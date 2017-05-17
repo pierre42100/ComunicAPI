@@ -15,10 +15,8 @@ class welcomeController {
 	 */
 	public function getInfos(){
 		return array(
-			"serviceDescription" => "This service watches DecodexList evolutions, stores them and let its client access them.",
-			"githubURL" => "https://github.com/pierre42100/decodexwatcherapi/",
-			"clientURL" => "https://decodexwatcher.communiquons.org/",
-			"apiSchema" => "https://swagger.decodexwatcher.communiquons.org/"
+			"serviceDescription" => "This is the Comunic API Server.",
+			"clientURL" => "https://communiquons.org/",
 		);
 	}
 
