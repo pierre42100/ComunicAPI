@@ -27,6 +27,14 @@ header("Access-Control-Allow-Origin: *");
 if(!isset($_GET["format"]))
     $_GET['format'] = "json";
 
+//Check tokens
+if($cs->config->get("site_mode") == "debug"){
+	$_POST['serviceName'] = "testService";
+	$_POST['serviceToken'] = "testPasswd";
+}
+if(!$cs->tokens->checkRequestTokens())
+	Rest_fatal_error(401, "Please check your tokens!");
+
 /**
  * Handle Rest requests
  */

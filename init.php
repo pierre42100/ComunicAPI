@@ -29,6 +29,7 @@ $cs->register("config", $config);
 foreach(glob(PROJECT_PATH."config/*.php") as $confFile){
 	require $confFile;
 }
+unset($config);
 
 //Connexion to the database
 $db = new DBLibrary(($cs->config->get("site_mode") == "debug"));
@@ -37,7 +38,14 @@ $db->openMYSQL($cs->config->get('mysql')['host'],
         $cs->config->get('mysql')['user'], 
         $cs->config->get('mysql')['password'], 
         $cs->config->get('mysql')['database']);
-
-//Delete created elements (security)
-unset($config);
 unset($db);
+
+//Add token object
+$tokens = new Tokens();
+$cs->register("tokens", $tokens);
+unset($tokens);
+
+//Add user object
+$user = new User();
+$cs->register("user", $user);
+unset($user);
