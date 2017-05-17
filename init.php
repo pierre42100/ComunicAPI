@@ -20,3 +20,24 @@ foreach(glob(PROJECT_PATH."functions/*.php") as $funcFile){
 
 //Create root object
 $cs = new CS();
+
+//Create configuration element
+$config = new config();
+$cs->register("config", $config);
+
+//Include configuration
+foreach(glob(PROJECT_PATH."config/*.php") as $confFile){
+	require $confFile;
+}
+
+//Connexion to the database
+$db = new DBLibrary(($cs->config->get("site_mode") == "debug"));
+$cs->register("db", $db);
+$db->openMYSQL($cs->config->get('mysql')['host'], 
+        $cs->config->get('mysql')['user'], 
+        $cs->config->get('mysql')['password'], 
+        $cs->config->get('mysql')['database']);
+
+//Delete created elements (security)
+unset($config);
+unset($db);
