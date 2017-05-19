@@ -8,16 +8,16 @@
 class Tokens{
 	
 	/**
-	 * Check request tokens
+	 * Check request client tokens
 	 *
 	 * @return Boolean Depends of the validity of the tokens
 	 */
-	public function checkRequestTokens(){
+	public function checkClientRequestTokens(){
 		if(!isset($_POST['serviceName']) OR !isset($_POST['serviceToken']))
 			return false; //No token specified
 		
 		//Check tokens
-		if(!$serviceID = $this->validateTokens($_POST['serviceName'], $_POST['serviceToken']))
+		if(!$serviceID = $this->validateClientTokens($_POST['serviceName'], $_POST['serviceToken']))
 			return false;
 
 		//Save service ID in a constant
@@ -28,13 +28,13 @@ class Tokens{
 	}
 
 	/**
-	 * Check API credentials (tokens)
+	 * Check client API credentials (tokens)
 	 *
 	 * @param 	String 	    $serviceName 	The name of the service
 	 * @param 	String  	$token 		 	The service's token
 	 * @return 	Boolean 			    	False or Tokens ID / Depending of validity of credentials
 	 */
-	private function validateTokens($serviceName, $token){
+	private function validateClientTokens($serviceName, $token){
 		//Prepare DataBase request
 		$tableName = "API_ServicesToken";
 		$conditions = "WHERE serviceName = ? AND token = ?";

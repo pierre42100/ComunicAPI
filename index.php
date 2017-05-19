@@ -14,7 +14,7 @@ include(__DIR__."/init.php");
 
 //Include RestControllers
 foreach(glob(PROJECT_PATH."RestControllers/*.php") as $restControllerFile){
-    require_once $restControllerFile;
+	require_once $restControllerFile;
 }
 
 //Include RestServer library
@@ -25,15 +25,31 @@ header("Access-Control-Allow-Origin: *");
 
 //By default format is json
 if(!isset($_GET["format"]))
-    $_GET['format'] = "json";
+	$_GET['format'] = "json";
 
-//Check tokens
+//Check client tokens
 if($cs->config->get("site_mode") == "debug"){
 	$_POST['serviceName'] = "testService";
 	$_POST['serviceToken'] = "testPasswd";
 }
-if(!$cs->tokens->checkRequestTokens())
-	Rest_fatal_error(401, "Please check your tokens!");
+if(!$cs->tokens->checkClientRequestTokens())
+	Rest_fatal_error(401, "Please check your client tokens!");
+
+//Check if login tokens where specified
+if(isset($_POST['userToken1']) AND isset($_POST['userToken2'])){
+	//Try to login user
+	$userID = $cs->user->getUserIDfromToken(APIServiceID, array(
+		$_POST['userToken1'],
+		$_POST['userToken2']
+	));
+
+	if($userID < 1){
+		Rest_fatal_error(401, "Please check your login tokens!");
+	}
+
+	//Else save userID
+	define("userID", $userID);
+}
 
 /**
  * Handle Rest requests
@@ -42,11 +58,11 @@ $server = new \Jacwright\RestServer\RestServer($cs->config->get("site_mode"));
 
 //Include controllers
 foreach(get_included_files() as $filePath){
-    if(preg_match("<RestControllers>", $filePath)){
-        $className = strstr($filePath, "RestControllers/");
-        $className = str_replace(array("RestControllers/", ".php"), "", $className);
-        $server->addClass($className);
-    }
+	if(preg_match("<RestControllers>", $filePath)){
+		$className = strstr($filePath, "RestControllers/");
+		$className = str_replace(array("RestControllers/", ".php"), "", $className);
+		$server->addClass($className);
+	}
 }
 
 //Hanlde

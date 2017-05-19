@@ -71,15 +71,10 @@ class userController
 	 * @return array The result
 	 */
 	public function getCurrentUserInfosWithTokens() : array{
-		//Check variables sent in request (for login)
-		if(!isset($_POST['token1']) OR !isset($_POST['token2']))
-			throw new RestException(401, "Missing tokens !");
-
-		//Preparing data
-		$tokens = array($_POST['token1'], $_POST['token2']);
+		user_login_required();
 
 		//Try to get user infos from token
-		$userInfos = CS::get()->user->getUserInfosFromToken($tokens, APIServiceID);
+		$userInfos = CS::get()->user->getUserInfos(userID);
 		
 		//Check if response is empty
 		if(count($userInfos) == 0)
@@ -95,10 +90,9 @@ class userController
 	 * @url POST /user/getCurrentUserID
 	 */
 	public function getCurrentUserIDUsingTokens(){
-		  //Get user infos
-		  $userInfos = $this->getCurrentUserInfosWithTokens();
+		user_login_required();
 
-		  //Return userID
-		  return array("userID" => $userInfos[0]["userID"]);
+		//Return userID
+		return array("userID" => userID);
 	}
 }

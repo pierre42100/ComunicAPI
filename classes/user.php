@@ -64,7 +64,7 @@ class User{
 	 * @param Integer $serviceID The ID of the service
 	 * @return False if it fails, or tokens if success
 	 */
-	function getUserLoginTokenByIDs($userID, $serviceID){
+	public function getUserLoginTokenByIDs($userID, $serviceID){
 		//Prepare database request
 		$conditions = "WHERE ID_utilisateurs = ? AND ID_API_ServicesToken = ?";
 		$values = array(
@@ -90,7 +90,7 @@ class User{
 	 * @param String $serviceID The service ID
 	 * @return Boolean False if it fails
 	 */
-	function deleteUserLoginToken(array $tokens, $serviceID){
+	public function deleteUserLoginToken(array $tokens, $serviceID){
 		//Check the number of given tokens
 		if(count($tokens) != 2)
 			return false;
@@ -112,20 +112,20 @@ class User{
 	}
 
 	/**
-	 * Get User Infos from token
+	 * Get User ID from token
 	 *
 	 * @param Array $tokens The user login tokens
 	 * @param String $serviceID The ID of the service
-	 * @return Array The result of the function (empty one if it fails)
+	 * @return Integer User ID (0 for a failure)
 	 */
-	function getUserInfosFromToken(array $tokens, $serviceID): array {
+	public function getUserIDfromToken($serviceID, array $tokens){
 		//Check token number
 		if(count($tokens) != 2)
-			return array();
-
+			return 0;
+		
 		//Prepare database request
-		$tablesName = "utilisateurs, API_userLoginToken";
-		$conditions = "WHERE utilisateurs.ID = API_userLoginToken.ID_utilisateurs AND API_userLoginToken.ID_API_ServicesToken = ? AND API_userLoginToken.token1 = ? AND API_userLoginToken.token2 = ?";
+		$tablesName = "API_userLoginToken";
+		$conditions = "WHERE API_userLoginToken.ID_API_ServicesToken = ? AND API_userLoginToken.token1 = ? AND API_userLoginToken.token2 = ?";
 		$conditionsValues = array(
 			$serviceID,
 			$tokens[0],
@@ -137,22 +137,51 @@ class User{
 		
 		//Check if result is correct or not
 		if(count($userInfos) == 0)
+			return 0; //No result
+
+		//Return ID
+		return $userInfos[0]["ID_utilisateurs"];
+	}
+	
+
+	/**
+	 * Get User Infos
+	 *
+	 * @param Integer $userID The user ID
+	 * @return Array The result of the function (user informations) (empty one if it fails)
+	 */
+	public function getUserInfos($userID): array {
+		//Prepare database request
+		$tablesName = "utilisateurs";
+		$conditions = "WHERE utilisateurs.ID = ?";
+		$conditionsValues = array(
+			$userID*1,
+		);
+		
+		//Perform request
+		$userInfos = CS::get()->db->select($tablesName, $conditions, $conditionsValues);
+		
+		//Check if result is correct or not
+		if(count($userInfos) == 0)
 			return array(); //No result
 		
 		//Prepare return
 		$return = array();
-		$return['userID'] = $userInfos[0]['ID_utilisateurs'];
+		$return['userID'] = $userInfos[0]['ID'];
 		$return['firstName'] = $userInfos[0]['nom'];
 		$return['lastName'] = $userInfos[0]['prenom'];
-		$return['mailAdress'] = $userInfos[0]['mail'];
 		$return['accountCreationDate'] = $userInfos[0]['date_creation'];
 		$return['publicPage'] = $userInfos[0]['public'];
 		$return['openPage'] = $userInfos[0]['pageouverte'];
-		$return['noCommentOnHisPage'] = $userInfos[0]['bloquecommentaire'];
 		$return['allowPostFromFriendOnHisPage'] = $userInfos[0]['autoriser_post_amis'];
+		$return['noCommentOnHisPage'] = $userInfos[0]['bloquecommentaire'];
 		$return['virtualDirectory'] = $userInfos[0]['sous_repertoire'];
 		$return['personnalWebsite'] = $userInfos[0]['site_web'];
-		$return['publicFriendList'] = $userInfos[0]['liste_amis_publique'];
+		$return['isPublicFriendList'] = $userInfos[0]['liste_amis_publique'];
+
+		//Only the user may get its mail address
+		if(userID === $userID)
+			$return['mailAdress'] = $userInfos[0]['mail'];
 
 		//Return result
 		return $return;
