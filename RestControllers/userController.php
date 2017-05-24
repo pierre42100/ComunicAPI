@@ -49,15 +49,11 @@ class userController
 	  * @url POST /user/disconnectUSER
 	  */
 	  public function disconnectUSER(){
-		//Check variables sent in request
-		if(!isset($_POST['token1']) OR !isset($_POST['token2']))
-			throw new RestException(401, "Missing data !");
 
-		//Prepare data
-		$tokens = array($_POST['token1'], $_POST['token2']);
+		user_login_required();
 
 		//Try to delete token
-		if(!CS::get()->user->deleteUserLoginToken($tokens, APIServiceID))
+		if(!CS::get()->user->deleteUserLoginToken(userID, APIServiceID))
 			throw new RestException(500, "Something went wrong while trying to logout user !");
 
 		//Everything is ok

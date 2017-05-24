@@ -86,20 +86,16 @@ class User{
 	/**
 	 * Delete token from given informations
 	 *
-	 * @param Array $tokens The tokens to delete
+	 * @param Integer $userID The ID of the user to delete
 	 * @param String $serviceID The service ID
 	 * @return Boolean False if it fails
 	 */
-	public function deleteUserLoginToken(array $tokens, $serviceID){
-		//Check the number of given tokens
-		if(count($tokens) != 2)
-			return false;
+	public function deleteUserLoginToken($userID, $serviceID){
 
 		//Prepare database request
-		$condition = "token1 = ? AND token2 = ? AND ID_API_ServicesToken = ?";
+		$condition = "ID_utilisateurs = ? AND ID_API_ServicesToken = ?";
 		$values = array(
-			$tokens[0],
-			$tokens[1],
+			$userID,
 			$serviceID
 		);
 
