@@ -164,8 +164,8 @@ class User{
 		//Prepare return
 		$return = array();
 		$return['userID'] = $userInfos[0]['ID'];
-		$return['firstName'] = $userInfos[0]['nom'];
-		$return['lastName'] = $userInfos[0]['prenom'];
+		$return['firstName'] = $userInfos[0]['prenom'];
+		$return['lastName'] = $userInfos[0]['nom'];
 		$return['accountCreationDate'] = $userInfos[0]['date_creation'];
 		$return['publicPage'] = $userInfos[0]['public'];
 		$return['openPage'] = $userInfos[0]['pageouverte'];
