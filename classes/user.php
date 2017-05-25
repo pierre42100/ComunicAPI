@@ -176,7 +176,7 @@ class User{
 		$return['isPublicFriendList'] = $userInfos[0]['liste_amis_publique'];
 
 		//Add account image url
-		$return['accountImage'] = path_user_data();
+		$return['accountImage'] = path_account_image("0Reverse.png");
 
 		//Only the user may get its mail address
 		if(userID === $userID)
