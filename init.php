@@ -18,6 +18,11 @@ foreach(glob(PROJECT_PATH."functions/*.php") as $funcFile){
     require_once $funcFile;
 }
 
+//Include helpers
+foreach(glob(PROJECT_PATH."helpers/*.php") as $funcFile){
+    require_once $funcFile;
+}
+
 //Create root object
 $cs = new CS();
 

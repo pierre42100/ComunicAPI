@@ -146,7 +146,7 @@ class User{
 	 * @param Integer $userID The user ID
 	 * @return Array The result of the function (user informations) (empty one if it fails)
 	 */
-	public function getUserInfos($userID): array {
+	public function getUserInfos($userID) : array {
 		//Prepare database request
 		$tablesName = "utilisateurs";
 		$conditions = "WHERE utilisateurs.ID = ?";
@@ -174,6 +174,9 @@ class User{
 		$return['virtualDirectory'] = $userInfos[0]['sous_repertoire'];
 		$return['personnalWebsite'] = $userInfos[0]['site_web'];
 		$return['isPublicFriendList'] = $userInfos[0]['liste_amis_publique'];
+
+		//Add account image url
+		$return['accountImage'] = path_user_data();
 
 		//Only the user may get its mail address
 		if(userID === $userID)
