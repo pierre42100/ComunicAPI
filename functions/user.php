@@ -16,6 +16,10 @@ function user_login_required(){
         Rest_fatal_error(401, "This function requires user to be logged in!");
     }
 
+    //Check if userID is the number 0
+    if(userID == 0)
+        Rest_fatal_error(401, "This function requires user to be logged in!");
+
     //User logged in
     return true;
 }

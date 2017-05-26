@@ -23,12 +23,12 @@ require PROJECT_PATH."3rdparty/RestServer/RestServer.php";
 //Allow remote requests
 header("Access-Control-Allow-Origin: *");
 
-//By default format is json
+//By default return format is json
 if(!isset($_GET["format"]))
 	$_GET['format'] = "json";
 
 //Check client tokens
-if($cs->config->get("site_mode") == "debug"){
+if($cs->config->get("site_mode") == "debug"){ //DEBUG ONLY
 	$_POST['serviceName'] = "testService";
 	$_POST['serviceToken'] = "testPasswd";
 }
@@ -49,6 +49,10 @@ if(isset($_POST['userToken1']) AND isset($_POST['userToken2'])){
 
 	//Else save userID
 	define("userID", $userID);
+}
+else {
+	//Defined userID is number 0
+	define("userID", 0);
 }
 
 /**
