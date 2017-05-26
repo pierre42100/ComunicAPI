@@ -23,7 +23,7 @@ $config->set("storage_url", "http://devweb.local/comunic/current/user_data/");
  *
  * The path (on the server) pointing of the user_data folder
  */
-$config->set("storage_path", "/home/pierre/Documents/projets_web/comunic/current/user_data");
+$config->set("storage_path", "/home/pierre/Documents/projets_web/comunic/current/user_data/");
 
 /**
  * Database credentials

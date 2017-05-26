@@ -13,11 +13,6 @@ foreach(glob(PROJECT_PATH."classes/*.php") as $classFile){
     require_once $classFile;
 }
 
-//Include components
-foreach(glob(PROJECT_PATH."classes/components/*.php") as $classFile){
-    require_once $classFile;
-}
-
 //Include functions
 foreach(glob(PROJECT_PATH."functions/*.php") as $funcFile){
     require_once $funcFile;
@@ -59,6 +54,11 @@ unset($tokens);
 $user = new User();
 $cs->register("user", $user);
 unset($user);
+
+//Include components
+foreach(glob(PROJECT_PATH."classes/components/*.php") as $classFile){
+    require_once $classFile;
+}
 
 //Add components object
 $components = new Components();
