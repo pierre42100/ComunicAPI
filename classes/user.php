@@ -161,26 +161,38 @@ class User{
 		if(count($userInfos) == 0)
 			return array(); //No result
 		
+		//Return result
+		return $this->generateUserInfosArray($userInfos[0]);
+	}
+
+	/**
+	 * Generate and return an array containing informations about a user
+	 * given the database entry
+	 *
+	 * @param Array $userInfos The user entry in the database
+	 * @return Array The informations ready to be returned
+	 */
+	private function generateUserInfosArray(array $userInfos) : array{
 		//Prepare return
 		$return = array();
-		$return['userID'] = $userInfos[0]['ID'];
-		$return['firstName'] = $userInfos[0]['prenom'];
-		$return['lastName'] = $userInfos[0]['nom'];
-		$return['accountCreationDate'] = $userInfos[0]['date_creation'];
-		$return['publicPage'] = $userInfos[0]['public'];
-		$return['openPage'] = $userInfos[0]['pageouverte'];
-		$return['allowPostFromFriendOnHisPage'] = $userInfos[0]['autoriser_post_amis'];
-		$return['noCommentOnHisPage'] = $userInfos[0]['bloquecommentaire'];
-		$return['virtualDirectory'] = $userInfos[0]['sous_repertoire'];
-		$return['personnalWebsite'] = $userInfos[0]['site_web'];
-		$return['isPublicFriendList'] = $userInfos[0]['liste_amis_publique'];
+		$return['userID'] = $userInfos['ID'];
+		$return['firstName'] = $userInfos['prenom'];
+		$return['lastName'] = $userInfos['nom'];
+		$return['accountCreationDate'] = $userInfos['date_creation'];
+		$return['publicPage'] = $userInfos['public'];
+		$return['openPage'] = $userInfos['pageouverte'];
+		$return['allowPostFromFriendOnHisPage'] = $userInfos['autoriser_post_amis'];
+		$return['noCommentOnHisPage'] = $userInfos['bloquecommentaire'];
+		$return['virtualDirectory'] = $userInfos['sous_repertoire'];
+		$return['personnalWebsite'] = $userInfos['site_web'];
+		$return['isPublicFriendList'] = $userInfos['liste_amis_publique'];
 
 		//Add account image url
-		$return['accountImage'] = path_account_image("0Reverse.png");
+		$return['accountImage'] = CS::get()->components->accountImage->getPath($return['userID']);
 
 		//Only the user may get its mail address
-		if(userID === $userID)
-			$return['mailAdress'] = $userInfos[0]['mail'];
+		if(userID === $return['userID'])
+			$return['mailAdress'] = $userInfos['mail'];
 
 		//Return result
 		return $return;
