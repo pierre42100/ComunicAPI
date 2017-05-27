@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-class userController
+class searchController
 {
 	/**
 	 * Peform a research on the database
@@ -18,13 +18,17 @@ class userController
 			Rest_fatal_error(400, "Please specify search terms");
 		
 		//Check for search limit
-		$seachLimit = (isset($_POST['searchLimit']) ? $_POST['searchLimit']*1 : 5);
+		$searchLimit = (isset($_POST['searchLimit']) ? $_POST['searchLimit']*1 : 5);
 
 		//Check the limit
-		if($seachLimit < 1 || $seachLimit > 25)
+		if($searchLimit < 1 || $searchLimit > 25)
 			Rest_fatal_error(401, "Invalid search limit !");
 		
 		//Perform research on the database and return results
+		if(!$results = CS::get()->components->searchUser->search($_POST['query'], $searchLimit))
+			Rest_fatal_error(500, "An error occured while trying to perform a research in user list !");
 		
+		//Return results
+		return $results;
 	}
 }

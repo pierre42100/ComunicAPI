@@ -317,9 +317,10 @@ class DBLibrary {
      * @param String $tableName The name of the table
      * @param String $conditions The conditions
      * @param Array $datasCond The values of condition
+     * @param Array $fieldsList Optionnal, specify the fields to select during the request. 
      * @return Array The result
      */
-    public function select($tableName, $conditions = "", array $datasCond = array()){
+    public function select($tableName, $conditions = "", array $datasCond = array(), array $fieldsList = array()){
         //We try to perform the task
         try{
             //We check if any database is opened
@@ -327,8 +328,17 @@ class DBLibrary {
                 throw new Exception("There isn't any opened DataBase !");
             }
         
+            //Process fields to select
+            if(count($fieldsList) == 0)
+                $fields = "*";
+            else {
+                $fields = "";
+                foreach($fieldsList as $processField)
+                    $fields .= $processField.", ";
+            }
+
             //Generating SQL
-            $sql = "SELECT * FROM ".$tableName." ".$conditions;
+            $sql = "SELECT ".$fields." FROM ".$tableName." ".$conditions;
             $selectOBJ = $this->db->prepare($sql);
             $selectOBJ->execute($datasCond);
             
