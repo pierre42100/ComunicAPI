@@ -67,7 +67,7 @@ class userController
 	 * @return array The result
 	 */
 	public function getUserInfos() : array{
-		user_login_required();
+		user_login_required();sleep(5);
 
 		//Determine userID
 		if(!isset($_POST['userID']))
@@ -100,19 +100,24 @@ class userController
 			Rest_fatal_error(400, "Please specify user ID !");
 		
 		$usersID = array();
-		foreach(json_decode($_POST['usersID']) as $userID){
-			$usersID[] = $userID*1;
+		foreach(explode(",", $_POST['usersID']) as $userID){
+			if($userID*1 > 0)
+				$usersID[$userID*1] = $userID*1;
 		}
 
+		//Check for errors
+		if(count($userID) == 0)
+			Rest_fatal_error(400, "No user ID were specified!");
+
 		//Try to get user infos
-		$userInfos = CS::get()->user->getUserInfos($userID);
+		$userInfos = CS::get()->user->getMultipleUserInfos($usersID);
 		
 		//Check if response is empty
 		if(count($userInfos) == 0)
 			throw new RestException(401, "Couldn't get user data (maybe user doesn't exists) !");
 		
 		//Return result
-		return array($userInfos);
+		return $userInfos;
 	}
 
 	/**

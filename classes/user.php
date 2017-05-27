@@ -174,12 +174,12 @@ class User{
 	public function getMultipleUserInfos(array $usersID) : array {
 		//Prepare database request
 		$tablesName = "utilisateurs";
-		$conditions = "WHERE ";
+		$conditions = "WHERE (utilisateurs.ID < 0)";
 		$conditionsValues = array();
 
 		//Process users
 		foreach($usersID as $i=>$process){
-			$conditions.= ($i==0 ? "" : " OR ")."utilisateurs.ID = ?";
+			$conditions .= " OR utilisateurs.ID = ?";
 			$conditionsValues[] = $process;
 		}
 		
@@ -191,7 +191,7 @@ class User{
 			return array(); //No result
 		
 		//Process result
-		foreach($userInfos as $processUser){
+		foreach($usersInfos as $processUser){
 			$result[$processUser['ID']] = $this->generateUserInfosArray($processUser);
 		}
 
