@@ -14,8 +14,28 @@ class searchUser {
 	 * @param Integer $limit The number of results to return on the screen
 	 * @return Array the result of the result
 	 */
-	public function search($query, $limit){
-		return array(1, 2);
+	public function search($query, $limit) : array{
+
+		//Prepare query string
+		$query = "%".str_replace(" ", "%", $query)."%";
+
+		//Prepare a request on the database
+		$tableName = "utilisateurs";
+		$conditions = "WHERE (nom LIKE ?) || (prenom LIKE ?) || (CONCAT(prenom, '%', nom) LIKE ?) || (CONCAT(nom, '%', prenom) LIKE ?) LIMIT ".$limit*1;
+		$datasCond = array($query, $query, $query, $query);
+		$fields = array("ID");
+
+		//Perform the request on the database
+		$results = CS::get()->db->select($tableName, $conditions, $datasCond, $fields);
+
+		//Prepare return
+		$return = array();
+		foreach($results as $value){
+			$return[] = $value["ID"];
+		}
+
+		//Return result
+		return $return;
 	}
 }
 

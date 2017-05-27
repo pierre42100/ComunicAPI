@@ -43,6 +43,7 @@ $db->openMYSQL($cs->config->get('mysql')['host'],
         $cs->config->get('mysql')['user'], 
         $cs->config->get('mysql')['password'], 
         $cs->config->get('mysql')['database']);
+define("DBprefix", $cs->config->get("dbprefix"));
 unset($db);
 
 //Add token object

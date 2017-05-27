@@ -36,3 +36,10 @@ $config->set("mysql", array(
     "user" => "root", 
     "password" => "root"
 ));
+
+/**
+ * Tables of database prefix
+ *
+ * For new tables only
+ */
+$config->set("dbprefix", "comunic_");

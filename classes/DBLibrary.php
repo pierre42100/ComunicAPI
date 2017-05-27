@@ -332,9 +332,7 @@ class DBLibrary {
             if(count($fieldsList) == 0)
                 $fields = "*";
             else {
-                $fields = "";
-                foreach($fieldsList as $processField)
-                    $fields .= $processField.", ";
+                $fields = implode(", ", $fieldsList);
             }
 
             //Generating SQL
