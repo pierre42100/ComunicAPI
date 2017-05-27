@@ -61,16 +61,22 @@ class userController
 	  }
 
 	/**
-	 * Get current user infos using tokens
+	 * Get informations about a user
 	 *
-	 * @url POST /user/getCurrentUserInfos
+	 * @url POST /user/getInfos
 	 * @return array The result
 	 */
-	public function getCurrentUserInfosWithTokens() : array{
+	public function getUserInfos() : array{
 		user_login_required();
 
-		//Try to get user infos from token
-		$userInfos = CS::get()->user->getUserInfos(userID);
+		//Determine userID
+		if(!isset($_POST['userID']))
+			Rest_fatal_error(400, "Please specify user ID !");
+		
+		$userID = $_POST['userID']*1;
+
+		//Try to get user infos
+		$userInfos = CS::get()->user->getUserInfos($userID);
 		
 		//Check if response is empty
 		if(count($userInfos) == 0)
@@ -85,7 +91,7 @@ class userController
 	 *
 	 * @url POST /user/getCurrentUserID
 	 */
-	public function getCurrentUserIDUsingTokens(){
+	public function getCurrentUserID(){
 		user_login_required();
 
 		//Return userID
