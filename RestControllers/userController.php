@@ -87,6 +87,35 @@ class userController
 	}
 
 	/**
+	 * Get multiple users informations
+	 *
+	 * @url POST /user/getInfosMultiple
+	 * @return array The result
+	 */
+	public function getMultipleUserInfos() : array{
+		user_login_required();
+
+		//Determine userID
+		if(!isset($_POST['usersID']))
+			Rest_fatal_error(400, "Please specify user ID !");
+		
+		$usersID = array();
+		foreach(json_decode($_POST['usersID']) as $userID){
+			$usersID[] = $userID*1;
+		}
+
+		//Try to get user infos
+		$userInfos = CS::get()->user->getUserInfos($userID);
+		
+		//Check if response is empty
+		if(count($userInfos) == 0)
+			throw new RestException(401, "Couldn't get user data (maybe user doesn't exists) !");
+		
+		//Return result
+		return array($userInfos);
+	}
+
+	/**
 	 * Get current user infos using tokens
 	 *
 	 * @url POST /user/getCurrentUserID

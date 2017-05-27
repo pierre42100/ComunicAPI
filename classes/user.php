@@ -166,6 +166,40 @@ class User{
 	}
 
 	/**
+	 * Get Multiple Users Infos
+	 *
+	 * @param Array $usersID The users ID
+	 * @return Array The result of the function (user informations) (empty one if it fails)
+	 */
+	public function getMultipleUserInfos(array $usersID) : array {
+		//Prepare database request
+		$tablesName = "utilisateurs";
+		$conditions = "WHERE ";
+		$conditionsValues = array();
+
+		//Process users
+		foreach($usersID as $i=>$process){
+			$conditions.= ($i==0 ? "" : " OR ")."utilisateurs.ID = ?";
+			$conditionsValues[] = $process;
+		}
+		
+		//Perform request
+		$usersInfos = CS::get()->db->select($tablesName, $conditions, $conditionsValues);
+		
+		//Check if result is correct or not
+		if(count($usersInfos) == 0)
+			return array(); //No result
+		
+		//Process result
+		foreach($userInfos as $processUser){
+			$result[$processUser['ID']] = $this->generateUserInfosArray($processUser);
+		}
+
+		//Return result
+		return $result;
+	}
+
+	/**
 	 * Generate and return an array containing informations about a user
 	 * given the database entry
 	 *
