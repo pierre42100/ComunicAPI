@@ -25,7 +25,8 @@ class searchController
 			Rest_fatal_error(401, "Invalid search limit !");
 		
 		//Perform research on the database and return results
-		if(!$results = CS::get()->components->searchUser->search($_POST['query'], $searchLimit))
+		$results = CS::get()->components->searchUser->search($_POST['query'], $searchLimit);
+		if($results === false)
 			Rest_fatal_error(500, "An error occured while trying to perform a research in user list !");
 		
 		//Return results
