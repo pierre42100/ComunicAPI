@@ -141,7 +141,7 @@ class User{
 	
 
 	/**
-	 * Get User Infos
+	 * Get Single User Infos
 	 *
 	 * @param Integer $userID The user ID
 	 * @return Array The result of the function (user informations) (empty one if it fails)

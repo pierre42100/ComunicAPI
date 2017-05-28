@@ -64,57 +64,38 @@ class userController
 	 * Get informations about a user
 	 *
 	 * @url POST /user/getInfos
-	 * @return array The result
-	 */
-	public function getUserInfos() : array{
-		user_login_required();sleep(5);
-
-		//Determine userID
-		if(!isset($_POST['userID']))
-			Rest_fatal_error(400, "Please specify user ID !");
-		
-		$userID = $_POST['userID']*1;
-
-		//Try to get user infos
-		$userInfos = CS::get()->user->getUserInfos($userID);
-		
-		//Check if response is empty
-		if(count($userInfos) == 0)
-			throw new RestException(401, "Couldn't get user data !");
-		
-		//Return result
-		return array($userInfos);
-	}
-
-	/**
-	 * Get multiple users informations
-	 *
 	 * @url POST /user/getInfosMultiple
 	 * @return array The result
 	 */
-	public function getMultipleUserInfos() : array{
+	public function getUserInfos() : array{
 		user_login_required();
 
 		//Determine userID
-		if(!isset($_POST['usersID']))
-			Rest_fatal_error(400, "Please specify user ID !");
-		
-		$usersID = array();
-		foreach(explode(",", $_POST['usersID']) as $userID){
-			if($userID*1 > 0)
-				$usersID[$userID*1] = $userID*1;
+		if(isset($_POST['userID'])){
+			$usersID = array($_POST['userID']*1);
 		}
+		elseif(isset($_POST['usersID'])){
+			//Generate users ID list
+			$usersID = array();
+			foreach(explode(",", $_POST['usersID']) as $userID){
+				if($userID*1 > 0)
+					$usersID[$userID*1] = $userID*1;
+			}
 
-		//Check for errors
-		if(count($userID) == 0)
-			Rest_fatal_error(400, "No user ID were specified!");
+			//Check for errors
+			if(count($userID) == 0)
+				Rest_fatal_error(400, "No user ID were specified!");
+		}
+		else
+			//No ID specified
+			Rest_fatal_error(400, "Please specify at least one user ID !");
 
 		//Try to get user infos
 		$userInfos = CS::get()->user->getMultipleUserInfos($usersID);
 		
 		//Check if response is empty
 		if(count($userInfos) == 0)
-			throw new RestException(401, "Couldn't get user data (maybe user doesn't exists) !");
+			throw new RestException(401, "Couldn't get user data !");
 		
 		//Return result
 		return $userInfos;
