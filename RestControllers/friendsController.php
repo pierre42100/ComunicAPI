@@ -16,7 +16,7 @@ class friendsController{
 		user_login_required(); //Login required
 
 		//Try to get friends list
-		$friendsList = false;
+		$friendsList = CS::get()->components->friends->getList(userID);
 
 		//Check for errors
 		if($friendsList === false)
