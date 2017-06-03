@@ -6,6 +6,12 @@
  */
 
 class User{
+
+	/**
+	 * @var String $userTable The name of the user table
+	 */
+	private $userTable = "utilisateurs";
+
 	/**
 	 * Try to login user with returning a service token
 	 * 
@@ -21,7 +27,7 @@ class User{
 			$email,
 			$this->cryptPassword($password)
 		);
-		$userInfos = CS::get()->db->select("utilisateurs", $conditions, $values);
+		$userInfos = CS::get()->db->select($this->userTable, $conditions, $values);
 
 		//Check if there is anything
 		if(count($userInfos) == 0)
@@ -148,7 +154,7 @@ class User{
 	 */
 	public function getUserInfos($userID) : array {
 		//Prepare database request
-		$tablesName = "utilisateurs";
+		$tablesName = $this->userTable;
 		$conditions = "WHERE utilisateurs.ID = ?";
 		$conditionsValues = array(
 			$userID*1,
@@ -173,7 +179,7 @@ class User{
 	 */
 	public function getMultipleUserInfos(array $usersID) : array {
 		//Prepare database request
-		$tablesName = "utilisateurs";
+		$tablesName = $this->userTable;
 		$conditions = "WHERE (utilisateurs.ID < 0)";
 		$conditionsValues = array();
 
@@ -230,6 +236,29 @@ class User{
 
 		//Return result
 		return $return;
+	}
+
+	/**
+	 * Update last user activity time on the network
+	 *
+	 * @param Integer $userID The ID of the user to update
+	 * @return Boolean True for a success
+	 */
+	public function updateLastActivity($userID){
+
+		//Perform a request on the database
+		$tableName = $this->userTable;
+		$conditions = "ID = ?";
+		$whereValues = array(userID);
+		$modifs = array(
+			"last_activity" => time()
+		);
+
+		if(!CS::get()->db->updateDB($tableName, $conditions, $modifs, $whereValues))
+			return false;
+
+		//Success
+		return true;
 	}
 
 	/**

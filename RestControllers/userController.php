@@ -109,6 +109,9 @@ class userController
 	public function getCurrentUserID(){
 		user_login_required();
 
+		//Update last user activity
+		CS::get()->components->user->updateLastActivity(userID);
+
 		//Return userID
 		return array("userID" => userID);
 	}
