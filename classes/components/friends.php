@@ -29,7 +29,7 @@ class friends {
 		
 		//Prepare the request on the database
 		$tableName = $this->friendsTable.", utilisateurs";
-		$condition = "WHERE ID_personne = ? AND amis.ID_amis = utilisateurs.ID ORDER BY utilisateurs.last_activity";
+		$condition = "WHERE ID_personne = ? AND amis.ID_amis = utilisateurs.ID ORDER BY utilisateurs.last_activity DESC";
 		$condValues = array($userID);
 
 		//Specify which fields to get
