@@ -243,3 +243,6 @@ class User{
 	}
 
 }
+
+//Register class
+Components::register("user", new User());

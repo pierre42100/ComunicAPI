@@ -51,11 +51,6 @@ $tokens = new Tokens();
 $cs->register("tokens", $tokens);
 unset($tokens);
 
-//Add user object
-$user = new User();
-$cs->register("user", $user);
-unset($user);
-
 //Include components
 foreach(glob(PROJECT_PATH."classes/components/*.php") as $classFile){
     require_once $classFile;
