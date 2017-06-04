@@ -58,6 +58,92 @@ class friends {
 		return $friendsList;
 
 	}
+
+	/**
+	 * Respond to a friendship request
+	 *
+	 * @param Integer $userID The ID of the user who respond to the request
+	 * @param Integer $friendID The ID of the target friend
+	 * @param Boolean $accept Defines wether the friend request was accepted or not
+	 * @return Boolean True or false depending of the success of the operation
+	 */
+	 public function respondRequest($userID, $friendID, $accept){
+		//If the request is to refuse friendship request, there isn't any security check to perform
+		if(!$accept){
+			//Perform a request on the database
+			$conditions = "ID_personne = ? AND ID_amis = ? AND actif = 0";
+			$conditionsValues = array(
+				$userID*1,
+				$friendID*1
+			);
+
+			//Try to perform request
+			if(CS::get()->db->deleteEntry($this->friendsTable, $conditions, $conditionsValues))
+				return true; //Operation is a success
+			else
+				return false; //An error occured
+		}
+
+		//Else it is a little more complicated
+		//First, check the request was really performed
+		if(!$this->checkFriendShipRequestExistence($friendID, $userID))
+			return false; //There isn't any existing request
+		
+		//Else we can update the database to accept the request
+		//Update the table
+		$conditions = "ID_personne = ? AND ID_amis = ? AND actif = 0";
+		$whereValues = array(
+			$userID*1,
+			$friendID*1
+		);
+		$modifs = array(
+			"actif" => 1
+		);
+
+		//First update the table
+		if(!CS::get()->db->updateDB($this->friendsTable, $conditions, $modifs, $whereValues))
+			return false;
+
+		//Then insert the second friend line
+		$insertValues = array(
+			"ID_personne" => $friendID,
+			"ID_amis" => $userID,
+			"actif" => 1
+		);
+		if(!CS::get()->db->addLine($this->friendsTable, $insertValues))
+			return false; //An error occurred
+		
+		//The operation is a success
+		return true;
+	}
+
+	/**
+	 * Check if a friendship request was performed by someone to someone
+	 *
+	 * @param Integer $userID The user who may have performed a request
+	 * @param Integer $friendID The destination of the request
+	 * @return Boolean True or false depending of the success of the operation
+	 */
+	 public function checkFriendShipRequestExistence($userID, $friendID){
+		//Perform a request on the database
+		$conditions = "WHERE ID_personne = ? AND ID_amis = ? AND actif = 0";
+		$dataConditions = array(
+			$friendID*1,
+			$userID*1
+		);
+		$fieldsList = array("ID");
+
+		//Try to perform request
+		$results = CS::get()->db->select($this->friendsTable, $conditions, $dataConditions, $fieldsList);
+
+		//Check for errors
+		if($results === false)
+			return false; //An error occured
+		
+		//Else we check the results
+		else
+			return count($results) === 1;
+	 }
 }
 
 //Register component
