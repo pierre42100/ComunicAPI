@@ -48,7 +48,7 @@ class friends {
 		foreach($results as $process){
 			$friendsList[] = array(
 				"ID_friend" => $process["ID_amis"],
-				"active" => $process["actif"],
+				"accepted" => $process["actif"],
 				"following" => $process["abonnement"],
 				"time_last_activity" => $process["last_activity"]
 			);
