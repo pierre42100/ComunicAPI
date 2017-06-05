@@ -11,6 +11,7 @@ class searchController
 	 * Peform a research on the database
 	 *
 	 * @url POST /search/request
+	 * @url POST /user/search
 	 */
 	public function searchDatabase(){
 		//Check if the query was specified with the request
