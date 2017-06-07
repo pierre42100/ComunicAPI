@@ -36,7 +36,7 @@ class Tokens{
 	 */
 	private function validateClientTokens($serviceName, $token){
 		//Prepare DataBase request
-		$tableName = "API_ServicesToken";
+		$tableName = CS::get()->config->get("dbprefix")."API_ServicesToken";
 		$conditions = "WHERE serviceName = ? AND token = ?";
 		$values = array(
 			$serviceName,

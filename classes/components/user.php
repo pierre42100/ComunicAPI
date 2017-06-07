@@ -13,6 +13,18 @@ class User{
 	private $userTable = "utilisateurs";
 
 	/**
+	 * @var String $userLoginAPItable The name of the table that contains logins performed on the API
+	 */
+	private $userLoginAPItable = "";
+
+	/**
+	 * Public constructor
+	 */
+	public function __construct(){
+		$this->userLoginAPItable = CS::get()->config->get("dbprefix")."API_userLoginToken";
+	}
+
+	/**
 	 * Try to login user with returning a service token
 	 * 
 	 * @param String $email The e-mail address of the user
@@ -49,10 +61,10 @@ class User{
 		$token2 = random_str(75);
 
 		//Insert token in the database
-		$tableName = "API_userLoginToken";
+		$tableName = $this->userLoginAPItable;
 		$insertValues = array(
 			"ID_utilisateurs" => $userID,
-			"ID_API_ServicesToken" => $serviceID,
+			"ID_".CS::get()->config->get("dbprefix")."API_ServicesToken" => $serviceID,
 			"token1" => $token1,
 			"token2" => $token2
 		);
@@ -72,12 +84,12 @@ class User{
 	 */
 	public function getUserLoginTokenByIDs($userID, $serviceID){
 		//Prepare database request
-		$conditions = "WHERE ID_utilisateurs = ? AND ID_API_ServicesToken = ?";
+		$conditions = "WHERE ID_utilisateurs = ? AND ID_".CS::get()->config->get("dbprefix")."API_ServicesToken = ?";
 		$values = array(
 			$userID,
 			$serviceID
 		);
-		$tokenInfos = CS::get()->db->select("API_userLoginToken", $conditions, $values);
+		$tokenInfos = CS::get()->db->select($this->userLoginAPItable, $conditions, $values);
 		
 		if(count($tokenInfos) == 0)
 			return false; //There is nobody at this address
@@ -99,14 +111,14 @@ class User{
 	public function deleteUserLoginToken($userID, $serviceID){
 
 		//Prepare database request
-		$condition = "ID_utilisateurs = ? AND ID_API_ServicesToken = ?";
+		$condition = "ID_utilisateurs = ? AND ID_".CS::get()->config->get("dbprefix")."API_ServicesToken = ?";
 		$values = array(
 			$userID,
 			$serviceID
 		);
 
 		//Try to perform request
-		if(!CS::get()->db->deleteEntry("API_userLoginToken", $condition, $values))
+		if(!CS::get()->db->deleteEntry($this->userLoginAPItable, $condition, $values))
 			return false; //Something went wrong during the request
 		
 		//Everything is ok
@@ -126,8 +138,8 @@ class User{
 			return 0;
 		
 		//Prepare database request
-		$tablesName = "API_userLoginToken";
-		$conditions = "WHERE API_userLoginToken.ID_API_ServicesToken = ? AND API_userLoginToken.token1 = ? AND API_userLoginToken.token2 = ?";
+		$tablesName = $this->userLoginAPItable;
+		$conditions = "WHERE ".$this->userLoginAPItable.".ID_".CS::get()->config->get("dbprefix")."API_ServicesToken = ? AND ".$this->userLoginAPItable.".token1 = ? AND ".$this->userLoginAPItable.".token2 = ?";
 		$conditionsValues = array(
 			$serviceID,
 			$tokens[0],
