@@ -14,6 +14,8 @@ class searchController
 	 * @url POST /user/search
 	 */
 	public function searchDatabase(){
+		user_login_required();
+
 		//Check if the query was specified with the request
 		if(!isset($_POST['query']))
 			Rest_fatal_error(400, "Please specify search terms");
