@@ -312,6 +312,25 @@ class DBLibrary {
     }
     
     /**
+     * Get the last inserted ID of a cursor
+     *
+     * @param Nothing
+     * @return Integer The last inserted ID (0 for a failure)
+     */
+    public function getLastInsertedID(){
+        try {
+            //Get & return last inserted ID
+            return $this->db->lastInsertId();
+        }
+        catch(Exception $e){
+            exit($this->echoException($e));
+        }
+        catch(PDOException $e){
+            exit($this->echoPDOException($e));
+        }
+    }
+
+    /**
      * Get datas from a table
      * 
      * @param String $tableName The name of the table
