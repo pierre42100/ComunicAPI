@@ -48,7 +48,7 @@ function users_list_to_array($list) : array{
 			return array();
 		
 		//Add the entry to the list
-		$usersList[] = floor($process*1);
+		$usersList[floor($process*1)] = floor($process*1);
 	}
 
 	//Return the result

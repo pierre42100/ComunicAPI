@@ -22,14 +22,28 @@ class conversationsController{
 		//Extract parametres
 		$conversationName = ($_POST["name"] == "false" ? false : $_POST['name']);
 		$followConversation = ($_POST['follow'] == "true" ? true : false);
-		$users = users_list_to_array($_POST['users']);
+		$usersList = users_list_to_array($_POST['users']);
+
+		//Add current user (if not present)
+		if(!isset($usersList[userID]))
+			$usersList[userID] = userID;
 
 		//Check users
-		if(count($users) < 1)
-			Rest_fatal_erro(501, "Please select at least one user !");
+		if(count($usersList) < 1)
+			Rest_fatal_error(501, "Please select at least one user !");
 		
-		//Perform the request
+		//Try to create the conversation
+		$conversationID = CS::get()->components->conversations->create(userID, $followConversation, $usersList, $conversationName);
 		
+		//Check for errors
+		if($conversationID == 0)
+			Rest_fatal_error(500, "Couldn't create the conversation !");
+
+		//Success
+		return array(
+			"conversationID" => $conversationID,
+			"success" => "The conversation was successfully created !"
+		);
 	}
 
 }
