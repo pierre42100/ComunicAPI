@@ -8,6 +8,25 @@
 class conversationsController{
 
 	/**
+	 * Get the conversations list
+	 *
+	 * @url POST /conversations/getList
+	 */
+	public function getConversationsList(){
+		user_login_required();
+
+		//Try to get the list
+		$conversationsList = CS::get()->components->conversations->getList(userID);
+
+		//Check for errors
+		if($conversationsList === false)
+			Rest_fatal_error(500, "Couldn't get conversations list !");
+		
+		//Return results
+		return $conversationsList;
+	}
+
+	/**
 	 * Create a new conversation
 	 *
 	 * @url POST /conversations/create

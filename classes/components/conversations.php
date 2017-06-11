@@ -27,6 +27,60 @@ class conversations {
 	}
 
 	/**
+	 * Get the conversations list of a specified user
+	 *
+	 * @param Integer $userID The ID of the user to get the list
+	 * @return Mixed Array in case of result / False else
+	 */
+	public function getList($userID){
+
+		//Prepare database request
+		$tablesName = $this->conversationListTable.", ".$this->conversationUsersTable;
+		
+		//Prepare conditions
+		$tableJoinCondition = $this->conversationListTable.".ID = ".$this->conversationUsersTable.".ID_".$this->conversationListTable."";
+		$userCondition = $this->conversationUsersTable.".ID_utilisateurs = ?";
+		$orderResults = "ORDER BY ".$this->conversationListTable.".last_active DESC";
+
+		//Compile conditions
+		$conditions = "WHERE ".$tableJoinCondition." AND (".$userCondition.") ".$orderResults;
+		$conditionsValues = array($userID);
+		
+		//Fields list
+		$requiredFields = array(
+			$this->conversationListTable.".ID",
+			$this->conversationListTable.".last_active",
+			$this->conversationListTable.".name",
+			$this->conversationListTable.".ID_utilisateurs AS ID_owner",
+			$this->conversationUsersTable.".following",
+			$this->conversationUsersTable.".saw_last_message",
+		);
+
+		//Perform database request
+		$results = CS::get()->db->select($tablesName, $conditions, $conditionsValues, $requiredFields);
+
+		//Check for errors
+		if($results === false)
+			return false; //An error occurred
+
+		//Process results
+		$conversationsList = array();
+		foreach($results as $processConversation){
+			$conversationsList[] = array(
+				"ID" => $processConversation["ID"],
+				"ID_owner" => $processConversation["ID_owner"],
+				"last_active" => $processConversation["last_active"],
+				"name" => ($processConversation["name"] == "" ? false : $processConversation["name"]),
+				"following" => $processConversation["following"],
+				"saw_last_message" => $processConversation["saw_last_message"]
+			);
+		}
+
+		//Return results
+		return $conversationsList;
+	}
+
+	/**
 	 * Create a new conversation
 	 *
 	 * @param Integer $userID The ID of the user creating the conversation
@@ -62,7 +116,8 @@ class conversations {
 			$userInformations = array(
 				"ID_".$this->conversationListTable => $conversationID,
 				"time_add" => time(),
-				"saw_last_message" => 1
+				"saw_last_message" => 1,
+				"ID_utilisateurs" => $processUser,
 			);
 
 			//Make user follow the conversation if required
