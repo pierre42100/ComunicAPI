@@ -17,11 +17,15 @@ class Tokens{
 			return false; //No token specified
 		
 		//Check tokens
-		if(!$serviceID = $this->validateClientTokens($_POST['serviceName'], $_POST['serviceToken']))
+		if(!$serviceInfos = $this->validateClientTokens($_POST['serviceName'], $_POST['serviceToken']))
 			return false;
 
 		//Save service ID in a constant
-		define("APIServiceID", $serviceID);
+		define("APIServiceID", $serviceInfos["ID"]);
+
+		//Save service domain in a constant (if any)
+		if($serviceInfos["clientDomain"])
+			define("APIServiceDomain", $serviceInfos["clientDomain"]);
 
 		//Else everything went good
 		return true;
@@ -52,7 +56,14 @@ class Tokens{
 		}
 		else {
 			//The API is correctly identified
-			return $requestResult[0]['ID'];
+			//Generate client informations
+			$clientInformations = array(
+				"ID" => $requestResult[0]['ID'],
+				"clientDomain" => ($requestResult[0]["client_domain"] == "" ? false : $requestResult[0]["client_domain"])
+			);
+
+			//Return API informations
+			return $clientInformations;
 		}
 
 	}

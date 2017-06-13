@@ -20,20 +20,38 @@ foreach(glob(PROJECT_PATH."RestControllers/*.php") as $restControllerFile){
 //Include RestServer library
 require PROJECT_PATH."3rdparty/RestServer/RestServer.php";
 
-//Allow remote requests
-header("Access-Control-Allow-Origin: *");
-
 //By default return format is json
 if(!isset($_GET["format"]))
 	$_GET['format'] = "json";
 
-//Check client tokens
+//Set debug clients tokens
 if($cs->config->get("site_mode") == "debug"){ //DEBUG ONLY
 	$_POST['serviceName'] = "testService";
 	$_POST['serviceToken'] = "testPasswd";
 }
+
+//Check client tokens
 if(!$cs->tokens->checkClientRequestTokens())
 	Rest_fatal_error(401, "Please check your client tokens!");
+
+//Check for remote requests limit
+if(defined("APIServiceDomain")){
+
+	//First, limit requests
+	header("Access-Control-Allow-Origin: ".APIServiceDomain);
+
+	//Then check for referer
+	if(!isset($_SERVER["HTTP_REFERER"]))
+		Rest_fatal_error(401, "Access from direct requests denied !");
+
+	//Check the referer
+	if(get_url_domain($_SERVER["HTTP_REFERER"]) !== APIServiceDomain)
+		Rest_fatal_error(401, "Access denied from this domain with this client token !");
+}
+else {
+	//Allow remote requests from anywhere
+	header("Access-Control-Allow-Origin: *");
+}
 
 //Check if login tokens where specified
 if(isset($_POST['userToken1']) AND isset($_POST['userToken2'])){
