@@ -42,7 +42,7 @@ if(defined("APIServiceDomain")){
 
 	//Then check for referer
 	if(!isset($_SERVER["HTTP_REFERER"]))
-		Rest_fatal_error(401, "Access from direct requests denied !");
+		Rest_fatal_error(401, "Access from direct requests denied with this client token !");
 
 	//Check the referer
 	if(get_url_domain($_SERVER["HTTP_REFERER"]) !== APIServiceDomain)
