@@ -72,12 +72,45 @@ class conversations {
 				"last_active" => $processConversation["last_active"],
 				"name" => ($processConversation["name"] == "" ? false : $processConversation["name"]),
 				"following" => $processConversation["following"],
-				"saw_last_message" => $processConversation["saw_last_message"]
+				"saw_last_message" => $processConversation["saw_last_message"],
+
+				//Get and add conversation members
+				"conversation_members" => $this->getConversationMembers($processConversation["ID"]),
 			);
 		}
 
 		//Return results
 		return $conversationsList;
+	}
+
+	/**
+	 * Get a conversation members
+	 *
+	 * @param Integer $conversationID The ID of the conversation
+	 * @return Array A list of the conversation members (empty arary may means that an error occured)
+	 */
+	public function getConversationMembers($conversationID) : array {
+
+		//Perform a request on the database
+		$tableName = $this->conversationUsersTable;
+		$conditions = "WHERE ID_".$this->conversationListTable." = ?";
+		$conditionsValues = array($conversationID*1);
+		$getFields = array("ID_utilisateurs as userID");
+
+		//Perform the request
+		$results = CS::get()->db->select($tableName, $conditions, $conditionsValues, $getFields);
+
+		if($results === false)
+			return array(); //An error occured
+
+		//Process results
+		$membersList = array();
+
+		foreach($results as $processUser)
+			$membersList[] = $processUser["userID"];
+
+		//Return result
+		return $membersList;
 	}
 
 	/**
