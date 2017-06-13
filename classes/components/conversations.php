@@ -75,7 +75,7 @@ class conversations {
 				"saw_last_message" => $processConversation["saw_last_message"],
 
 				//Get and add conversation members
-				"conversation_members" => $this->getConversationMembers($processConversation["ID"]),
+				"members" => $this->getConversationMembers($processConversation["ID"]),
 			);
 		}
 
