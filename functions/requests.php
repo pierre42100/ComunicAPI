@@ -44,13 +44,23 @@ function users_list_to_array($list) : array{
 	foreach($array as $process){
 
 		//Check the entry is valid
-		if(floor($process*1) < 1)
+		if(toInt($process) < 1)
 			return array();
 		
 		//Add the entry to the list
-		$usersList[floor($process*1)] = floor($process*1);
+		$usersList[toInt($process)] = toInt($process);
 	}
 
 	//Return the result
 	return $usersList;
+}
+
+/**
+ * Securely transform user given number (mixed) to integer (int)
+ *
+ * @param Mixed $input The input variable (mixed)
+ * @return Integer $output The output (safe integer)
+ */
+function toInt($input){
+	return floor($input*1);
 }

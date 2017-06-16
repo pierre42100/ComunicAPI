@@ -8,52 +8,64 @@
 class conversations {
 
 	/**
-	 * @var String $conversationListTable Name of the conversation list table 
+	 * @var String $conversationsListTable Name of the conversation list table 
 	 */
-	private $conversationListTable;
+	private $conversationsListTable;
 
 	/**
-	 * @var String $conversationUsersTable Name of the conversation users table 
+	 * @var String $conversationsUsersTable Name of the conversation users table 
 	 */
-	private $conversationUsersTable;
+	private $conversationsUsersTable;
 
 
 	/**
 	 * Public constructor
 	 */
 	public function __construct(){
-		$this->conversationListTable = CS::get()->config->get("dbprefix")."conversations_list";
-		$this->conversationUsersTable = CS::get()->config->get("dbprefix")."conversations_users";
+		$this->conversationsListTable = CS::get()->config->get("dbprefix")."conversations_list";
+		$this->conversationsUsersTable = CS::get()->config->get("dbprefix")."conversations_users";
 	}
 
 	/**
 	 * Get the conversations list of a specified user
+	 * or get informations of a specific conversation
 	 *
 	 * @param Integer $userID The ID of the user to get the list
+	 * @param Integer $conversationID Optionnal, the ID of conversation to get informatios from
 	 * @return Mixed Array in case of result / False else
 	 */
-	public function getList($userID){
+	public function getList($userID, $conversationID = 0){
 
 		//Prepare database request
-		$tablesName = $this->conversationListTable.", ".$this->conversationUsersTable;
+		$tablesName = $this->conversationsListTable.", ".$this->conversationsUsersTable;
 		
 		//Prepare conditions
-		$tableJoinCondition = $this->conversationListTable.".ID = ".$this->conversationUsersTable.".ID_".$this->conversationListTable."";
-		$userCondition = $this->conversationUsersTable.".ID_utilisateurs = ?";
-		$orderResults = "ORDER BY ".$this->conversationListTable.".last_active DESC";
+		$tableJoinCondition = $this->conversationsListTable.".ID = ".$this->conversationsUsersTable.".ID_".$this->conversationsListTable."";
+		$userCondition = $this->conversationsUsersTable.".ID_utilisateurs = ?";
+		$orderResults = "ORDER BY ".$this->conversationsListTable.".last_active DESC";
+
+		//Specify conditions values
+		$conditionsValues = array($userID);
+
+		//Check if we have to get informations about just one conversation
+		if($conversationID != 0){
+			$specificConditions = "AND ".$this->conversationsListTable.".ID  = ?";
+			$conditionsValues[] = $conversationID;
+		}
+		else
+			$specificConditions = ""; //Nothing now
 
 		//Compile conditions
-		$conditions = "WHERE ".$tableJoinCondition." AND (".$userCondition.") ".$orderResults;
-		$conditionsValues = array($userID);
+		$conditions = "WHERE ".$tableJoinCondition." AND (".$userCondition.") ".$specificConditions." ".$orderResults;
 		
 		//Fields list
 		$requiredFields = array(
-			$this->conversationListTable.".ID",
-			$this->conversationListTable.".last_active",
-			$this->conversationListTable.".name",
-			$this->conversationListTable.".ID_utilisateurs AS ID_owner",
-			$this->conversationUsersTable.".following",
-			$this->conversationUsersTable.".saw_last_message",
+			$this->conversationsListTable.".ID",
+			$this->conversationsListTable.".last_active",
+			$this->conversationsListTable.".name",
+			$this->conversationsListTable.".ID_utilisateurs AS ID_owner",
+			$this->conversationsUsersTable.".following",
+			$this->conversationsUsersTable.".saw_last_message",
 		);
 
 		//Perform database request
@@ -83,6 +95,7 @@ class conversations {
 		return $conversationsList;
 	}
 
+
 	/**
 	 * Get a conversation members
 	 *
@@ -92,8 +105,8 @@ class conversations {
 	public function getConversationMembers($conversationID) : array {
 
 		//Perform a request on the database
-		$tableName = $this->conversationUsersTable;
-		$conditions = "WHERE ID_".$this->conversationListTable." = ?";
+		$tableName = $this->conversationsUsersTable;
+		$conditions = "WHERE ID_".$this->conversationsListTable." = ?";
 		$conditionsValues = array($conversationID*1);
 		$getFields = array("ID_utilisateurs as userID");
 
@@ -132,7 +145,7 @@ class conversations {
 		);
 
 		//First, insert the conversation in the main table
-		if(!CS::get()->db->addLine($this->conversationListTable, $mainInformations))
+		if(!CS::get()->db->addLine($this->conversationsListTable, $mainInformations))
 			return 0; //An error occured
 		
 		//Get the last inserted ID
@@ -147,7 +160,7 @@ class conversations {
 
 			//Prepare informations about the user
 			$userInformations = array(
-				"ID_".$this->conversationListTable => $conversationID,
+				"ID_".$this->conversationsListTable => $conversationID,
 				"time_add" => time(),
 				"saw_last_message" => 1,
 				"ID_utilisateurs" => $processUser,
@@ -158,12 +171,40 @@ class conversations {
 				$userInformations["following"] = ($follow ? 1 : 0);
 
 			//Try to insert user in conversation
-			if(!CS::get()->db->addLine($this->conversationUsersTable, $userInformations))
+			if(!CS::get()->db->addLine($this->conversationsUsersTable, $userInformations))
 				return 0; //Error
 		}
 
 		//Conversation creation is a success
 		return $conversationID;
+	}
+
+	/**
+	 * Check if a user is a member of a conversation or not
+	 *
+	 * @param Integer $userID The ID of the user to check
+	 * @param Integer $conversationID The ID of the conversation to check
+	 * @return Boolean True if the user belongs to the conversation
+	 */
+	public function userBelongsTo($userID, $conversationID){
+		
+		//Prepare a request on the database
+		$tableName = $this->conversationsUsersTable;
+		$conditions = "WHERE ID_".$this->conversationsListTable." = ? AND ID_utilisateurs = ?";
+		$values = array(
+			$conversationID,
+			$userID
+		);
+
+		//Peform a request on the database
+		$result = CS::get()->db->count($tableName, $conditions, $values);
+
+		//Check if request failed
+		if($result === false)
+			return false; // An error occured
+
+		//Analyse result and return it
+		return $result != 0;
 	}
 
 }
