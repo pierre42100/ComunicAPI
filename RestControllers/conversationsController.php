@@ -122,8 +122,27 @@ class conversationsController{
 		 		Rest_fatal_error(500, "Couldn't update user follow state !");
 		}
 		
+		//Check if user asked to change moderation settings
+		if(isset($_POST['members']) OR isset($_POST['name'])){
+
+			//Check if user is allowed to change such settings
+			if(!CS::get()->components->conversations->userIsModerator(userID, $conversationID))
+				Rest_fatal_error(401, "The user isn't a moderator, he can't updates such settings !");
+			
+			//Update conversation name (if required)
+			if(isset($_POST["name"])){
+				$conversationName = $_POST['name'] == "false" ? "" : $_POST['name'];
+
+				//Update conversation name
+				if(!CS::get()->components->conversations->changeName($conversationID, $conversationName))
+					Rest_fatal_error(500, "Couldn't update conversation name !");
+			}
+
+
+
+		}
 			
 		//Success
-		return array("success" => "User informations were successfully updated !");
+		return array("success" => "Conversation informations were successfully updated !");
 	}
 }

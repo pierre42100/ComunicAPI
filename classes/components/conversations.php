@@ -239,12 +239,61 @@ class conversations {
 	}
 
 	/**
+	 * Change conversation name
+	 *
+	 * @param Integer $conversationID The ID of the conversation
+	 * @param String $conversationName The name of the conversation
+	 * @return Boolean True for a success
+	 */
+	public function changeName($conversationID, $conversationName){
+		//Prepare database request
+		$tableName = $this->conversationsListTable;
+		$conditions = "ID = ?";
+		$condVals = array($conversationID);
+
+		//Changes
+		$changes = array(
+			"name" => $conversationName,
+		);
+
+		//Try to perform request
+		if(!CS::get()->db->updateDB($tableName, $conditions, $changes, $condVals))
+			return false; //An error occured
+
+		//Success
+		return true;
+	}
+
+	/**
 	 * Check if a user is a conversation moderator or not
 	 *
 	 * @param Integer $userID The ID of the user to check
 	 * @param Integer $conversationID The ID of the conversation to check
-	 * @return Boolean True if the user is a conversation moderator or not
+	 * @return Boolean True if the user is a conversation moderator / false else
 	 */
+	 public function userIsModerator($userID, $conversationID){
+		//Prepare database request
+		$tableName = $this->conversationsListTable;
+		$conditions = "WHERE ID = ?";
+		$values = array($conversationID);
+		$requiredFields = array(
+			"ID_utilisateurs"
+		);
+
+		//Peform a request on the database
+		$results = CS::get()->db->select($tableName, $conditions, $values, $requiredFields);
+
+		//Check for errors
+		if($results === false)
+			return false; // An error occured
+		
+		//Check if there was results
+		if(count($results) === 0)
+			return false;
+
+		//Check the first result only
+		return $results[0]["ID_utilisateurs"] == $userID;
+	 }
 
 }
 
