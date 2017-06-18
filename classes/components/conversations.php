@@ -158,20 +158,13 @@ class conversations {
 		//Insert users registrattions
 		foreach($usersList as $processUser){
 
-			//Prepare informations about the user
-			$userInformations = array(
-				"ID_".$this->conversationsListTable => $conversationID,
-				"time_add" => time(),
-				"saw_last_message" => 1,
-				"ID_utilisateurs" => $processUser,
-			);
-
 			//Make user follow the conversation if required
+			$processUserFollowing = false;
 			if($userID == $processUser)
-				$userInformations["following"] = ($follow ? 1 : 0);
+				$processUserFollowing = $follow;
 
 			//Try to insert user in conversation
-			if(!CS::get()->db->addLine($this->conversationsUsersTable, $userInformations))
+			if(!$this->addMember($conversationID, $processUser, $processUserFollowing))
 				return 0; //Error
 		}
 
@@ -262,6 +255,84 @@ class conversations {
 
 		//Success
 		return true;
+	}
+
+	/**
+	 * Update conversation members list
+	 *
+	 * @param Integer $conversationID The ID of the conversation to update
+	 * @param Array $conversationMembers The new list of conversation members
+	 * @return Boolean True for a success
+	 */
+	public function updateMembers($conversationID, array $conversationMembers){
+
+		//Get the current conversation list
+		$currentMembers = $this->getConversationMembers($conversationID);
+
+		//Determinate entries to add
+		$toAdd = array_diff($conversationMembers, $currentMembers);
+
+		//Determinate entries to remove
+		$toRemove = array_diff($currentMembers, $conversationMembers);
+
+		//Add new member
+		foreach($toAdd as $processInsert){
+			if(!$this->addMember($conversationID, $processInsert))
+				return false; //An error occured
+		}
+
+		//Remove old members
+		foreach($toRemove as $processDelete){
+			if(!$this->removeMember($conversationID, $processDelete))
+				return false; //An error occured
+		}
+
+		//Success
+		return true;
+	}
+
+	/**
+	 * Add a member to the list
+	 *
+	 * @param Integer $conversationID The ID of the target conversation
+	 * @param Integer $userID The ID of the user to add to the conversation
+	 * @param Boolean $follow Optionnal, specify if the user will follow or not the conversation
+	 * @return Boolean True for a success
+	 */
+	private function addMember($conversationID, $userID, $follow = false){
+
+		//Prepare database request
+		$tableName = $this->conversationsUsersTable;
+		$values = array(
+			"ID_".$this->conversationsListTable => $conversationID,
+			"ID_utilisateurs" => $userID,
+			"time_add" => time(),
+			"following" => $follow ? 1 : 0,
+			"saw_last_message" => 1
+		);
+
+		//Try to perform request
+		return CS::get()->db->addLine($tableName, $values);
+	}
+
+	/**
+	 * Remove a member from the list
+	 *
+	 * @param Integer $conversationID The ID of the target conversation
+	 * @param Integer $userID The ID of the user to remove from the conversation
+	 * @return Boolean True for a success
+	 */
+	private function removeMember($conversationID, $userID){
+		//Prepare database request
+		$tableName = $this->conversationsUsersTable;
+		$conditions = "ID_".$this->conversationsListTable." = ? AND ID_utilisateurs = ?";
+		$values = array(
+			$conversationID,
+			$userID
+		);
+
+		//Try to perform request
+		return CS::get()->db->deleteEntry($tableName, $conditions, $values);
 	}
 
 	/**

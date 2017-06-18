@@ -138,7 +138,18 @@ class conversationsController{
 					Rest_fatal_error(500, "Couldn't update conversation name !");
 			}
 
+			//Update conversation users (if required)
+			if(isset($_POST["members"])){
+				//Get user list
+				$conversationMembers = users_list_to_array($_POST['members']);
 
+				//Make sure current user is in the list
+				$conversationMembers[userID] = userID;
+
+				//Try to update conversation members
+				if(!CS::get()->components->conversations->updateMembers($conversationID, $conversationMembers))
+					Rest_fatal_error(500, "Couldn't update conversation members list !");
+			}
 
 		}
 			
