@@ -207,6 +207,45 @@ class conversations {
 		return $result != 0;
 	}
 
+	/**
+	 * Change the follow state of a user on conversation
+	 *
+	 * @param Integer $userID The ID to update
+	 * @param Integer $conversationID The ID of the conversation
+	 * @param Boolean $follow Specify if the conversation is followed or not
+	 * @return Boolean True for a success
+	 */
+	public function changeFollowState($userID, $conversationID, $follow){
+		
+		//Prepare the request on the database
+		$tableName = $this->conversationsUsersTable;
+		$conditions = "ID_".$this->conversationsListTable." = ? AND ID_utilisateurs = ?";
+		$condVals = array(
+			$conversationID,
+			$userID
+		);
+
+		//Defines modifications
+		$modifs = array(
+			"following" => $follow ? 1 : 0,
+		);
+		
+		//Update the table
+		if(!CS::get()->db->updateDB($tableName, $conditions, $modifs, $condVals))
+			return false; //An error occured
+
+		//Success
+		return true;
+	}
+
+	/**
+	 * Check if a user is a conversation moderator or not
+	 *
+	 * @param Integer $userID The ID of the user to check
+	 * @param Integer $conversationID The ID of the conversation to check
+	 * @return Boolean True if the user is a conversation moderator or not
+	 */
+
 }
 
 //Register component

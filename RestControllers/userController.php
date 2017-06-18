@@ -72,18 +72,14 @@ class userController
 
 		//Determine userID
 		if(isset($_POST['userID'])){
-			$usersID = array($_POST['userID']*1);
+			$usersID = array(toInt($_POST['userID']));
 		}
 		elseif(isset($_POST['usersID'])){
 			//Generate users ID list
-			$usersID = array();
-			foreach(explode(",", $_POST['usersID']) as $userID){
-				if($userID*1 > 0)
-					$usersID[$userID*1] = $userID*1;
-			}
-
+			$usersID = users_list_to_array($_POST['usersID']);
+			
 			//Check for errors
-			if(count($userID) == 0)
+			if(count($usersID) == 0)
 				Rest_fatal_error(400, "No user ID were specified!");
 		}
 		else

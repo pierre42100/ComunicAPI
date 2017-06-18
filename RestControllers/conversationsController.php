@@ -12,7 +12,7 @@ class conversationsController{
 	 *
 	 * @url POST /conversations/getList
 	 */
-	public function getConversationsList(){
+	public function getList(){
 		user_login_required();
 
 		//Try to get the list
@@ -31,7 +31,7 @@ class conversationsController{
 	 *
 	 * @url POST /conversations/getInfosOne
 	 */
-	public function getOneConversationInformations(){
+	public function getOneInformations(){
 		user_login_required();
 
 		//First, check the parametres
@@ -62,7 +62,7 @@ class conversationsController{
 	 *
 	 * @url POST /conversations/create
 	 */
-	public function createConversation(){
+	public function create(){
 		user_login_required();
 
 		//Check for parametres
@@ -96,4 +96,34 @@ class conversationsController{
 		);
 	}
 
+	/**
+	 * Update a conversation settings
+	 *
+	 * @url POST /conversations/updateSettings
+	 */
+	public function updateSettings(){
+		user_login_required();
+
+		//Check conversation ID was specified
+		if(!isset($_POST["conversationID"]))
+			Rest_fatal_error("501", "Please specify a conversation ID !");
+		$conversationID = toInt($_POST["conversationID"]);
+
+		//Check if the user is a conversation moderator or not
+		if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
+			Rest_fatal_error("401", "Specified user doesn't belongs to the conversation !");
+
+		//Check if user want to update its follow state
+		if(isset($_POST['following'])){
+			$follow = $_POST["following"] === "true" ? true : false;
+
+			//Try to update follow state
+		 	if(!CS::get()->components->conversations->changeFollowState(userID, $conversationID, $follow))
+		 		Rest_fatal_error(500, "Couldn't update user follow state !");
+		}
+		
+			
+		//Success
+		return array("success" => "User informations were successfully updated !");
+	}
 }

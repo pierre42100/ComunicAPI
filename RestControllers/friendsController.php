@@ -39,7 +39,7 @@ class friendsController{
 			Rest_fatal_error(501, "Please check your parametres !");
 		
 		//Extract informations and process request
-		$friendID = $_POST['friendID']*1;
+		$friendID = toInt($_POST['friendID']);
 		$acceptRequest = $_POST['accept'] == "true";
 
 		//Try to perform request

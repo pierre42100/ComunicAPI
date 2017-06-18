@@ -21,7 +21,7 @@ class searchController
 			Rest_fatal_error(400, "Please specify search terms");
 		
 		//Check for search limit
-		$searchLimit = (isset($_POST['searchLimit']) ? $_POST['searchLimit']*1 : 5);
+		$searchLimit = (isset($_POST['searchLimit']) ? toInt($_POST['searchLimit']) : 5);
 
 		//Check the limit
 		if($searchLimit < 1 || $searchLimit > 25)

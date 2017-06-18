@@ -24,8 +24,11 @@ require PROJECT_PATH."3rdparty/RestServer/RestServer.php";
 if(!isset($_GET["format"]))
 	$_GET['format'] = "json";
 
+//Specify we are on Comunic API Server
+header("Technology: Official Comunic API Server");
+
 //Set debug clients tokens
-if($cs->config->get("site_mode") == "debug"){ //DEBUG ONLY
+if($cs->config->get("site_mode") === "debug"){ //DEBUG ONLY
 	$_POST['serviceName'] = "testService";
 	$_POST['serviceToken'] = "testPasswd";
 }

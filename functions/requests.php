@@ -45,7 +45,8 @@ function users_list_to_array($list) : array{
 
 		//Check the entry is valid
 		if(toInt($process) < 1)
-			return array();
+			//return array();
+			continue; //Ignore entry
 		
 		//Add the entry to the list
 		$usersList[toInt($process)] = toInt($process);
