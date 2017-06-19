@@ -135,7 +135,7 @@ class conversations {
 	 * @param Mixed $name Optionnal, the name of the conversation
 	 * @return Integer 0 for a fail else the ID of the newly created conversation
 	 */
-	public function create($userID, $follow, array $usersList, $name){
+	public function create($userID, $follow, array $usersList, $name = ""){
 		
 		$mainInformations = array(
 			"ID_utilisateurs" => $userID*1,

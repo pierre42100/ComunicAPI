@@ -32,7 +32,7 @@ class User{
 	 * @param String $serviceID The ID of the service
 	 * @return String Token if success, false if fails
 	 */
-	public function generateUserLoginTokens($email, $password, $serviceID){
+	public function generateUserLoginTokens($email, $password, $serviceID) : array{
 		//Try to find user ID in the database
 		$conditions = "WHERE mail = ? AND password = ?";
 		$values = array(
@@ -271,6 +271,30 @@ class User{
 
 		//Success
 		return true;
+	}
+
+	/**
+	 * Check if a user exists or not
+	 *
+	 * @param Integer $userID The ID of the user to check
+	 * @return Boolean Depends of the existence of the user
+	 */
+	public function exists($userID){
+		//Perform a request on the database
+		$tableName = $this->userTable;
+		$condition = "WHERE ID = ?";
+		$condValues = array($userID);
+		$requiredFields = array("ID");
+
+		//Try to perform request
+		$result = CS::get()->db->select($tableName, $condition, $condValues, $requiredFields);
+
+		//Check for errors
+		if($result === false)
+			return false; //An error occured
+		
+		//Check and return result
+		return count($result) !== 0;
 	}
 
 	/**

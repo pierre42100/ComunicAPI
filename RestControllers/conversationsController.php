@@ -167,8 +167,47 @@ class conversationsController{
 		user_login_required();
 
 		//Check for parametres
-		if(!isset($_POST['user1']) OR !isset($_POST['user2']))
-			Rest_fatal_error(400, "Please check your parametres")
+		if(!isset($_POST['otherUser']))
+			Rest_fatal_error(400, "Please check your parametres !");
+		
+		//Extract parametres
+		$otherUser = toInt($_POST['otherUser']);
+		if(isset($_POST["allowCreate"]))
+			$allowCreate = $_POST["allowCreate"] == "true" ? true : false;
+		else
+			$allowCreate = false;
+		
+		//Check the user exists
+		if(!CS::get()->components->user->exists($otherUser))
+			Rest_fatal_error(400, "Specified user does not exist !");
 
+		//Search the database
+		$results = CS::get()->components->conversations->findPrivate(userID, $otherUser);
+		
+		//Count results number
+		if(count($results) === 0) {
+
+			//We check if we are not allowed to create a conversation
+			if(!$allowCreate)
+				Rest_fatal_error(404, "Not any private conversation were found. The server wasn't allowed to create a new one...");
+			
+			//Now we can try to create the conversation
+			$ID_owner = userID;
+			$follow = false; //Not following by default
+			$conversationMembers = array(userID, $otherUser);
+
+			//Try to create the conversation
+			$conversationID = CS::get()->components->conversations->create($ID_owner, $follow, $conversationMembers);
+			
+			//Check for errors
+			if($conversationID == 0)
+				Rest_fatal_error(500, "Couldn't create the conversation !");
+			
+			//Save result
+			$results = array($conversationID);
+		}
+
+		//Success
+		return array("conversationsID" => $results); 
 	}
 }
