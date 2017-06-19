@@ -36,7 +36,7 @@ class friendsController{
 
 		//Check parametres
 		if(!isset($_POST["friendID"]) OR !isset($_POST['accept']))
-			Rest_fatal_error(501, "Please check your parametres !");
+			Rest_fatal_error(400, "Please check your parametres !");
 		
 		//Extract informations and process request
 		$friendID = toInt($_POST['friendID']);

@@ -18,7 +18,7 @@ class userController
 	public function connectUSER(){
 		 //Check variables sent in request
 		 if(!isset($_POST['userMail']) OR !isset($_POST['userPassword']))
-			throw new RestException(401, "Missing data !");
+			throw new RestException(400, "Missing data !");
 		
 		//Retrieve database connection
 		$db = CS::get()->db;;

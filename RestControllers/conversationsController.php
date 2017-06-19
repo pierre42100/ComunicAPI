@@ -67,7 +67,7 @@ class conversationsController{
 
 		//Check for parametres
 		if(!check_post_parametres(array("name", "follow", "users")))
-			Rest_fatal_error(501, "Please check parametres passed with the request !");
+			Rest_fatal_error(400, "Please check parametres passed with the request !");
 		
 		//Extract parametres
 		$conversationName = ($_POST["name"] == "false" ? false : $_POST['name']);
@@ -106,7 +106,7 @@ class conversationsController{
 
 		//Check conversation ID was specified
 		if(!isset($_POST["conversationID"]))
-			Rest_fatal_error("501", "Please specify a conversation ID !");
+			Rest_fatal_error(400, "Please specify a conversation ID !");
 		$conversationID = toInt($_POST["conversationID"]);
 
 		//Check if the user is a conversation moderator or not
@@ -155,5 +155,20 @@ class conversationsController{
 			
 		//Success
 		return array("success" => "Conversation informations were successfully updated !");
+	}
+
+	/**
+	 * Find (create ?) and return private conversation ID
+	 *
+	 * @url POST /conversations/getPrivate
+	 */
+	public function findPrivate(){
+
+		user_login_required();
+
+		//Check for parametres
+		if(!isset($_POST['user1']) OR !isset($_POST['user2']))
+			Rest_fatal_error(400, "Please check your parametres")
+
 	}
 }
