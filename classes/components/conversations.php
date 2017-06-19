@@ -342,7 +342,7 @@ class conversations {
 	 * @param Integer $conversationID The ID of the conversation to check
 	 * @return Boolean True if the user is a conversation moderator / false else
 	 */
-	 public function userIsModerator($userID, $conversationID){
+	public function userIsModerator($userID, $conversationID){
 		//Prepare database request
 		$tableName = $this->conversationsListTable;
 		$conditions = "WHERE ID = ?";
@@ -364,7 +364,52 @@ class conversations {
 
 		//Check the first result only
 		return $results[0]["ID_utilisateurs"] == $userID;
-	 }
+	}
+
+	/**
+	 * Search for a private conversation between two users
+	 *
+	 * @param Integer $user1 The first user
+	 * @param Integer $user2 The second user
+	 * @return Array The list of private conversations
+	 */
+	public function findPrivate($user1, $user2) : array{
+		
+		//Prepare database request
+		$tableName = $this->conversationsUsersTable." AS table1 JOIN ".
+			$this->conversationsUsersTable." AS table2";
+		
+		//Prepare conditions
+		$joinCondition = "table1.ID_".$this->conversationsListTable." = table2.ID_".$this->conversationsListTable;
+		$whereConditions = "table1.ID_utilisateurs = ? OR table1.ID_utilisateurs = ?";
+		$groupCondition = "table1.ID_".$this->conversationsListTable." having count(*) = 4";
+
+		//Conditions values
+		$condValues = array($user1, $user2);
+
+		//Required fields
+		$requiredFields = array(
+			"table1.ID_".$this->conversationsListTable." as conversationID",
+		);
+
+		//Build conditions
+		$conditions = "ON ".$joinCondition." WHERE ".$whereConditions." GROUP BY ".$groupCondition;
+
+		//Try to perform request
+		$results = CS::get()->db->select($tableName, $conditions, $condValues, $requiredFields);
+
+		//Check for errors
+		if($results === false)
+			return false;
+		
+		//Prepare return
+		$conversationsID = array();
+		foreach($results as $processConversation)
+			$conversationsID[] = $processConversation["conversationID"];
+		
+		//Return result
+		return $conversationsID;
+	}
 
 }
 
