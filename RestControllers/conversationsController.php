@@ -109,7 +109,7 @@ class conversationsController{
 			Rest_fatal_error(400, "Please specify a conversation ID !");
 		$conversationID = toInt($_POST["conversationID"]);
 
-		//Check if the user is a conversation moderator or not
+		//Check if the user belongs to the conversation
 		if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
 			Rest_fatal_error("401", "Specified user doesn't belongs to the conversation !");
 
@@ -209,5 +209,45 @@ class conversationsController{
 
 		//Success
 		return array("conversationsID" => $results); 
+	}
+
+	/**
+	 * Send a new message
+	 *
+	 * @url POST /conversations/sendMessage
+	 */
+	public function sendMessage(){
+		user_login_required();
+
+		//First, check a conversation ID was specified
+		if(!isset($_POST["conversationID"]))
+			Rest_fatal_errror(400, "Please speicify a conversation ID !");
+
+		//Extract conversation ID
+		$conversationID = toInt($_POST["conversationID"]);
+
+		//Check if the user belongs to the conversation
+		if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
+			Rest_fatal_error(401, "Specified user doesn't belongs to the conversation !");
+
+		//Check if informations were specified about the new message or not
+		if(!isset($_POST['message']) AND !isset($_POST['image']))
+			Rest_fatal_error(401, "Nothing to be sent with the new message !");
+		
+		//Else extract informations
+		$message = (isset($_POST['message']) ? $_POST['message'] : "");
+		$image = (isset($_POST['image']) ? $_POST['image'] : false);
+
+		//Check message validity
+		if(!check_string_before_insert($message) && !$image)
+			Rest_fatal_error(401, "Invalid message sending request !");
+
+		//Process images NOT IMPLEMENTED YET
+
+		//Insert the new message
+		if(!CS::get()->components->conversations->sendMessage(userID, $conversationID, $message))
+			Rest_fatal_error(500, "Couldn't send the message !");
+		
+		Rest_fatal_error("200", "All right now");
 	}
 }

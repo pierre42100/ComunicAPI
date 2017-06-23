@@ -65,3 +65,41 @@ function users_list_to_array($list) : array{
 function toInt($input){
 	return floor($input*1);
 }
+
+/**
+ * Remove HTML markup codes (<, >)
+ *
+ * @param String $input The string to change
+ * @return String The updated string
+ */
+function removeHTMLnodes($input){
+	$output = str_replace("<", "&lt;", $input);
+	return str_replace(">", "&gt;", $output);
+}
+
+/**
+ * Check a string before inserting it
+ *
+ * @param String $string The string to check
+ * @return Boolean True if the string is valid / false else
+ */
+function check_string_before_insert($string){
+
+	//First, empty string are invalid
+	if($string == "")
+		return false;
+	
+	//Remove HTML tags before continuing
+	$string = str_replace(array("<", ">"), "", $string);
+
+	//Check string size
+	if(strlen($string)<5)
+		return false;
+
+	//Check if the string has at least three different characters
+	if(strlen(count_chars($string,3)) < 3)
+		return false; 
+	
+	//Success
+	return true;
+}

@@ -1,6 +1,6 @@
 <?php
 /**
- * API specific methods
+ * Strings methods
  *
  * @author Pierre HUBERT
  */

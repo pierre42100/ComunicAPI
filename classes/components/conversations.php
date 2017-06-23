@@ -411,6 +411,23 @@ class conversations {
 		return $conversationsID;
 	}
 
+	/**
+	 * Send a new message
+	 *
+	 * @param Integer $userID The ID of the user sending the message
+	 * @param Integer $conversationID The ID of the target conversation
+	 * @param String $message The message
+	 * @return Boolean True for a success
+	 */
+	 public function sendMessage($userID, $conversationID, $message){
+
+		//GUIDE LINE : this method act like a "controller" : it doesn't perform any database operation
+		//But it manage all operations (insert message; save image; inform other users; ...)
+
+		 //Success
+		 return true;
+	 }
+
 }
 
 //Register component
