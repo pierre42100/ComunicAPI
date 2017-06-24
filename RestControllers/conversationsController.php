@@ -279,6 +279,7 @@ class conversationsController{
 		if(!CS::get()->components->conversations->sendMessage(userID, $conversationID, $message, $image))
 			Rest_fatal_error(500, "Couldn't send the message !");
 		
-		Rest_fatal_error("200", "All right now");
+		//Success
+		return array("success" => "Conversation message with successfully added !");
 	}
 }
