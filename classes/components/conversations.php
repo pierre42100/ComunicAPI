@@ -423,9 +423,10 @@ class conversations {
 	 * @param Integer $userID The ID of the user inserting the message
 	 * @param Integer $conversationID The ID of the target conversation
 	 * @param String $message The message to insert
+	 * @param Mixed $image_path Optionnal, the path to an image associated with the message
 	 * @return Boolean True for a success
 	 */
-	private function insertMessage($userID, $conversationID, $message){
+	private function insertMessage($userID, $conversationID, $message, $image_path = false){
 
 		//Prepare values
 		$tableName = $this->conversationMessagesTable;
@@ -435,6 +436,10 @@ class conversations {
 			"time_insert" => time(),
 			"message" => $message
 		);
+
+		//Add image path (if required)
+		if($image_path)
+			$values['image_path'] = $image_path;
 
 		//Try to insert new value in database
 		if(!CS::get()->db->addLine($tableName, $values))
@@ -510,15 +515,16 @@ class conversations {
 	 * @param Integer $userID The ID of the user sending the message
 	 * @param Integer $conversationID The ID of the target conversation
 	 * @param String $message The message
+	 * @param Mixed $image_path Optionna, define the path to an image associated with the message
 	 * @return Boolean True for a success
 	 */
-	public function sendMessage($userID, $conversationID, $message){
+	public function sendMessage($userID, $conversationID, $message, $image_path = false){
 
 		//GUIDE LINE : this method act like a "controller" : it doesn't perform any database operation
 		//But it manage all operations (insert message; save image; inform other users; ...)
 
 		//First, try to insert the message
-		if(!$this->insertMessage($userID, $conversationID, $message))
+		if(!$this->insertMessage($userID, $conversationID, $message, $image_path))
 			return false; //An error occured
 		
 		//Then, update the last activity of the conversation
