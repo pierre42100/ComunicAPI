@@ -17,6 +17,11 @@ class conversations {
 	 */
 	private $conversationsUsersTable;
 
+	/**
+	 * @var String $conversationMessagesTabel Name of the conversation messages table
+	 */
+	private $conversationMessagesTable;
+
 
 	/**
 	 * Public constructor
@@ -24,6 +29,7 @@ class conversations {
 	public function __construct(){
 		$this->conversationsListTable = CS::get()->config->get("dbprefix")."conversations_list";
 		$this->conversationsUsersTable = CS::get()->config->get("dbprefix")."conversations_users";
+		$this->conversationMessagesTable = CS::get()->config->get("dbprefix")."conversations_messages";
 	}
 
 	/**
@@ -412,6 +418,93 @@ class conversations {
 	}
 
 	/**
+	 * Insert a new message in the database
+	 *
+	 * @param Integer $userID The ID of the user inserting the message
+	 * @param Integer $conversationID The ID of the target conversation
+	 * @param String $message The message to insert
+	 * @return Boolean True for a success
+	 */
+	private function insertMessage($userID, $conversationID, $message){
+
+		//Prepare values
+		$tableName = $this->conversationMessagesTable;
+		$values = array(
+			"ID_".$this->conversationsListTable => $conversationID,
+			"ID_utilisateurs" => $userID,
+			"time_insert" => time(),
+			"message" => $message
+		);
+
+		//Try to insert new value in database
+		if(!CS::get()->db->addLine($tableName, $values))
+			return false; //An error occured
+
+		//Success
+		return true;
+	}
+
+	/**
+	 * Update the last time a conversation was active
+	 *
+	 * @param Integer $conversationID The ID of the conversation to update
+	 * @param Integer $time The new time of last activity to set
+	 * @return Boolean True for a success
+	 */
+	private function updateLastActive($conversationID, $time){
+
+		//Perform a request on the database
+		$tableName = $this->conversationsListTable;
+		$conditions = "ID = ?";
+		$condVals = array($conversationID);
+
+		//Set new values
+		$newValues = array(
+			"last_active" => $time,
+		);
+
+		//Try to perform a request on the database
+		if(!CS::get()->db->updateDB($tableName, $conditions, $newValues, $condVals))
+			return false; //An error occured
+
+		//Success
+		return true;
+	}
+
+	/**
+	 * Mark all the users of a conversation as "unread"
+	 *
+	 * @param Integer $conversationID The ID of the conversation to update
+	 * @param Array $exceptions Users that should not be marked as read
+	 * @return Boolean True for a success
+	 */
+	private function allUsersAsUnread($conversationID, array $exceptions){
+
+		//Prepare request
+		$tableName = $this->conversationsUsersTable;
+		$conditions = "ID_".$this->conversationsListTable." = ?";
+		$condVals = array($conversationID);
+
+		//Remove users exceptions
+		foreach($exceptions as $userID){
+			$conditions.= " AND ID_utilisateurs != ?";
+			$condVals[] = $userID;
+		}
+
+		//Define new values
+		$newValues = array(
+			"saw_last_message" => 0
+		);
+
+		//Try to perform a request on the database
+		if(!CS::get()->db->updateDB($tableName, $conditions, $newValues, $condVals))
+			return false; //An error occured
+
+		//Success
+		return true;
+	}
+
+	/**
 	 * Send a new message
 	 *
 	 * @param Integer $userID The ID of the user sending the message
@@ -419,14 +512,26 @@ class conversations {
 	 * @param String $message The message
 	 * @return Boolean True for a success
 	 */
-	 public function sendMessage($userID, $conversationID, $message){
+	public function sendMessage($userID, $conversationID, $message){
 
 		//GUIDE LINE : this method act like a "controller" : it doesn't perform any database operation
 		//But it manage all operations (insert message; save image; inform other users; ...)
 
+		//First, try to insert the message
+		if(!$this->insertMessage($userID, $conversationID, $message))
+			return false; //An error occured
+		
+		//Then, update the last activity of the conversation
+		if(!$this->updateLastActive($conversationID, time()))
+			return false; //An error occured (2)
+		
+		//Then, set all the users of the conversation as unread
+		if(!$this->allUsersAsUnread($conversationID, array($userID)))
+			return false; //An error occured (3)
+
 		 //Success
 		 return true;
-	 }
+	}
 
 }
 

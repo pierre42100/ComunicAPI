@@ -93,7 +93,7 @@ function check_string_before_insert($string){
 	$string = str_replace(array("<", ">"), "", $string);
 
 	//Check string size
-	if(strlen($string)<5)
+	if(strlen($string)<3)
 		return false;
 
 	//Check if the string has at least three different characters
