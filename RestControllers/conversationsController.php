@@ -305,7 +305,7 @@ class conversationsController{
 					Rest_fatal_error(401, "Specified user doesn't belongs to the conversation number ".$conversationID." !");
 				
 				//Then we can get the ten las messages of the conversation system
-				$conversationsMessages[$conversationID] = CS::get()->components->conversations->getLastMessages($conversationID, 10);
+				$conversationsMessages["conversation-".$conversationID] = CS::get()->components->conversations->getLastMessages($conversationID, 10);
 			}
 		}
 

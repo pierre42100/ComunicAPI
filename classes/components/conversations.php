@@ -557,8 +557,29 @@ class conversations {
 			$conversationID
 		);
 
+		//Define required fields
+		$requiredFields = array(
+			"ID",
+			"ID_utilisateurs AS ID_user",
+			"image_path",
+			"message",
+			"time_insert"
+		);
+
 		//Try to perform request on the database
-		$messages = CS::get()->db->select($tableName, $conditions, $condVals);
+		$messages = CS::get()->db->select($tableName, $conditions, $condVals, $requiredFields);
+
+		//Process each message
+		array_walk($messages, function(&$item){
+			//Check if image is not null
+			if($item["image_path"] !== null && $item["image_path"] != ""){
+				//Replace image name with full URL
+				$item["image_path"] = path_user_data($item["image_path"]);
+			}
+		});
+
+		//Revert messages order
+		$messages = array_reverse($messages);
 
 		//Return messages
 		return $messages;
