@@ -20,7 +20,7 @@ class conversations {
 	/**
 	 * @var String $conversationMessagesTabel Name of the conversation messages table
 	 */
-	private $conversationMessagesTable;
+	private $conversationsMessagesTable;
 
 
 	/**
@@ -29,7 +29,7 @@ class conversations {
 	public function __construct(){
 		$this->conversationsListTable = CS::get()->config->get("dbprefix")."conversations_list";
 		$this->conversationsUsersTable = CS::get()->config->get("dbprefix")."conversations_users";
-		$this->conversationMessagesTable = CS::get()->config->get("dbprefix")."conversations_messages";
+		$this->conversationsMessagesTable = CS::get()->config->get("dbprefix")."conversations_messages";
 	}
 
 	/**
@@ -429,7 +429,7 @@ class conversations {
 	private function insertMessage($userID, $conversationID, $message, $image_path = false){
 
 		//Prepare values
-		$tableName = $this->conversationMessagesTable;
+		$tableName = $this->conversationsMessagesTable;
 		$values = array(
 			"ID_".$this->conversationsListTable => $conversationID,
 			"ID_utilisateurs" => $userID,
@@ -537,6 +537,31 @@ class conversations {
 
 		 //Success
 		 return true;
+	}
+
+	/**
+	 * Get the last messages of a conversation
+	 *
+	 * @param Integer $conversationID The ID of the target conversation
+	 * @param Integer $numberOfMessages The number of messages to return
+	 * @return Array The messages of the conversation
+	 */
+	public function getLastMessages($conversationID, $numberOfMessages) : array {
+
+		//Prepare database request
+		$tableName = $this->conversationsMessagesTable;
+		
+		//Define conditions
+		$conditions = "WHERE ID_".$this->conversationsListTable." = ? ORDER BY ID DESC LIMIT ".($numberOfMessages*1);
+		$condVals = array(
+			$conversationID
+		);
+
+		//Try to perform request on the database
+		$messages = CS::get()->db->select($tableName, $conditions, $condVals);
+
+		//Return messages
+		return $messages;
 	}
 
 }

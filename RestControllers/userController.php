@@ -76,7 +76,7 @@ class userController
 		}
 		elseif(isset($_POST['usersID'])){
 			//Generate users ID list
-			$usersID = users_list_to_array($_POST['usersID']);
+			$usersID = numbers_list_to_array($_POST['usersID']);
 			
 			//Check for errors
 			if(count($usersID) == 0)

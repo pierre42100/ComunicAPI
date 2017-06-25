@@ -31,12 +31,12 @@ function check_post_parametres(array $varList){
 }
 
 /**
- * Convert a list of user comma-separated to an array
+ * Convert a list of numbers (anything with IDs) comma-separated to an array
  *
  * @param String $list The input list
  * @return Array The list of user / an empty list in case of errors
  */
-function users_list_to_array($list) : array{
+function numbers_list_to_array($list) : array{
 	//Split the list into an array
 	$array = explode(",", $list);
 	$usersList = array();

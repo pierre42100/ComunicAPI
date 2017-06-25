@@ -72,7 +72,7 @@ class conversationsController{
 		//Extract parametres
 		$conversationName = ($_POST["name"] == "false" ? false : $_POST['name']);
 		$followConversation = ($_POST['follow'] == "true" ? true : false);
-		$usersList = users_list_to_array($_POST['users']);
+		$usersList = numbers_list_to_array($_POST['users']);
 
 		//Add current user (if not present)
 		if(!isset($usersList[userID]))
@@ -141,7 +141,7 @@ class conversationsController{
 			//Update conversation users (if required)
 			if(isset($_POST["members"])){
 				//Get user list
-				$conversationMembers = users_list_to_array($_POST['members']);
+				$conversationMembers = numbers_list_to_array($_POST['members']);
 
 				//Make sure current user is in the list
 				$conversationMembers[userID] = userID;
@@ -281,5 +281,35 @@ class conversationsController{
 		
 		//Success
 		return array("success" => "Conversation message with successfully added !");
+	}
+
+	/**
+	 * Refresh conversations
+	 *
+	 * @url POST /conversations/refresh
+	 */
+	public function refreshConversations(){
+		user_login_required();
+
+		//Prepare return
+		$conversationsMessages = array();
+
+		//Check if we have to give the latest messages of a conversation
+		if(isset($_POST['newConversations'])){
+			//Get conversations ID
+			$newConversations = numbers_list_to_array($_POST['newConversations']);
+
+			foreach($newConversations as $conversationID){
+				//First, check the users belongs to the conversation
+				if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
+					Rest_fatal_error(401, "Specified user doesn't belongs to the conversation number ".$conversationID." !");
+				
+				//Then we can get the ten las messages of the conversation system
+				$conversationsMessages[$conversationID] = CS::get()->components->conversations->getLastMessages($conversationID, 10);
+			}
+		}
+
+		//Return result
+		return $conversationsMessages;
 	}
 }
