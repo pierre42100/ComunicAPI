@@ -548,14 +548,56 @@ class conversations {
 	 */
 	public function getLastMessages($conversationID, $numberOfMessages) : array {
 
-		//Prepare database request
-		$tableName = $this->conversationsMessagesTable;
-		
 		//Define conditions
 		$conditions = "WHERE ID_".$this->conversationsListTable." = ? ORDER BY ID DESC LIMIT ".($numberOfMessages*1);
 		$condVals = array(
 			$conversationID
 		);
+
+		//Perform request
+		$messages = $this->getMessages($conditions, $condVals);
+
+		//Revert messages order
+		$messages = array_reverse($messages);
+
+		//Return messages
+		return $messages;
+	}
+
+	/**
+	 * Get the new messages of a conversation
+	 *
+	 * @param Integer $conversationID The ID of the target conversation
+	 * @param Integer $lastMessageID The ID of the last know message
+	 * @return Array A list of messages
+	 */
+	public function getNewMessages($conversationID, $lastMessageID) : array {
+
+		//Define conditions
+		$conditions = "WHERE ID_".$this->conversationsListTable." = ? AND ID > ? ORDER BY ID";
+		$condVals = array(
+			$conversationID,
+			$lastMessageID
+		);
+
+		//Perform request
+		$messages = $this->getMessages($conditions, $condVals);
+
+		//Return messages
+		return $messages;
+	}
+
+	/**
+	 * Get a list of conversation messages based on specified conditions
+	 *
+	 * @param String $conditions The conditions of the request
+	 * @param Array $conditionsValues The values of the conditions (Optionnal)
+	 * @return Array The list of messages
+	 */
+	private function getMessages($conditions, $conditionsValues = array()) : array{
+
+		//Prepare database request
+		$tableName = $this->conversationsMessagesTable;
 
 		//Define required fields
 		$requiredFields = array(
@@ -567,21 +609,19 @@ class conversations {
 		);
 
 		//Try to perform request on the database
-		$messages = CS::get()->db->select($tableName, $conditions, $condVals, $requiredFields);
+		$messages = CS::get()->db->select($tableName, $conditions, $conditionsValues, $requiredFields);
 
 		//Process each message
 		array_walk($messages, function(&$item){
-			//Check if image is not null
+
+			//Check if the image of the message is not null
 			if($item["image_path"] !== null && $item["image_path"] != ""){
 				//Replace image name with full URL
 				$item["image_path"] = path_user_data($item["image_path"]);
 			}
 		});
 
-		//Revert messages order
-		$messages = array_reverse($messages);
-
-		//Return messages
+		//Return result
 		return $messages;
 	}
 

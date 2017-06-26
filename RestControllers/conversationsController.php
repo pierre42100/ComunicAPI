@@ -294,18 +294,54 @@ class conversationsController{
 		//Prepare return
 		$conversationsMessages = array();
 
-		//Check if we have to give the latest messages of a conversation
+		//Check if we have to give the latest messages of some conversations
 		if(isset($_POST['newConversations'])){
 			//Get conversations ID
 			$newConversations = numbers_list_to_array($_POST['newConversations']);
 
 			foreach($newConversations as $conversationID){
-				//First, check the users belongs to the conversation
+				//First, check the user belongs to the conversation
 				if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
 					Rest_fatal_error(401, "Specified user doesn't belongs to the conversation number ".$conversationID." !");
 				
-				//Then we can get the ten las messages of the conversation system
+				//Then we can get the ten last messages of the conversation system
 				$conversationsMessages["conversation-".$conversationID] = CS::get()->components->conversations->getLastMessages($conversationID, 10);
+			}
+		}
+
+		//Check if we have to refresh some conversations
+		if(isset($_POST['toRefresh'])){
+
+			//Try to decode informations about the conversations
+			$toRefresh = json_decode($_POST['toRefresh'], true);
+			if($toRefresh === false)
+				Rest_fatal_error(400, "Couldn't get refresh conversations informations !");
+			
+			//Process each conversation
+			foreach($toRefresh as $conversationID=>$informations){
+
+				//Get conversation ID
+				$conversationID = toInt(str_replace("conversation-", "", $conversationID));
+
+				//Check if the conversation is not a new conversation too
+				if(isset($conversationsMessages["conversation-".$conversationID]))
+					Rest_fatal_error(401, "Conversation marked as new can't be refreshed !");
+
+				//Check if conversation number is valid
+				if($conversationID < 1)
+					Rest_fatal_error(401, "An error occured while trying to extract given conversation ID to refresh :".$conversationID);
+				
+				//Check if informations where given about the limit of the informations to get
+				if(!isset($informations["last_message_id"]))
+					Rest_fatal_error(401, "Conversation ".$conversationID." couldn't be refreshed: not enough informations");
+				$last_message_id = toInt($informations["last_message_id"]);
+
+				//Check if the user belongs to the conversation
+				if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
+					Rest_fatal_error(401, "Specified user doesn't belongs to the conversation number ".$conversationID." !");
+				
+				//Then we can get informations about the conversation
+				$conversationsMessages["conversation-".$conversationID] = CS::get()->components->conversations->getNewMessages($conversationID, $last_message_id);
 			}
 		}
 
