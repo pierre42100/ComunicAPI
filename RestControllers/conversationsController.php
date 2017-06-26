@@ -306,6 +306,9 @@ class conversationsController{
 				
 				//Then we can get the ten last messages of the conversation system
 				$conversationsMessages["conversation-".$conversationID] = CS::get()->components->conversations->getLastMessages($conversationID, 10);
+
+				//Specify that user has seen last messages
+				CS::get()->components->conversations->markUserAsRead(userID, $conversationID);
 			}
 		}
 
@@ -329,11 +332,11 @@ class conversationsController{
 
 				//Check if conversation number is valid
 				if($conversationID < 1)
-					Rest_fatal_error(401, "An error occured while trying to extract given conversation ID to refresh :".$conversationID);
+					Rest_fatal_error(401, "An error occured while trying to extract given conversation ID to refresh: ".$conversationID);
 				
 				//Check if informations where given about the limit of the informations to get
 				if(!isset($informations["last_message_id"]))
-					Rest_fatal_error(401, "Conversation ".$conversationID." couldn't be refreshed: not enough informations");
+					Rest_fatal_error(401, "Conversation ".$conversationID." couldn't be refreshed: not enough informations !");
 				$last_message_id = toInt($informations["last_message_id"]);
 
 				//Check if the user belongs to the conversation
@@ -342,6 +345,9 @@ class conversationsController{
 				
 				//Then we can get informations about the conversation
 				$conversationsMessages["conversation-".$conversationID] = CS::get()->components->conversations->getNewMessages($conversationID, $last_message_id);
+
+				//Specify that user has seen last messages
+				CS::get()->components->conversations->markUserAsRead(userID, $conversationID);
 			}
 		}
 

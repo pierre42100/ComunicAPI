@@ -510,6 +510,36 @@ class conversations {
 	}
 
 	/**
+	 * Mark the user of a conversation as "read" for a conversation
+	 *
+	 * @param Integer $userID The ID of the user to update
+	 * @param Integer $conversationID The ID of a conversation to update
+	 * @return Boolean True for a success
+	 */
+	public function markUserAsRead($userID, $conversationID) : bool {
+
+		//Prepare database request
+		$tableName = $this->conversationsUsersTable;
+		$conditions = "ID_".$this->conversationsListTable." = ? AND ID_utilisateurs = ?";
+		$condVals = array(
+			$conversationID,
+			$userID
+		);
+
+		//Define new values
+		$newValues = array(
+			"saw_last_message" => 1
+		);
+
+		//Try to perform a request on the database
+		if(!CS::get()->db->updateDB($tableName, $conditions, $newValues, $condVals))
+			return false; //An error occured
+
+		//Success
+		return true;
+	}
+
+	/**
 	 * Send a new message
 	 *
 	 * @param Integer $userID The ID of the user sending the message
