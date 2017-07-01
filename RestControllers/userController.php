@@ -86,8 +86,21 @@ class userController
 			//No ID specified
 			Rest_fatal_error(400, "Please specify at least one user ID !");
 
-		//Try to get user infos
-		$userInfos = CS::get()->components->user->getMultipleUserInfos($usersID);
+		//Check if it is a wide request or not
+		if(count($usersID) <= 10)
+			//Try to get user infos
+			$userInfos = CS::get()->components->user->getMultipleUserInfos($usersID);
+		else {
+			//Divide request in multiples ones
+			$userInfos = array();
+			foreach(array_chunk($usersID, 10) as $process_users_ID){
+				
+				//Get informations about the IDS
+				foreach(CS::get()->components->user->getMultipleUserInfos($process_users_ID) as $key=>$val){
+					$userInfos[$key] = $val;
+				}
+			}
+		}
 		
 		//Check if response is empty
 		if(count($userInfos) == 0)
