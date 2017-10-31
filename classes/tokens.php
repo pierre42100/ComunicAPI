@@ -24,7 +24,7 @@ class Tokens{
 		define("APIServiceID", $serviceInfos["ID"]);
 
 		//Save service domain in a constant (if any)
-		if($serviceInfos["clientDomain"])
+		if($serviceInfos["clientDomain"] != "")
 			define("APIServiceDomain", $serviceInfos["clientDomain"]);
 
 		//Else everything went good
