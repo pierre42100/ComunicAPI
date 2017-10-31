@@ -43,7 +43,7 @@ class User{
 
 		//Check if there is anything
 		if(count($userInfos) == 0)
-			return false; //Not any account was found
+			return array(); //Not any account was found
 		
 		//Extract first value ID
 		$userID = $userInfos[0]['ID'];
@@ -69,7 +69,7 @@ class User{
 			"token2" => $token2
 		);
 		if(!CS::get()->db->addLine($tableName, $insertValues))
-			return false; //Something went wrong
+			return array(); //Something went wrong
 
 		//We can return tokens
 		return array($token1, $token2);

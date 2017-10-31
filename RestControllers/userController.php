@@ -30,7 +30,7 @@ class userController
 		//Try to perform login
 		$loginTokens = CS::get()->components->user->generateUserLoginTokens($userMail, $userPassword, APIServiceID, $db);
 
-		if(!$loginTokens)
+		if(count($loginTokens) == 0)
 			throw new RestException(401, "Invalid e-mail address / password !");
 
 		//Return result with tokens
