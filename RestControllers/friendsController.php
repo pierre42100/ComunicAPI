@@ -22,6 +22,9 @@ class friendsController{
 		if($friendsList === false)
 			Rest_fatal_error(500, "Couldn't get friends list !");
 		
+		//Update the last activity of the user
+		CS::get()->components->user->updateLastActivity(userID);
+		
 		//Return list
 		return $friendsList;
 	}
