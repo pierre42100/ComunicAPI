@@ -487,7 +487,7 @@ class DBLibrary {
      * @param Array $conditionsValues The values of condition
      * @return Boolean  True if succeed
      */
-    public function deleteEntry($tableName, $conditions = false, array $conditionsValues = array()) {
+    public function deleteEntry(string $tableName, $conditions = false, array $conditionsValues = array()) : bool {
         //We try to perform the task
         try{
             //We check if any database is opened

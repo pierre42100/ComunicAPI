@@ -56,4 +56,27 @@ class friendsController{
 		return array("success" => "A response was given to friendship request !");
 	}
 
+	/**
+	 * Delete a friend from the list
+	 *
+	 * @url POST /friends/remove
+	 */
+	 public function delete(){
+		 user_login_required(); //Login required
+
+		 //Check input parametres
+		 if(!isset($_POST['friendID']))
+		 	Rest_fatal_error(400, "Please specify the ID of the friend to delete !");
+			
+		//Delete the friend from the list
+		$friendID = toInt($_POST['friendID']);
+		$result = CS::get()->components->friends->remove(userID, $friendID);
+
+		//Check if the operation is a result
+		if(!$result)
+			Rest_fatal_error(500, "Couldn't remove user from the friendlist for an unexcepted reason !");
+		else
+			return array("success" => "The friend was removed from the list !");
+	 }
+
 }

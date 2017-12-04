@@ -124,7 +124,7 @@ class friends {
 	 * @param Integer $friendID The destination of the request
 	 * @return Boolean True or false depending of the success of the operation
 	 */
-	 public function checkFriendShipRequestExistence($userID, $friendID){
+	public function checkFriendShipRequestExistence($userID, $friendID){
 		//Perform a request on the database
 		$conditions = "WHERE ID_personne = ? AND ID_amis = ? AND actif = 0";
 		$dataConditions = array(
@@ -143,7 +143,27 @@ class friends {
 		//Else we check the results
 		else
 			return count($results) === 1;
-	 }
+	}
+
+	/**
+	 * Remove a friend from the firends list
+	 *
+	 * @param int $userID The ID of the user who delete the friend
+	 * @param int $friendID The ID of the friend that is being removed from the list
+	 * @return bool True if the user was successfully removed / false else
+	 */
+	public function remove(int $userID, int $friendID) : bool {
+
+		//Delete the friend from the database
+		$tableName = $this->friendsTable;
+		$conditions = "(ID_personne = ? AND ID_amis = ?) OR (ID_personne = ? AND ID_amis = ?)";
+		$condValues = array($userID, $friendID, $friendID, $userID);
+
+		//Try to perform the request
+		$success = CS::get()->db->deleteEntry($tableName, $conditions, $condValues);
+
+		return $success;
+	}
 }
 
 //Register component
