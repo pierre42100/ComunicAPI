@@ -103,3 +103,20 @@ function check_string_before_insert($string){
 	//Success
 	return true;
 }
+
+/**
+ * Make a string safe to be used to perform a query on a database
+ *
+ * @param string $input The string to process
+ * @return string The result string
+ */
+function safe_for_sql(string $input) : string {
+
+	//Perform safe adapation
+	$input = str_ireplace("\\", "\\\\", $input);
+	$input = str_ireplace("'", "\\'", $input);
+	$input = str_ireplace('"', "\\\"", $input);
+
+	return $input;
+
+}

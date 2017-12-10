@@ -298,6 +298,36 @@ class User{
 	}
 
 	/**
+	 * Find the user specified by a folder name
+	 *
+	 * @param string $folder The folder of the research
+	 * @return int 0 if no user was found or the ID of the user in case of success
+	 */
+	public function findByFolder(string $folder) : int {
+
+		//Perform a request on the database
+		$tableName = $this->userTable;
+		$condition = "WHERE sous_repertoire = ?";
+		$condValues = array($folder);
+		$requiredFields = array("ID");
+
+		//Try to perform the request
+		$result = CS::get()->db->select($tableName, $condition, $condValues, $requiredFields);
+
+		//Check for errors
+		if($result === false){
+			return 0;
+		}
+
+		if(count($result) == 0)
+			return 0; //There is no result
+		
+		//Return result
+		return $result[0]["ID"];
+
+	}
+
+	/**
 	 * Crypt user password
 	 *
 	 * @param String $userPassword The password to crypt

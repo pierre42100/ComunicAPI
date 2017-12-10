@@ -124,4 +124,32 @@ class userController
 		//Return userID
 		return array("userID" => userID);
 	}
+
+	/**
+	 * Find user ID by a specified folder name
+	 *
+	 * @url POST /user/findbyfolder
+	 */
+	public function findUserByFolder(){
+
+		//Check for domain name
+		if(!isset($_POST['subfolder']))
+			Rest_fatal_error(400, "No subfolder specified!");
+
+		$input = safe_for_sql($_POST['subfolder']);
+
+		if(!check_string_before_insert($input))
+			Rest_fatal_error(401, "The request was cancelled because the query is unsafe !");
+
+		//Search user ID in the database
+		$id = CS::get()->components->user->findByFolder($input);
+
+		//Check for error
+		if($id === 0)
+			Rest_fatal_error(404, "No user was found with the specifed subfolder!");
+		
+		//Return result
+		return array("userID" => $id);
+
+	}
 }
