@@ -576,7 +576,7 @@ class conversations {
 	 * @param Integer $numberOfMessages The number of messages to return
 	 * @return Array The messages of the conversation
 	 */
-	public function getLastMessages($conversationID, $numberOfMessages) : array {
+	public function getLastMessages(int $conversationID, int $numberOfMessages) : array {
 
 		//Define conditions
 		$conditions = "WHERE ID_".$this->conversationsListTable." = ? ORDER BY ID DESC LIMIT ".($numberOfMessages*1);

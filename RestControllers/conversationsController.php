@@ -354,4 +354,43 @@ class conversationsController{
 		//Return result
 		return $conversationsMessages;
 	}
+
+	/**
+	 * Refresh the messages of a specific conversation
+	 *
+	 * @url POST /conversations/refresh_single
+	 */
+	public function refresh_single(){
+		user_login_required();
+
+		//Get the ID of the conversation to refresh
+		if(!isset($_POST['conversationID']))
+			Rest_fatal_error(400, "Please specify a conversation ID !");
+		
+		//Get the last message ID downloaded by the client
+		if(!isset($_POST['last_message_id']))
+			Rest_fatal_error(400, "Please specify the ID of the last message you've got!");
+
+		$conversationID = toInt($_POST['conversationID']);
+		$last_message_id = toInt($_POST['last_message_id']);
+
+		//Check if the current user can access the conversation
+		if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
+			Rest_fatal_error(401, "Specified user doesn't belongs to the conversation number ".$conversationID." !");
+
+		//Check if user has already some of the messages of the conversations, or
+		//If we have to return the list of the last ten messages
+		if($last_message_id == 0){
+			$messages = 
+				CS::get()->components->conversations->getLastMessages($conversationID, 10);
+		}
+		else {
+			$messages = 
+				CS::get()->components->conversations->getNewMessages($conversationID, $last_message_id);
+		}
+
+		//Return the messges
+		return $messages;
+		
+	}
 }
