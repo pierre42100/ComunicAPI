@@ -164,6 +164,27 @@ class friends {
 
 		return $success;
 	}
+
+	/**
+	 * Check wether two users are friend or not
+	 *
+	 * @param $user1 The ID of the first user
+	 * @param $user2 The ID of the second user
+	 * @return TRUE if the users are friend / FALSE else
+	 */
+	public function are_friend(int $user1, int $user2) : bool {
+		
+		//Query the friends table
+		$tableName = $this->friendsTable;
+		$conditions = "WHERE ID_personne = ? AND ID_amis = ? AND actif = 1";
+		$condValues = array($user1, $user2);
+
+		//Try to perform the request
+		$response = CS::get()->db->select($tableName, $conditions, $condValues);
+
+		//Return the result
+		return count($response) > 0;
+	}
 }
 
 //Register component
