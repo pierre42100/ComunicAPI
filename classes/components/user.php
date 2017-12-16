@@ -226,7 +226,7 @@ class User{
 	 * @param $advanced Get advanced informations about user or not (to display its profile for example)
 	 * @return Array The informations ready to be returned
 	 */
-	private function generateUserInfosArray(array $userInfos, bool $advanced) : array{
+	private function generateUserInfosArray(array $userInfos, bool $advanced = false) : array{
 		//Prepare return
 		$return = array();
 		$return['userID'] = $userInfos['ID'];
