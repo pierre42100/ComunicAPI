@@ -111,6 +111,27 @@ class userController
 	}
 
 	/**
+	 * Get advanced user informations
+	 *
+	 * @url POST /user/getAdvancedUserInfos
+	 */
+	public function getAdvancedInfos(){
+
+		//Get the ID of the target user
+		if(!isset($_POST["userID"]))
+			Rest_fatal_error(400, "Please specify a user ID!");
+		
+		$userID = toInt($_POST["userID"]);
+
+		//Check if the user is allowed to get advanced user infromations
+		if(!CS::get()->components->user->userAllowed(userID, $userID))
+			Rest_fatal_error(401, "You are not allowed to access these information !");
+		
+		echo "ok";
+
+	}
+
+	/**
 	 * Get current user infos using tokens
 	 *
 	 * @url POST /user/getCurrentUserID

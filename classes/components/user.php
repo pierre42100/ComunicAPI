@@ -337,7 +337,7 @@ class User{
 	 * - 1 : The page is public (for signed in users)
 	 * - 2 : The page is open (for everyone)
 	 */
-	public function getUserVisibilty(int $userID) : int {
+	public function getVisibilty(int $userID) : int {
 
 		//Perform a request on the database
 		$tableName = $this->userTable;
@@ -370,6 +370,35 @@ class User{
 			return 3; //Page open
 		else
 			return 2; //Public page
+
+	}
+
+	/**
+	 * Check if a user is allowed to access another user page content
+	 *
+	 * @param $userID The ID of the user attempting to get user informations (0 = no user)
+	 * @param $targetUser Target user for the research
+	 * @return TRUE if the user is allowed to see the page / FALSE else
+	 */
+	public function userAllowed(int $userID, int $targetUser) : bool {
+		
+		//Get the visibility level of the page
+		$visibility = $this->getVisibilty($targetUser);
+
+		//Check if the page is public
+		if($visibility == 3)
+			return true;
+		
+		if($userID == 0)
+			return false;
+		
+		if($visibility == 2)
+			return true;
+		
+		if(CS::get()->components->friends->are_friend($userID, $targetUser))
+			return true;
+		else
+			return false;
 
 	}
 	
