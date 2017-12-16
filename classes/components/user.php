@@ -328,6 +328,53 @@ class User{
 	}
 
 	/**
+	 * Get a user page visibility level
+	 *
+	 * @param $id The ID of the user to fetch
+	 * @return The visibility level of the user page
+	 * - -1 : In case of failure (will make the protection level elevated)
+	 * - 0 : The page is private (for user friends)
+	 * - 1 : The page is public (for signed in users)
+	 * - 2 : The page is open (for everyone)
+	 */
+	public function getUserVisibilty(int $userID) : int {
+
+		//Perform a request on the database
+		$tableName = $this->userTable;
+		$condition = "WHERE ID = ?";
+		$condValues = array($userID);
+
+		$requiredFields = array(
+			"public",
+			"pageouverte"
+		);
+
+		//Perform the request
+		$result = CS::get()->db->select($tableName, $condition, $condValues, $requiredFields);
+
+		if($result === false){
+			return -1;
+		}
+
+		//Check for a result
+		if(count($result) == 0){
+			return -1;
+		}
+
+		//Check if the page is public
+		if($result[0]["public"] == 0)
+			return 0;
+
+		//Check if the page is open or not
+		if($result[0]["pageouverte"] == 1)
+			return 3; //Page open
+		else
+			return 2; //Public page
+
+	}
+	
+
+	/**
 	 * Crypt user password
 	 *
 	 * @param String $userPassword The password to crypt
