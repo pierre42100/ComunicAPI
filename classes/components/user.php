@@ -162,9 +162,10 @@ class User{
 	 * Get Single User Infos
 	 *
 	 * @param Integer $userID The user ID
+	 * @param $advanced Get advanced informations about user, for its page for example
 	 * @return Array The result of the function (user informations) (empty one if it fails)
 	 */
-	public function getUserInfos($userID) : array {
+	public function getUserInfos($userID, bool $advanced = false) : array {
 		//Prepare database request
 		$tablesName = $this->userTable;
 		$conditions = "WHERE utilisateurs.ID = ?";
@@ -180,7 +181,7 @@ class User{
 			return array(); //No result
 		
 		//Return result
-		return $this->generateUserInfosArray($userInfos[0]);
+		return $this->generateUserInfosArray($userInfos[0], $advanced);
 	}
 
 	/**
@@ -222,9 +223,10 @@ class User{
 	 * given the database entry
 	 *
 	 * @param Array $userInfos The user entry in the database
+	 * @param $advanced Get advanced informations about user or not (to display its profile for example)
 	 * @return Array The informations ready to be returned
 	 */
-	private function generateUserInfosArray(array $userInfos) : array{
+	private function generateUserInfosArray(array $userInfos, bool $advanced) : array{
 		//Prepare return
 		$return = array();
 		$return['userID'] = $userInfos['ID'];
@@ -242,9 +244,13 @@ class User{
 		//Add account image url
 		$return['accountImage'] = CS::get()->components->accountImage->getPath($return['userID']);
 
-		//Only the user may get its mail address
-		if(userID === $return['userID'])
-			$return['mailAdress'] = $userInfos['mail'];
+		//Check if we have to fetch advanced informations
+		if($advanced){
+			
+			//Add background image url
+			$return['backgroundImage'] = CS::get()->components->backgroundImage->getPath($return['userID']);
+
+		}
 
 		//Return result
 		return $return;

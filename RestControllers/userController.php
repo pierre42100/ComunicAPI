@@ -127,7 +127,15 @@ class userController
 		if(!CS::get()->components->user->userAllowed(userID, $userID))
 			Rest_fatal_error(401, "You are not allowed to access these information !");
 		
-		echo "ok";
+		//Get user informations
+		$userInfos = CS::get()->components->user->getUserInfos($userID, true);
+
+		//Check if we got a response
+		if(count($userInfos) == 0)
+			Rest_fatal_error(500, "Couldn't get informations about the user !");
+		
+		//Return user informations
+		return $userInfos;
 
 	}
 
