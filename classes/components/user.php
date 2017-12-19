@@ -388,6 +388,10 @@ class User{
 	 */
 	public function userAllowed(int $userID, int $targetUser) : bool {
 		
+		//Check if the requested user is the current user
+		if($userID == $targetUser)
+			return true; //A user can access to its own page !
+
 		//Get the visibility level of the page
 		$visibility = $this->getVisibilty($targetUser);
 
