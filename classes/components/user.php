@@ -82,7 +82,7 @@ class User{
 	 * @param Integer $serviceID The ID of the service
 	 * @return False if it fails, or tokens if success
 	 */
-	public function getUserLoginTokenByIDs($userID, $serviceID){
+	private function getUserLoginTokenByIDs($userID, $serviceID){
 		//Prepare database request
 		$conditions = "WHERE ID_utilisateurs = ? AND ID_".CS::get()->config->get("dbprefix")."API_ServicesToken = ?";
 		$values = array(
