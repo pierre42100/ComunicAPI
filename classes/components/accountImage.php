@@ -52,8 +52,8 @@ class accountImage{
 			//Get account image visibility level
 			$visibilityLevel = $this->visibilityLevel($userID);
 
-			//If account image is open
-			if($visibilityLevel == 3)
+			//If account image is open or if the user signed in is the user making the request
+			if($visibilityLevel == 3 || userID == $userID)
 				//Account image is OPEN
 				return $accountImageFile;
 			
@@ -67,8 +67,12 @@ class accountImage{
 
 			//Else users must be friends
 			if($visibilityLevel == 1){
-				//Level not implemented yet
-				return $this->accountImageURL.$this->errorAccountImage;
+				//Check the two persons are friend or not
+				if(CS::get()->components->friends->are_friend($userID, userID))
+					//User is allowed to access the image
+					return $accountImageFile;
+				else
+					return $this->accountImageURL.$this->errorAccountImage;
 			}
 		}
 		else
