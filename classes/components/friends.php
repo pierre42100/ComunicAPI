@@ -185,6 +185,28 @@ class friends {
 		//Return the result
 		return count($response) > 0;
 	}
+
+	/**
+	 * Check whether a user has sent a friendship 
+	 * request to another friend
+	 * 
+	 * @param $user The ID of the user supposed to have sent a request
+	 * @param $targetUser The ID of the target user
+	 * @return TRUE if a request has been sent / FALSE else
+	 */
+	public function sent_request(int $user, int $targetUser) : bool {
+
+		//Query the friend table
+		$tableName = $this->friendsTable;
+		$conditions = "WHERE ID_personne = ? AND ID_amis = ? AND actif = 0";
+		$condValues = array($targetUser, $user);
+
+		//Try to perform the request
+		$response = CS::get()->db->select($tableName, $conditions, $condValues);
+
+		//Return result
+		return count($response) > 0;
+	}
 }
 
 //Register component
