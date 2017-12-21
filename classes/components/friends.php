@@ -187,6 +187,28 @@ class friends {
 	}
 
 	/**
+	 * Send a friendship request
+	 * 
+	 * @param $userID The ID of the user creating the request
+	 * @param $targetID The target of the friendship request
+	 * @return TRUE in case of success / FALSE else
+	 */
+	public function send_request(int $userID, int $targetID) : bool {
+
+		//Prepare the insertion
+		$tableName = $this->friendsTable;
+		$values = array(
+			"ID_personne" => $targetID,
+			"ID_amis" => $userID,
+			"actif" => 0
+		);
+
+		//Try to perform the request
+		return CS::get()->db->addLine($tableName, $values) == true;
+
+	}
+
+	/**
 	 * Check wether a user has sent a friendship 
 	 * request to another friend
 	 * 

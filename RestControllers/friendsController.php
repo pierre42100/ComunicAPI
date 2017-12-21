@@ -30,6 +30,43 @@ class friendsController{
 	}
 
 	/**
+	 * Send a friendship request
+	 * 
+	 * @url POST /friends/sendRequest
+	 */
+	public function sendRequest(){
+		user_login_required(); //Login required
+
+		//Check parametres
+		if(!isset($_POST["friendID"]))
+			Rest_fatal_error(400, "Please specify a user ID !");
+		
+		//Extract informations and process request
+		$friendID = toInt($_POST['friendID']);
+
+		//Check if the two persons are already friend
+		if(CS::get()->components->friends->are_friend(userID, $friendID))
+			Rest_fatal_error(401, "The two personns are already friend !");
+		
+		//Check if there is already a pending request
+		//Check if the current user has sent a request to the other user
+		if(CS::get()->components->friends->sent_request(userID, $friendID))
+			Rest_fatal_error(401, "You have already sent a friendship request to this personn !");
+	
+		//Check if the current user has received a friendship request
+		if(CS::get()->components->friends->sent_request($friendID, userID))
+			Rest_fatal_error(401, "You have already received a friendship request from this personn !");
+		
+		//We can now create the request
+		if(!CS::get()->components->friends->send_request(userID, $friendID))
+			Rest_fatal_error(500, "Couldn't create friendship request !");
+		
+		//Success
+		return array("success" => "The friendship request has been created !");
+
+	}
+
+	/**
 	 * Respond to a friendship request
 	 *
 	 * @url POST /friends/respondRequest
