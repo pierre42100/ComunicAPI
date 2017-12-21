@@ -103,6 +103,7 @@ class friendsController{
 			"sent_request" => false,
 			"received_request" => false,
 			"following" => false,
+			"can_post_texts" => false,
 		);
 
 		//Check if the two personns are friend
@@ -123,8 +124,13 @@ class friendsController{
 		else {
 
 			//Perform the check specific to the real friend
+			//Check if the user is following his friend or not
 			if(CS::get()->components->friends->is_following(userID, $friendID))
 				$response['following'] = true;
+
+			//Check if the user can post text on his friend page
+			if(CS::get()->components->friends->can_post_text(userID, $friendID))
+				$response['can_post_texts'] = true;
 
 		}
 

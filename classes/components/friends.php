@@ -209,7 +209,7 @@ class friends {
 	}
 
 	/**
-	 * Check wether a user is following or not another user
+	 * Check wether a user is following or not another friend
 	 * 
 	 * @param $userID The ID of the user supposed to follow another friend
 	 * @param $friendID The ID of the friend
@@ -231,6 +231,34 @@ class friends {
 			return FALSE; //No entry found
 		
 		return $response[0]['abonnement'] == 1;
+	}
+
+	/**
+	 * Check wether a friend allows a friend to post text on his page or not
+	 * 
+	 * @param $userID The ID of the user performing the request
+	 * @param $friendID The ID of the friend allowing or denying the user
+	 * to post texts on his page
+	 * @return TRUE if the user is allowed to post texts on the page / FALSE else
+	 */
+	public function can_post_text(int $userID, int $friendID) : bool {
+
+		//Query the friend table
+		$tableName = $this->friendsTable;
+		$conditions = "WHERE ID_personne = ? AND ID_amis = ? AND actif = 1";
+		$condValues = array($friendID, $userID);
+		$requiredFields = array("autoriser_post_page");
+
+		//Try to perform the request
+		$response = CS::get()->db->select($tableName, $conditions, $condValues, $requiredFields);
+
+		//Check for result
+		if(count($response) < 1)
+			return FALSE; //No entry found
+		
+		return $response[0]['autoriser_post_page'] == 1;
+
+
 	}
 }
 
