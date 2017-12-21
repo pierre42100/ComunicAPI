@@ -102,6 +102,7 @@ class friendsController{
 			"are_friend" => false,
 			"sent_request" => false,
 			"received_request" => false,
+			"following" => false,
 		);
 
 		//Check if the two personns are friend
@@ -118,6 +119,13 @@ class friendsController{
 			//Check if the current user has received a friendship request
 			if(CS::get()->components->friends->sent_request($friendID, userID))
 				$response["received_request"] = true;
+		}
+		else {
+
+			//Perform the check specific to the real friend
+			if(CS::get()->components->friends->is_following(userID, $friendID))
+				$response['following'] = true;
+
 		}
 
 		//Return the response

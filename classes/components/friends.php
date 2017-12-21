@@ -187,7 +187,7 @@ class friends {
 	}
 
 	/**
-	 * Check whether a user has sent a friendship 
+	 * Check wether a user has sent a friendship 
 	 * request to another friend
 	 * 
 	 * @param $user The ID of the user supposed to have sent a request
@@ -206,6 +206,31 @@ class friends {
 
 		//Return result
 		return count($response) > 0;
+	}
+
+	/**
+	 * Check wether a user is following or not another user
+	 * 
+	 * @param $userID The ID of the user supposed to follow another friend
+	 * @param $friendID The ID of the friend
+	 * @return TRUE if the user is following the other user / FALSE else
+	 */
+	public function is_following(int $userID, int $friendID) : bool {
+
+		//Query the friend table
+		$tableName = $this->friendsTable;
+		$conditions = "WHERE ID_personne = ? AND ID_amis = ? AND actif = 1";
+		$condValues = array($userID, $friendID);
+		$requiredFields = array("abonnement");
+
+		//Try to perform the request
+		$response = CS::get()->db->select($tableName, $conditions, $condValues, $requiredFields);
+
+		//Check for result
+		if(count($response) < 1)
+			return FALSE; //No entry found
+		
+		return $response[0]['abonnement'] == 1;
 	}
 }
 
