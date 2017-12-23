@@ -209,6 +209,25 @@ class friends {
 	}
 
 	/**
+	 * Delete a friendship request previously created
+	 * 
+	 * @param $userID The ID of the user removing its request
+	 * @param $targetID The ID of the target of the request
+	 * @return TRUE in case of success / false else
+	 */
+	public function remove_request(int $userID, int $targetID) : bool {
+
+		//Prepare the request on the database
+		$tableName = $this->friendsTable;
+		$conditions = "ID_personne = ? AND ID_amis = ? AND actif = 0";
+		$values = array($targetID, $userID);
+		
+		//Try to perform the request
+		return CS::get()->db->deleteEntry($tableName, $conditions, $values);
+
+	}
+
+	/**
 	 * Check wether a user has sent a friendship 
 	 * request to another friend
 	 * 

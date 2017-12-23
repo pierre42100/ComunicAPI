@@ -67,6 +67,33 @@ class friendsController{
 	}
 
 	/**
+	 * Remove a previously send frienship request
+	 * 
+	 * @url POST /friends/removeRequest
+	 */
+	public function removeRequest(){
+		user_login_required(); //Login required
+
+		//Check parametres
+		if(!isset($_POST["friendID"]))
+			Rest_fatal_error(400, "Please specify a user ID !");
+		
+		//Extract informations and process request
+		$friendID = toInt($_POST['friendID']);
+
+		//Check if the current user has sent a request to the other user
+		if(!CS::get()->components->friends->sent_request(userID, $friendID))
+			Rest_fatal_error(401, "You didn't send a friendship request to this user !");
+		
+		//Try to remove the friendship request
+		if(!CS::get()->components->friends->remove_request(userID, $friendID))
+			Rest_fatal_error(500, "An error occured while trying to remove the friendship request !");
+		
+		//This is a success
+		return array("success" => "The friendship request has been removed!");
+	}
+
+	/**
 	 * Respond to a friendship request
 	 *
 	 * @url POST /friends/respondRequest
