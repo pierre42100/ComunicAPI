@@ -322,6 +322,23 @@ class friends {
 		//Perform the request
 		return CS::get()->db->updateDB($tableName, $conditions, $newValues, $conditionsValues);
 	}
+
+	/**
+	 * Count the number of friends of a user
+	 * 
+	 * @param int $userID The target user ID
+	 * @return int The number of friends of the user
+	 */
+	public function count_all(int $userID) : int {
+
+		//Perform a request on the datbase
+		$tableName = $this->friendsTable;
+		$conditions = "WHERE ID_amis = ? AND actif = 1";
+		$condValues = array($userID);
+
+		return CS::get()->db->count($tableName, $conditions, $condValues);
+
+	}
 }
 
 //Register component
