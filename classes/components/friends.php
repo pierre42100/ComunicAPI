@@ -299,7 +299,28 @@ class friends {
 		
 		return $response[0]['autoriser_post_page'] == 1;
 
+	}
 
+	/**
+	 * Update the following status for a friendship
+	 * 
+	 * @param int $userID The ID of the user updating the status
+	 * @param int $friendID The ID of the target friend
+	 * @param boolean $following The new status
+	 * @return bool True in case of succcess / false else
+	 */
+	public function set_following(int $userID, int $friendID, bool $following) : bool {
+
+		//Update the table
+		$tableName = $this->friendsTable;
+		$conditions = "ID_personne = ? AND ID_amis = ?";
+		$conditionsValues = array($userID, $friendID);
+		$newValues = array(
+			"abonnement" => $following ? 1 : 0
+		);
+
+		//Perform the request
+		return CS::get()->db->updateDB($tableName, $conditions, $newValues, $conditionsValues);
 	}
 }
 

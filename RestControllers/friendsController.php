@@ -201,4 +201,36 @@ class friendsController{
 		//Return the response
 		return $response;
 	}
+
+	/**
+	 * Update the following status of a friendship
+	 * 
+	 * @url POST /friends/setFollowing
+	 */
+	public function update_following(){
+		user_login_required(); //Login required
+
+		//Check if the a friendID has been specified
+		if(!isset($_POST['friendID']))
+			Rest_fatal_error(400, "Please specify a friend ID !");
+		
+		$friendID = toInt($_POST['friendID']);
+
+		//Check if a follow status has been specified
+		if(!isset($_POST['follow']))
+			Rest_fatal_error(400, "Please specify a follow status!");
+		
+		$following = $_POST['follow'] === "true";
+
+		//Check if the two personns are friend
+		if(!CS::get()->components->friends->are_friend(userID, $friendID))
+			Rest_fatal_error(401, "You are not friend with this personn!");
+		
+		//Update following status
+		if(!CS::get()->components->friends->set_following(userID, $friendID, $following))
+			Rest_fatal_error(500, "Couldn't update friendship status!");
+		
+		//Success
+		return array("success" => "Friendship status has been updated!");
+	}
 }
