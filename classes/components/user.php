@@ -232,14 +232,9 @@ class User{
 		$return['userID'] = $userInfos['ID'];
 		$return['firstName'] = $userInfos['prenom'];
 		$return['lastName'] = $userInfos['nom'];
-		$return['accountCreationDate'] = $userInfos['date_creation'];
-		$return['publicPage'] = $userInfos['public'];
-		$return['openPage'] = $userInfos['pageouverte'];
-		$return['allowPostFromFriendOnHisPage'] = $userInfos['autoriser_post_amis'];
-		$return['noCommentOnHisPage'] = $userInfos['bloquecommentaire'];
+		$return['publicPage'] = $userInfos['public'] == 1;
+		$return['openPage'] = $userInfos['pageouverte'] == 1;
 		$return['virtualDirectory'] = $userInfos['sous_repertoire'];
-		$return['personnalWebsite'] = $userInfos['site_web'];
-		$return['isPublicFriendList'] = $userInfos['liste_amis_publique'];
 
 		//Add account image url
 		$return['accountImage'] = CS::get()->components->accountImage->getPath($return['userID']);
@@ -247,6 +242,21 @@ class User{
 		//Check if we have to fetch advanced informations
 		if($advanced){
 			
+			//Public friend list
+			$return['friend_list_public'] = $userInfos['liste_amis_publique'] == 1;
+
+			//Personnal website
+			$return['personnalWebsite'] = $userInfos['site_web'];
+
+			//Block comment his his page ?
+			$return['noCommentOnHisPage'] = $userInfos['bloquecommentaire'] == 1;
+
+			//Allow user to post informations on his page
+			$return['allowPostFromFriendOnHisPage'] = $userInfos['autoriser_post_amis'] == 1;
+
+			//Account creation date
+			$return['accountCreationDate'] = $userInfos['date_creation'];
+
 			//Add background image url
 			$return['backgroundImage'] = CS::get()->components->backgroundImage->getPath($return['userID']);
 
