@@ -255,7 +255,7 @@ class User{
 			$return['allowPostFromFriendOnHisPage'] = $userInfos['autoriser_post_amis'] == 1;
 
 			//Account creation date
-			$return['accountCreationDate'] = $userInfos['date_creation'];
+			$return['account_creation_time'] = strtotime($userInfos['date_creation']);
 
 			//Add background image url
 			$return['backgroundImage'] = CS::get()->components->backgroundImage->getPath($return['userID']);
