@@ -138,8 +138,6 @@ class userController
 		if(count($userInfos) == 0)
 			Rest_fatal_error(500, "Couldn't get informations about the user !");
 		
-		//Add account image url
-		$userInfos['accountImage'] = CS::get()->components->accountImage->getPath($userID);
 
 		//Get the number of friends (if allowed)
 		if($userInfos['friend_list_public'] === true){

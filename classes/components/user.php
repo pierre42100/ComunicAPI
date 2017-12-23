@@ -236,6 +236,9 @@ class User{
 		$return['openPage'] = $userInfos['pageouverte'] == 1;
 		$return['virtualDirectory'] = $userInfos['sous_repertoire'];
 
+		//Add account image url
+		$return['accountImage'] = CS::get()->components->accountImage->getPath($return['userID']);
+
 		//Check if we have to fetch advanced informations
 		if($advanced){
 			
