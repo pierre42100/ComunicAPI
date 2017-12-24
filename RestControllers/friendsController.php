@@ -162,12 +162,8 @@ class friendsController{
 
 		user_login_required(); //Login required
 
-		//Check if the a friendID has been specified
-		if(!isset($_POST['friendID']))
-			Rest_fatal_error(400, "Please specify a friend ID !");
-
 		//Get it
-		$friendID = toInt($_POST['friendID']);
+		$friendID = getPostUserID('friendID');
 
 		//Prepare the response
 		$response = array(

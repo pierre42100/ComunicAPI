@@ -134,3 +134,30 @@ function check_user_id(int $userID) : bool {
 
 	return true; //Valid
 }
+
+/**
+ * Get userID posted in a request and return it if there
+ * isn't any error
+ * 
+ * @param string $name Optionnal, the name of the post field
+ * @return int User ID
+ * @throws RestError in case of error
+ */
+function getPostUserID(string $name = "userID") : int {
+
+	//Get userID post
+	if(!isset($_POST[$name]))
+		Rest_fatal_error(400, "Please specify a userID in '".$name."' !");
+	
+	$userID = toInt($_POST[$name]);
+
+	//Check userID validity
+	if(!check_user_id($userID))
+		Rest_fatal_error(400, "Invalid userID in '".$name."' !");
+	
+	//Check if user exits
+	if(!CS::get()->components->user->exists($userID))
+		Rest_fatal_error(404, "Specified user in '".$name."' not found !");
+	
+	return $userID;
+}
