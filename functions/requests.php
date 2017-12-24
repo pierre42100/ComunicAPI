@@ -120,3 +120,17 @@ function safe_for_sql(string $input) : string {
 	return $input;
 
 }
+
+/**
+ * Check a given user ID
+ * 
+ * @param int $userID The user ID to check
+ * @return bool True if userID is valid, false else
+ */
+function check_user_id(int $userID) : bool {
+
+	if($userID < 1)
+		return false; //Invalid
+
+	return true; //Valid
+}

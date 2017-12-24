@@ -295,7 +295,7 @@ class User{
 	 * @param Integer $userID The ID of the user to check
 	 * @return Boolean Depends of the existence of the user
 	 */
-	public function exists($userID){
+	public function exists(int $userID) : bool {
 		//Perform a request on the database
 		$tableName = $this->userTable;
 		$condition = "WHERE ID = ?";

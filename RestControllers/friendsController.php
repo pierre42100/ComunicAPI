@@ -44,6 +44,14 @@ class friendsController{
 		//Extract informations and process request
 		$friendID = toInt($_POST['friendID']);
 
+		//Check friendID validity
+		if(!check_user_id($friendID))
+			Rest_fatal_error(401, "The user ID you specified is invalid !");
+		
+		//Check if the user exists
+		if(!CS::get()->components->user->exists($friendID))
+			Rest_fatal_error(401, "Specifed user does not exist!");
+
 		//Check if the two persons are already friend
 		if(CS::get()->components->friends->are_friend(userID, $friendID))
 			Rest_fatal_error(401, "The two personns are already friend !");
