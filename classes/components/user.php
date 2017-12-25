@@ -27,12 +27,12 @@ class User{
 	/**
 	 * Try to login user with returning a service token
 	 * 
-	 * @param String $email The e-mail address of the user
-	 * @param String $password The password of the user
-	 * @param String $serviceID The ID of the service
-	 * @return String Token if success, false if fails
+	 * @param string $email The e-mail address of the user
+	 * @param string $password The password of the user
+	 * @param int $serviceID The ID of the service
+	 * @return array Tokens if success, false if fails
 	 */
-	public function generateUserLoginTokens($email, $password, $serviceID) : array{
+	public function generateUserLoginTokens(string $email, string $password, int $serviceID) : array{
 		//Try to find user ID in the database
 		$conditions = "WHERE mail = ? AND password = ?";
 		$values = array(
@@ -78,11 +78,11 @@ class User{
 	/**
 	 * Get token with the help of userID and serviceID
 	 *
-	 * @param Integer $userID The ID of the user
-	 * @param Integer $serviceID The ID of the service
-	 * @return False if it fails, or tokens if success
+	 * @param int $userID The ID of the user
+	 * @param int $serviceID The ID of the service
+	 * @return FALSE if it fails, or tokens if success
 	 */
-	private function getUserLoginTokenByIDs($userID, $serviceID){
+	private function getUserLoginTokenByIDs(int $userID, int $serviceID) {
 		//Prepare database request
 		$conditions = "WHERE ID_utilisateurs = ? AND ID_".CS::get()->config->get("dbprefix")."API_ServicesToken = ?";
 		$values = array(
@@ -104,11 +104,11 @@ class User{
 	/**
 	 * Delete token from given informations
 	 *
-	 * @param Integer $userID The ID of the user to delete
-	 * @param String $serviceID The service ID
-	 * @return Boolean False if it fails
+	 * @param int $userID The ID of the user to delete
+	 * @param string $serviceID The service ID
+	 * @return bool False if it fails
 	 */
-	public function deleteUserLoginToken($userID, $serviceID){
+	public function deleteUserLoginToken(int $userID, string $serviceID) : bool {
 
 		//Prepare database request
 		$condition = "ID_utilisateurs = ? AND ID_".CS::get()->config->get("dbprefix")."API_ServicesToken = ?";
@@ -128,11 +128,11 @@ class User{
 	/**
 	 * Get User ID from token
 	 *
-	 * @param Array $tokens The user login tokens
-	 * @param String $serviceID The ID of the service
-	 * @return Integer User ID (0 for a failure)
+	 * @param int $serviceID The ID of the service
+	 * @param array $tokens The user login tokens
+	 * @return int User ID (0 for a failure)
 	 */
-	public function getUserIDfromToken($serviceID, array $tokens){
+	public function getUserIDfromToken(int $serviceID, array $tokens) : int {
 		//Check token number
 		if(count($tokens) != 2)
 			return 0;
@@ -161,11 +161,11 @@ class User{
 	/**
 	 * Get Single User Infos
 	 *
-	 * @param Integer $userID The user ID
-	 * @param $advanced Get advanced informations about user, for its page for example
+	 * @param int $userID The user ID
+	 * @param bool $advanced Get advanced informations about user, for its page for example
 	 * @return Array The result of the function (user informations) (empty one if it fails)
 	 */
-	public function getUserInfos($userID, bool $advanced = false) : array {
+	public function getUserInfos(int $userID, bool $advanced = false) : array {
 		//Prepare database request
 		$tablesName = $this->userTable;
 		$conditions = "WHERE utilisateurs.ID = ?";
@@ -199,7 +199,7 @@ class User{
 		//Process users
 		foreach($usersID as $i=>$process){
 			$conditions .= " OR utilisateurs.ID = ?";
-			$conditionsValues[] = $process;
+			$conditionsValues[] = $process*1;
 		}
 		
 		//Perform request
@@ -222,9 +222,9 @@ class User{
 	 * Generate and return an array containing informations about a user
 	 * given the database entry
 	 *
-	 * @param Array $userInfos The user entry in the database
-	 * @param $advanced Get advanced informations about user or not (to display its profile for example)
-	 * @return Array The informations ready to be returned
+	 * @param array $userInfos The user entry in the database
+	 * @param bool $advanced Get advanced informations about user or not (to display its profile for example)
+	 * @return array The informations ready to be returned
 	 */
 	private function generateUserInfosArray(array $userInfos, bool $advanced = false) : array{
 		//Prepare return
@@ -269,10 +269,10 @@ class User{
 	/**
 	 * Update last user activity time on the network
 	 *
-	 * @param Integer $userID The ID of the user to update
-	 * @return Boolean True for a success
+	 * @param int $userID The ID of the user to update
+	 * @return bool True for a success
 	 */
-	public function updateLastActivity($userID){
+	public function updateLastActivity(int $userID) : bool{
 
 		//Perform a request on the database
 		$tableName = $this->userTable;
@@ -292,8 +292,8 @@ class User{
 	/**
 	 * Check if a user exists or not
 	 *
-	 * @param Integer $userID The ID of the user to check
-	 * @return Boolean Depends of the existence of the user
+	 * @param int $userID The ID of the user to check
+	 * @return bool Depends of the existence of the user
 	 */
 	public function exists(int $userID) : bool {
 		//Perform a request on the database
@@ -346,14 +346,14 @@ class User{
 	/**
 	 * Get a user page visibility level
 	 *
-	 * @param $id The ID of the user to fetch
-	 * @return The visibility level of the user page
+	 * @param int $id The ID of the user to fetch
+	 * @return int The visibility level of the user page
 	 * - -1 : In case of failure (will make the protection level elevated)
 	 * - 0 : The page is private (for user friends)
 	 * - 1 : The page is public (for signed in users)
 	 * - 2 : The page is open (for everyone)
 	 */
-	public function getVisibilty(int $userID) : int {
+	public function getVisibility(int $userID) : int {
 
 		//Perform a request on the database
 		$tableName = $this->userTable;
@@ -392,9 +392,9 @@ class User{
 	/**
 	 * Check if a user is allowed to access another user page content
 	 *
-	 * @param $userID The ID of the user attempting to get user informations (0 = no user)
-	 * @param $targetUser Target user for the research
-	 * @return TRUE if the user is allowed to see the page / FALSE else
+	 * @param int $userID The ID of the user attempting to get user informations (0 = no user)
+	 * @param int $targetUser Target user for the research
+	 * @return bool TRUE if the user is allowed to see the page / FALSE else
 	 */
 	public function userAllowed(int $userID, int $targetUser) : bool {
 		
@@ -403,7 +403,11 @@ class User{
 			return true; //A user can access to its own page !
 
 		//Get the visibility level of the page
-		$visibility = $this->getVisibilty($targetUser);
+		$visibility = $this->getVisibility($targetUser);
+
+		//Check for errors
+		if($visibility == -1)
+			return FALSE; //An error occured
 
 		//Check if the page is public
 		if($visibility == 3)
@@ -426,10 +430,10 @@ class User{
 	/**
 	 * Crypt user password
 	 *
-	 * @param String $userPassword The password to crypt
-	 * @return String The encrypted password
+	 * @param string $userPassword The password to crypt
+	 * @return string The encrypted password
 	 */
-	public function cryptPassword($userPassword){
+	public function cryptPassword(string $userPassword) : string {
 		return crypt(sha1($userPassword), sha1($userPassword));
 	}
 
