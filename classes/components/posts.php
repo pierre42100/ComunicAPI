@@ -20,9 +20,22 @@ class Posts {
 	const VISIBILITY_USER = 3;
 
 	/**
-	 * Table name
+	 * Table informations
 	 */
+	//Name of the table
 	const TABLE_NAME = "texte";
+
+	//Translation of posts types between the API language and the database structure
+	const POSTS_TYPE = array(
+		"texte" => "text",
+		"image" => "image",
+		"webpage_link" => "weblink",
+		"pdf" => "pdf",
+		"video" => "movie",
+		"count_down" => "countdown",
+		"sondage" => "survey",
+		"youtube" => "youtube"
+	);
 
 	/**
 	 * Get the visibility level of a user other another user
@@ -59,8 +72,14 @@ class Posts {
 	 * @param int $targetID The ID of the target user
 	 * @param int $visibilityLevel Visibility level required
 	 * @param int $startPoint The startpoint for the request (0 stands for none)
+	 * @param int $limit The maximum number of messages to fetch
 	 */
-	public function getUserPosts(int $userID, int $targetID, int $visibilityLevel, int $startPoint = 0) : array {
+	public function getUserPosts(int $userID, int $targetID, int $visibilityLevel, int $startPoint = 0, int $limit = 10) : array {
+
+		//Check the value of limit (security)
+		if($limit < 1){
+			throw new Exception("The limit of the query must absolutly be positive !");
+		}
 
 		//Prepare the request on the database
 		$conditions = "WHERE ID_personne = ? AND (";
@@ -76,15 +95,87 @@ class Posts {
 			$dataConds[] = $userID;
 		}
 
-		//Close conditions
+		//Close permissions conditions
 		$conditions .= ")";
+		
+		//Add startpoint condition if required (and get older messages)
+		if($startPoint != 0){
+			$conditions .= " AND ID <= ? ";
+			$dataConds[] = $startPoint;
+		}
+
+		//Specify order and limit
+		$conditions.= " ORDER BY ID DESC LIMIT ".$limit;
 
 		//Perform the request
-		return CS::get()->db->select(
+		$list = CS::get()->db->select(
 			$this::TABLE_NAME,
 			$conditions,
 			$dataConds
 		);
+
+		//Parse posts
+		$posts = array();
+		foreach($list as $post){
+			$posts[] = $this->parse_post($post);
+		}
+
+		return $posts;
+
+	}
+
+	/**
+	 * Parse a user post from the database into
+	 * the standardized version of post structure
+	 * 
+	 * @param array $src Informations about the post from the database
+	 * @return array Parsed informations about the post
+	 */
+	private function parse_post(array $src) : array {
+		
+		$info = array();
+
+		//Specify post ID
+		$info["ID"] = $src["ID"];
+
+		//Determine user ID
+		$info["userID"] = $src["ID_amis"] == 0 ? $src["ID_personne"] : $src["ID_amis"];
+
+		//Time when the message was sent
+		$info["post_time"] = strtotime($src["date_envoi"]);
+
+		//Content of the message
+		$info["content"] = $src["texte"];
+
+		//Visibility level
+		$info["visibility_level"] = $src["niveau_visibilite"];
+
+		//Determine the kind of post
+		$info["kind"] = $this::POSTS_TYPE[$src["type"]];
+
+		//Document info
+		$info["file_size"] = $src["size"];
+		$info["file_type"] = $src["file_type"];
+		$info["file_path"] = $src["path"];
+		$info["file_path_url"] = $src["path"] == null ? null : path_user_data($src["path"], false);
+
+		//Video specific
+		$info["video_id"] = $src["idvideo"];
+
+		//Countdown timer specific
+		$info["year_end"] = $src["annee_fin"];
+		$info["month_end"] = $src["mois_fin"];
+		$info["day_end"] = $src["jour_fin"];
+
+		//Weblink specific
+		$info["link_url"] = $src["url_page"];
+		$info["link_title"] = $src["titre_page"];
+		$info["link_description"] = $src["description_page"];
+		$info["link_image"] = $src["image_page"];
+
+
+		return $info;
+
 	}
 }
 
