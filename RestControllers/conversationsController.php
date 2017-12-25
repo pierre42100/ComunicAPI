@@ -165,21 +165,15 @@ class conversationsController{
 	public function findPrivate(){
 
 		user_login_required();
-
-		//Check for parametres
-		if(!isset($_POST['otherUser']))
-			Rest_fatal_error(400, "Please check your parametres !");
 		
 		//Extract parametres
-		$otherUser = toInt($_POST['otherUser']);
+		$otherUser = getPostUserID('otherUser');
+
+		//Check if we are allowed to create a conversation or not
 		if(isset($_POST["allowCreate"]))
 			$allowCreate = $_POST["allowCreate"] == "true" ? true : false;
 		else
 			$allowCreate = false;
-		
-		//Check the user exists
-		if(!CS::get()->components->user->exists($otherUser))
-			Rest_fatal_error(400, "Specified user does not exist !");
 
 		//Search the database
 		$results = CS::get()->components->conversations->findPrivate(userID, $otherUser);
