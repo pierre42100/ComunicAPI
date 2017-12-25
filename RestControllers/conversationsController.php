@@ -215,7 +215,7 @@ class conversationsController{
 
 		//First, check a conversation ID was specified
 		if(!isset($_POST["conversationID"]))
-			Rest_fatal_errror(400, "Please speicify a conversation ID !");
+			Rest_fatal_errror(400, "Please specify a conversation ID !");
 
 		//Extract conversation ID
 		$conversationID = toInt($_POST["conversationID"]);
