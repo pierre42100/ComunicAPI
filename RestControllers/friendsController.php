@@ -37,20 +37,8 @@ class friendsController{
 	public function sendRequest(){
 		user_login_required(); //Login required
 
-		//Check parametres
-		if(!isset($_POST["friendID"]))
-			Rest_fatal_error(400, "Please specify a user ID !");
-		
-		//Extract informations and process request
-		$friendID = toInt($_POST['friendID']);
-
-		//Check friendID validity
-		if(!check_user_id($friendID))
-			Rest_fatal_error(401, "The user ID you specified is invalid !");
-		
-		//Check if the user exists
-		if(!CS::get()->components->user->exists($friendID))
-			Rest_fatal_error(401, "Specifed user does not exist!");
+		//Get target ID
+		$friendID = getPostUserID('friendID');
 
 		//Check if the two persons are already friend
 		if(CS::get()->components->friends->are_friend(userID, $friendID))
@@ -82,12 +70,8 @@ class friendsController{
 	public function removeRequest(){
 		user_login_required(); //Login required
 
-		//Check parametres
-		if(!isset($_POST["friendID"]))
-			Rest_fatal_error(400, "Please specify a user ID !");
-		
-		//Extract informations and process request
-		$friendID = toInt($_POST['friendID']);
+		//Get friendID
+		$friendID = getPostUserID('friendID');
 
 		//Check if the current user has sent a request to the other user
 		if(!CS::get()->components->friends->sent_request(userID, $friendID))
@@ -162,7 +146,7 @@ class friendsController{
 
 		user_login_required(); //Login required
 
-		//Get it
+		//Get friendID
 		$friendID = getPostUserID('friendID');
 
 		//Prepare the response
@@ -215,10 +199,7 @@ class friendsController{
 		user_login_required(); //Login required
 
 		//Check if the a friendID has been specified
-		if(!isset($_POST['friendID']))
-			Rest_fatal_error(400, "Please specify a friend ID !");
-		
-		$friendID = toInt($_POST['friendID']);
+		$friendID = getPostUserID('friendID');
 
 		//Check if a follow status has been specified
 		if(!isset($_POST['follow']))
