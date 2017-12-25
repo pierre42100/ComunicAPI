@@ -118,14 +118,7 @@ class userController
 	public function getAdvancedInfos(){
 
 		//Get the ID of the target user
-		if(!isset($_POST["userID"]))
-			Rest_fatal_error(400, "Please specify a user ID!");
-		
-		$userID = toInt($_POST["userID"]);
-
-		//Check if the user exists
-		if(!CS::get()->components->user->exists($userID))
-			Rest_fatal_error(404, "Specified user not found !");
+		$userID = getPostUserID("userID");
 
 		//Check if the user is allowed to get advanced user infromations
 		if(!CS::get()->components->user->userAllowed(userID, $userID))
