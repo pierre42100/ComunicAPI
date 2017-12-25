@@ -33,7 +33,10 @@ class postsController {
 		//Get visibility level for the post
 		$visibility_level = CS::get()->components->posts->getUserVisibility(userID, $userID);
 
-		return CS::get()->components->posts->getUserPosts(userID, $userID, $visibility_level, $startFrom);
+		//Get the post of the user
+		$posts = CS::get()->components->posts->getUserPosts(userID, $userID, $visibility_level, $startFrom);
+
+		return $posts;
 	}
 
 }

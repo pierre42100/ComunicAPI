@@ -426,6 +426,34 @@ class User{
 
 	}
 	
+	/**
+	 * Check whether a user allow comments on his page or not
+	 * 
+	 * @param int $userID The ID of the user
+	 * @return bool True if comments are allowed / False else
+	 */
+	public function allowComments(int $userID) : bool {
+		
+		//Fetch the information in the database
+		$conditions = "WHERE ID = ?";
+		$condValues = array($userID);
+		$fields = array("bloquecommentaire");
+
+		//Perform the request
+		$result = CS::get()->db->select(
+			$this->userTable,
+			$conditions,
+			$condValues,
+			$fields
+		);
+
+		//Check for errors
+		if(count($result) == 0)
+			return FAlSE;
+
+		//Return result
+		return $result[0]["bloquecommentaire"] == 0;
+	}
 
 	/**
 	 * Crypt user password

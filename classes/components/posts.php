@@ -114,10 +114,13 @@ class Posts {
 			$dataConds
 		);
 
+		//Check if the user allow comments on his page or not
+		$getComments = CS::get()->components->user->allowComments($targetID);
+
 		//Parse posts
 		$posts = array();
 		foreach($list as $post){
-			$posts[] = $this->parse_post($post);
+			$posts[] = $this->parse_post($post, $getComments);
 		}
 
 		return $posts;
@@ -129,9 +132,10 @@ class Posts {
 	 * the standardized version of post structure
 	 * 
 	 * @param array $src Informations about the post from the database
+	 * @param bool $load_comments Get comments, if required
 	 * @return array Parsed informations about the post
 	 */
-	private function parse_post(array $src) : array {
+	private function parse_post(array $src, bool $load_comments) : array {
 		
 		$info = array();
 
@@ -173,6 +177,11 @@ class Posts {
 		$info["link_description"] = $src["description_page"];
 		$info["link_image"] = $src["image_page"];
 
+		//Load comments, if required
+		if($load_comments)
+			$info["comments"] = CS::get()->components->comments->get($info["ID"]);
+		else
+			$info["comments"] = null;
 
 		return $info;
 
