@@ -60,9 +60,9 @@ function numbers_list_to_array($list) : array{
  * Securely transform user given number (mixed) to integer (int)
  *
  * @param Mixed $input The input variable (mixed)
- * @return Integer $output The output (safe integer)
+ * @return int $output The output (safe integer)
  */
-function toInt($input){
+function toInt($input) : int{
 	return floor($input*1);
 }
 
@@ -160,4 +160,30 @@ function getPostUserID(string $name = "userID") : int {
 		Rest_fatal_error(404, "Specified user in '".$name."' not found !");
 	
 	return $userID;
+}
+
+/**
+ * Get the ID of a conversation posted in a request and return
+ * if it is a valid ID
+ * 
+ * @param string $name Optionnal, the name of the post field
+ * @return int $convID The ID of the conversation
+ */
+function getPostConversationID(string $name = "conversationID") : int {
+
+	//Get conversationID
+	if(!isset($_POST[$name]))
+		Rest_fatal_error(400, "Exepted conversation ID in '".$name."' !");
+	$conversationID = toInt($_POST[$name]);
+
+	//Check conversationID validity
+	if($conversationID < 1)
+		Rest_fatal_error(400, "Invalid conversation ID !");
+	
+	//Check if conversation exists
+	if(!CS::get()->components->conversations->exist($conversationID))
+		Rest_fatal_error(404, "Specified conversation not found!");
+	
+	return $conversationID;
+
 }

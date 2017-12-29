@@ -655,6 +655,21 @@ class conversations {
 		return $messages;
 	}
 
+	/**
+	 * Check whether a conversation exists or not
+	 * 
+	 * @param int $convID The ID of the conversation to check
+	 * @return bool TRUE if it exists / false else
+	 */
+	public function exist(int $convID) : bool {
+
+		//Perform a request on the database
+		$tableName = $this->conversationsListTable;
+
+		return CS::get()->db->count($tableName, "WHERE ID = ?", array($convID)) > 0;
+
+	}
+
 }
 
 //Register component
