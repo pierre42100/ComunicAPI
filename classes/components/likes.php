@@ -69,6 +69,48 @@ class Likes {
 
 	}
 
+	/**
+	 * Update like status
+	 * 
+	 * @param int $userID The ID of the user
+	 * @param bool $like New like status
+	 * @param int $id The ID of the component element to update
+	 * @param string $kind The kind of component
+	 */
+	public function update(int $userID, bool $like, int $id, string $kind){
+
+		//Check if the request is not to like anymore
+		if(!$like){
+			
+			//Delete on the database
+			$conditions = "ID_personne = ? AND ID_type = ? AND type = ?";
+			$values = array($userID, $id, $this::KINDS_DB[$kind]);
+			CS::get()->db->deleteEntry($this::LIKES_TABLE, $conditions, $values);
+
+		}
+
+		//We have to like component
+		else {
+
+			//Check if user is already liking component
+			if($this->is_liking($userID, $id, $kind))
+				return; //Nothing to be done
+			
+			//Insert in the database
+			$values = array(
+				"ID_type" => $id,
+				"ID_personne" => $userID,
+				"Date_envoi" => mysql_date(),
+				"type" => $this::KINDS_DB[$kind]
+			);
+
+			//Insert in the database
+			CS::get()->db->addLine($this::LIKES_TABLE, $values);
+
+		}
+
+	}
+
 }
 
 //Register class
