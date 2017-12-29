@@ -139,6 +139,11 @@ class userController
 		else
 			//User friends won't be displayed
 			$userInfos["number_friends"] = 0;
+
+		//Get some informations only is user is signed in
+		if(user_signed_in()){
+			$userInfos["user_like_page"] = CS::get()->components->likes->is_liking(userID, $userID, Likes::LIKE_USER);
+		}
 		
 		//Return user informations
 		return $userInfos;

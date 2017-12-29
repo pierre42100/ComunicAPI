@@ -260,6 +260,9 @@ class User{
 			//Add background image url
 			$return['backgroundImage'] = CS::get()->components->backgroundImage->getPath($return['userID']);
 
+			//Get the number of likes of the page
+			$return['pageLikes'] = CS::get()->components->likes->count($return['userID'], Likes::LIKE_USER);
+
 		}
 
 		//Return result
