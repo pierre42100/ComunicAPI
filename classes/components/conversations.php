@@ -36,11 +36,11 @@ class conversations {
 	 * Get the conversations list of a specified user
 	 * or get informations of a specific conversation
 	 *
-	 * @param Integer $userID The ID of the user to get the list
-	 * @param Integer $conversationID Optionnal, the ID of conversation to get informatios from
+	 * @param int $userID The ID of the user to get the list
+	 * @param int $conversationID Optionnal, the ID of conversation to get informatios from
 	 * @return Mixed Array in case of result / False else
 	 */
-	public function getList($userID, $conversationID = 0){
+	public function getList(int $userID, int $conversationID = 0){
 
 		//Prepare database request
 		$tablesName = $this->conversationsListTable.", ".$this->conversationsUsersTable;
@@ -105,10 +105,10 @@ class conversations {
 	/**
 	 * Get a conversation members
 	 *
-	 * @param Integer $conversationID The ID of the conversation
-	 * @return Array A list of the conversation members (empty arary may means that an error occured)
+	 * @param int $conversationID The ID of the conversation
+	 * @return array A list of the conversation members (empty arary may means that an error occured)
 	 */
-	public function getConversationMembers($conversationID) : array {
+	public function getConversationMembers(int $conversationID) : array {
 
 		//Perform a request on the database
 		$tableName = $this->conversationsUsersTable;
@@ -135,13 +135,13 @@ class conversations {
 	/**
 	 * Create a new conversation
 	 *
-	 * @param Integer $userID The ID of the user creating the conversation
-	 * @param Boolean $follow Defines if the user creating the conversation will follow it 
-	 * @param Array $usersList The list of users following the conversation
+	 * @param int $userID The ID of the user creating the conversation
+	 * @param bool $follow Defines if the user creating the conversation will follow it 
+	 * @param array $usersList The list of users following the conversation
 	 * @param Mixed $name Optionnal, the name of the conversation
-	 * @return Integer 0 for a fail else the ID of the newly created conversation
+	 * @return int 0 for a fail else the ID of the newly created conversation
 	 */
-	public function create($userID, $follow, array $usersList, $name = ""){
+	public function create(int $userID, bool $follow, array $usersList, $name = "") : int{
 		
 		$mainInformations = array(
 			"ID_utilisateurs" => $userID*1,
@@ -181,11 +181,11 @@ class conversations {
 	/**
 	 * Check if a user is a member of a conversation or not
 	 *
-	 * @param Integer $userID The ID of the user to check
-	 * @param Integer $conversationID The ID of the conversation to check
-	 * @return Boolean True if the user belongs to the conversation
+	 * @param int $userID The ID of the user to check
+	 * @param int $conversationID The ID of the conversation to check
+	 * @return bool True if the user belongs to the conversation
 	 */
-	public function userBelongsTo($userID, $conversationID){
+	public function userBelongsTo(int $userID, int $conversationID) : bool {
 		
 		//Prepare a request on the database
 		$tableName = $this->conversationsUsersTable;
@@ -209,12 +209,12 @@ class conversations {
 	/**
 	 * Change the follow state of a user on conversation
 	 *
-	 * @param Integer $userID The ID to update
-	 * @param Integer $conversationID The ID of the conversation
-	 * @param Boolean $follow Specify if the conversation is followed or not
-	 * @return Boolean True for a success
+	 * @param int $userID The ID to update
+	 * @param int $conversationID The ID of the conversation
+	 * @param bool $follow Specify if the conversation is followed or not
+	 * @return bool True for a success
 	 */
-	public function changeFollowState($userID, $conversationID, $follow){
+	public function changeFollowState(int $userID, int $conversationID, bool $follow) : bool{
 		
 		//Prepare the request on the database
 		$tableName = $this->conversationsUsersTable;
@@ -240,11 +240,11 @@ class conversations {
 	/**
 	 * Change conversation name
 	 *
-	 * @param Integer $conversationID The ID of the conversation
-	 * @param String $conversationName The name of the conversation
-	 * @return Boolean True for a success
+	 * @param int $conversationID The ID of the conversation
+	 * @param string $conversationName The name of the conversation
+	 * @return bool True for a success
 	 */
-	public function changeName($conversationID, $conversationName){
+	public function changeName(int $conversationID, string $conversationName) : bool{
 		//Prepare database request
 		$tableName = $this->conversationsListTable;
 		$conditions = "ID = ?";
@@ -266,11 +266,11 @@ class conversations {
 	/**
 	 * Update conversation members list
 	 *
-	 * @param Integer $conversationID The ID of the conversation to update
-	 * @param Array $conversationMembers The new list of conversation members
-	 * @return Boolean True for a success
+	 * @param int $conversationID The ID of the conversation to update
+	 * @param array $conversationMembers The new list of conversation members
+	 * @return bool True for a success
 	 */
-	public function updateMembers($conversationID, array $conversationMembers){
+	public function updateMembers(int $conversationID, array $conversationMembers) : bool{
 
 		//Get the current conversation list
 		$currentMembers = $this->getConversationMembers($conversationID);
@@ -300,12 +300,12 @@ class conversations {
 	/**
 	 * Add a member to the list
 	 *
-	 * @param Integer $conversationID The ID of the target conversation
-	 * @param Integer $userID The ID of the user to add to the conversation
-	 * @param Boolean $follow Optionnal, specify if the user will follow or not the conversation
-	 * @return Boolean True for a success
+	 * @param int $conversationID The ID of the target conversation
+	 * @param int $userID The ID of the user to add to the conversation
+	 * @param bool $follow Optionnal, specify if the user will follow or not the conversation
+	 * @return bool True for a success
 	 */
-	private function addMember($conversationID, $userID, $follow = false){
+	private function addMember(int $conversationID, int $userID, bool $follow = false) : bool {
 
 		//Prepare database request
 		$tableName = $this->conversationsUsersTable;
@@ -324,11 +324,11 @@ class conversations {
 	/**
 	 * Remove a member from the list
 	 *
-	 * @param Integer $conversationID The ID of the target conversation
-	 * @param Integer $userID The ID of the user to remove from the conversation
-	 * @return Boolean True for a success
+	 * @param int $conversationID The ID of the target conversation
+	 * @param int $userID The ID of the user to remove from the conversation
+	 * @return bool True for a success
 	 */
-	private function removeMember($conversationID, $userID){
+	private function removeMember(int $conversationID, int $userID) : bool {
 		//Prepare database request
 		$tableName = $this->conversationsUsersTable;
 		$conditions = "ID_".$this->conversationsListTable." = ? AND ID_utilisateurs = ?";
@@ -344,11 +344,11 @@ class conversations {
 	/**
 	 * Check if a user is a conversation moderator or not
 	 *
-	 * @param Integer $userID The ID of the user to check
-	 * @param Integer $conversationID The ID of the conversation to check
-	 * @return Boolean True if the user is a conversation moderator / false else
+	 * @param int $userID The ID of the user to check
+	 * @param int $conversationID The ID of the conversation to check
+	 * @return bool True if the user is a conversation moderator / false else
 	 */
-	public function userIsModerator($userID, $conversationID){
+	public function userIsModerator(int $userID, int $conversationID) : bool {
 		//Prepare database request
 		$tableName = $this->conversationsListTable;
 		$conditions = "WHERE ID = ?";
@@ -375,11 +375,11 @@ class conversations {
 	/**
 	 * Search for a private conversation between two users
 	 *
-	 * @param Integer $user1 The first user
-	 * @param Integer $user2 The second user
-	 * @return Array The list of private conversations
+	 * @param int $user1 The first user
+	 * @param int $user2 The second user
+	 * @return array The list of private conversations
 	 */
-	public function findPrivate($user1, $user2) : array{
+	public function findPrivate(int $user1, int $user2) : array{
 		
 		//Prepare database request
 		$tableName = $this->conversationsUsersTable." AS table1 JOIN ".
@@ -420,13 +420,13 @@ class conversations {
 	/**
 	 * Insert a new message in the database
 	 *
-	 * @param Integer $userID The ID of the user inserting the message
-	 * @param Integer $conversationID The ID of the target conversation
-	 * @param String $message The message to insert
+	 * @param int $userID The ID of the user inserting the message
+	 * @param int $conversationID The ID of the target conversation
+	 * @param string $message The message to insert
 	 * @param Mixed $image_path Optionnal, the path to an image associated with the message
-	 * @return Boolean True for a success
+	 * @return bool True for a success
 	 */
-	private function insertMessage($userID, $conversationID, $message, $image_path = false){
+	private function insertMessage(int $userID, int $conversationID, string $message, $image_path = false) : bool{
 
 		//Prepare values
 		$tableName = $this->conversationsMessagesTable;
@@ -452,11 +452,11 @@ class conversations {
 	/**
 	 * Update the last time a conversation was active
 	 *
-	 * @param Integer $conversationID The ID of the conversation to update
-	 * @param Integer $time The new time of last activity to set
-	 * @return Boolean True for a success
+	 * @param int $conversationID The ID of the conversation to update
+	 * @param int $time The new time of last activity to set
+	 * @return bool True for a success
 	 */
-	private function updateLastActive($conversationID, $time){
+	private function updateLastActive(int $conversationID, int $time) : bool{
 
 		//Perform a request on the database
 		$tableName = $this->conversationsListTable;
@@ -479,11 +479,11 @@ class conversations {
 	/**
 	 * Mark all the users of a conversation as "unread"
 	 *
-	 * @param Integer $conversationID The ID of the conversation to update
-	 * @param Array $exceptions Users that should not be marked as read
-	 * @return Boolean True for a success
+	 * @param int $conversationID The ID of the conversation to update
+	 * @param array $exceptions Users that should not be marked as read
+	 * @return bool True for a success
 	 */
-	private function allUsersAsUnread($conversationID, array $exceptions){
+	private function allUsersAsUnread(int $conversationID, array $exceptions) : bool{
 
 		//Prepare request
 		$tableName = $this->conversationsUsersTable;
@@ -512,11 +512,11 @@ class conversations {
 	/**
 	 * Mark the user of a conversation as "read" for a conversation
 	 *
-	 * @param Integer $userID The ID of the user to update
-	 * @param Integer $conversationID The ID of a conversation to update
-	 * @return Boolean True for a success
+	 * @param int $userID The ID of the user to update
+	 * @param int $conversationID The ID of a conversation to update
+	 * @return bool True for a success
 	 */
-	public function markUserAsRead($userID, $conversationID) : bool {
+	public function markUserAsRead(int $userID, int $conversationID) : bool {
 
 		//Prepare database request
 		$tableName = $this->conversationsUsersTable;
@@ -542,13 +542,13 @@ class conversations {
 	/**
 	 * Send a new message
 	 *
-	 * @param Integer $userID The ID of the user sending the message
-	 * @param Integer $conversationID The ID of the target conversation
-	 * @param String $message The message
-	 * @param Mixed $image_path Optionna, define the path to an image associated with the message
-	 * @return Boolean True for a success
+	 * @param int $userID The ID of the user sending the message
+	 * @param int $conversationID The ID of the target conversation
+	 * @param string $message The message
+	 * @param Mixed $image_path Optionnal, define the path to an image associated with the message
+	 * @return bool True for a success
 	 */
-	public function sendMessage($userID, $conversationID, $message, $image_path = false){
+	public function sendMessage(int $userID, int $conversationID, string $message, $image_path = false) : bool{
 
 		//GUIDE LINE : this method act like a "controller" : it doesn't perform any database operation
 		//But it manage all operations (insert message; save image; inform other users; ...)
@@ -572,9 +572,9 @@ class conversations {
 	/**
 	 * Get the last messages of a conversation
 	 *
-	 * @param Integer $conversationID The ID of the target conversation
-	 * @param Integer $numberOfMessages The number of messages to return
-	 * @return Array The messages of the conversation
+	 * @param int $conversationID The ID of the target conversation
+	 * @param int $numberOfMessages The number of messages to return
+	 * @return array The messages of the conversation
 	 */
 	public function getLastMessages(int $conversationID, int $numberOfMessages) : array {
 
@@ -597,11 +597,11 @@ class conversations {
 	/**
 	 * Get the new messages of a conversation
 	 *
-	 * @param Integer $conversationID The ID of the target conversation
-	 * @param Integer $lastMessageID The ID of the last know message
-	 * @return Array A list of messages
+	 * @param int $conversationID The ID of the target conversation
+	 * @param int $lastMessageID The ID of the last know message
+	 * @return array A list of messages
 	 */
-	public function getNewMessages($conversationID, $lastMessageID) : array {
+	public function getNewMessages(int $conversationID, int $lastMessageID) : array {
 
 		//Define conditions
 		$conditions = "WHERE ID_".$this->conversationsListTable." = ? AND ID > ? ORDER BY ID";
@@ -624,7 +624,7 @@ class conversations {
 	 * @param Array $conditionsValues The values of the conditions (Optionnal)
 	 * @return Array The list of messages
 	 */
-	private function getMessages($conditions, $conditionsValues = array()) : array{
+	private function getMessages(string $conditions, array $conditionsValues = array()) : array{
 
 		//Prepare database request
 		$tableName = $this->conversationsMessagesTable;
