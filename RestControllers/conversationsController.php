@@ -51,7 +51,7 @@ class conversationsController{
 		//Check if a conversation was found
 		if(count($conversationsList) < 1)
 			Rest_fatal_error(401, "Users doesn't belong to the specified conversation,".
-			"or the conversation doesn't exists !");
+			" or the conversation doesn't exists !");
 
 		//Return conversation informations
 		return $conversationsList[0];
