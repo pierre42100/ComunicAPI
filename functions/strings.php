@@ -14,7 +14,7 @@
  *                         to select from
  * @return string
  */
-function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+function random_str(int $length, string $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
 {
     $str = '';
     $max = mb_strlen($keyspace, '8bit') - 1;
@@ -22,4 +22,14 @@ function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzAB
         $str .= $keyspace[random_int(0, $max)];
     }
     return $str;
+}
+
+/**
+ * Get the current date formatted for the "datetime" object of
+ * a Mysql database
+ * 
+ * @return string Formatted string
+ */
+function mysql_date() : string {
+    return date("Y-m-d h:i:s", time());
 }
