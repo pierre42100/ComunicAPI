@@ -70,16 +70,18 @@ class Posts {
 	 * 
 	 * @param int $userID The ID of the user making the request
 	 * @param int $targetID The ID of the target user
-	 * @param int $visibilityLevel Visibility level required
 	 * @param int $startPoint The startpoint for the request (0 stands for none)
 	 * @param int $limit The maximum number of messages to fetch
 	 */
-	public function getUserPosts(int $userID, int $targetID, int $visibilityLevel, int $startPoint = 0, int $limit = 10) : array {
+	public function getUserPosts(int $userID, int $targetID, int $startPoint = 0, int $limit = 10) : array {
 
 		//Check the value of limit (security)
 		if($limit < 1){
 			throw new Exception("The limit of the query must absolutly be positive !");
 		}
+
+		//Get user visibility level
+		$visibilityLevel = $this->getUserVisibility($userID, $targetID);
 
 		//Prepare the request on the database
 		$conditions = "WHERE ID_personne = ? AND (";
