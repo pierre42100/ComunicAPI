@@ -62,6 +62,10 @@ class Comments {
 			$info["img_url"] = null;
 		}
 
+		//Get informations about likes
+		$info["likes"] = CS::get()->components->likes->count($info["ID"], Likes::LIKE_COMMENT);
+		$info["userlike"] = user_signed_in() ? CS::get()->components->likes->is_liking(userID, $info["ID"], Likes::LIKE_COMMENT) : false;
+
 		return $info;
 	}
 
