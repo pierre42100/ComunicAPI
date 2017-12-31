@@ -358,8 +358,7 @@ class conversationsController{
 		user_login_required();
 
 		//Get the ID of the conversation to refresh
-		if(!isset($_POST['conversationID']))
-			Rest_fatal_error(400, "Please specify a conversation ID !");
+		$conversationID = getPostConversationID("conversationID");
 		
 		//Get the last message ID downloaded by the client
 		if(!isset($_POST['last_message_id']))
@@ -386,5 +385,38 @@ class conversationsController{
 		//Return the messges
 		return $messages;
 		
+	}
+
+	/**
+	 * Delete a conversation
+	 * 
+	 * @url POST /conversations/delete
+	 */
+	public function delete(){
+
+		user_login_required();
+
+		//Get conversation ID
+		$conversationID = getPostConversationID("conversationID");
+
+		//Check if the user belongs to the conversation
+		if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
+			Rest_fatal_error(401, "Specified user doesn't belongs to the conversation number ".$conversationID." !");
+		
+		//Check if user is the owner of the conversation or not
+		$owner = CS::get()->components->conversations->userIsModerator(userID, $conversationID);
+
+		if($owner){
+			//Delete the conversation
+			if(!CS::get()->components->conversations->delete_conversation($conversationID))
+				Rest_fatal_error(500, "Couldn't delete the conversation from the server !");
+		}
+		else {
+			Rest_fatal_error(500, "Not implemented yet !!");
+		}
+
+
+		//The operation is a success
+		return array("success" => "The conversation has been deleted");
 	}
 }

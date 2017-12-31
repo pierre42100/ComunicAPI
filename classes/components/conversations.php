@@ -618,13 +618,126 @@ class conversations {
 	}
 
 	/**
+	 * Check whether a conversation exists or not
+	 * 
+	 * @param int $convID The ID of the conversation to check
+	 * @return bool TRUE if it exists / false else
+	 */
+	public function exist(int $convID) : bool {
+
+		//Perform a request on the database
+		$tableName = $this->conversationsListTable;
+
+		return CS::get()->db->count($tableName, "WHERE ID = ?", array($convID)) > 0;
+
+	}
+
+	/**
+	 * Delete a conversation
+	 * 
+	 * @param int $conID The conversation to delete
+	 * @return bool True in case of success / False else
+	 */
+	public function delete_conversation(int $convID) : bool {
+
+		//Get all the messages of the conversation
+		$messages = $this->getMessages("WHERE ID_".$this->conversationsListTable." = ?", array($convID));
+
+		//Delete each message
+		foreach($messages as $message){
+			if(!$this->delete_message($message['ID'], $convID))
+				return false;
+		}
+
+		//Delete all the members of the conversation
+		if(!$this->delete_all_members($convID))
+			return false;
+
+		//Delete the conversation entry itself
+		if(!$this->delete_conversation_entry($convID))
+			return false;
+
+		//Success
+		return true;
+	}
+
+	/**
+	 * Delete a single message of a conversation
+	 * 
+	 * @param int $messageID The ID of the message to delete
+	 * @param int $convID The target conversation
+	 * @param array $informations Optionnal, informations about the message
+	 * @return bool True in case of success / false else
+	 */
+	private function delete_message(int $messageID, int $convID, array $informations = null) : bool {
+
+		//Check if we have to fetch informations about the message
+		if(is_null($informations)){
+			$messages = $this->getMessages("WHERE ID_".$this->conversationsListTable." = ? AND ID = ?", array($convID, $messageID), false);
+
+			if(count($messages) == 0)
+				return false;
+			
+			$informations = $messages[0];
+		}
+
+		//Check if we have to delete an image
+		if(!is_null($informations["image_path"]) AND $informations["image_path"] !== ""){
+
+			//Get system path of the image
+			$img_sys_path = path_user_data($informations["image_path"], true);
+
+			if(file_exists($img_sys_path)){
+				unlink($img_sys_path);
+			}
+
+		}
+
+		//Delete message from the database
+		$conditions = "ID = ?";
+		$condValues = array($messageID);
+		return CS::get()->db->deleteEntry($this->conversationsMessagesTable, $conditions, $condValues);
+
+	}
+
+	/**
+	 * Delete all the members of a conversation
+	 * 
+	 * @param int $convID The target conversation
+	 * @return bool TRUE in case of success / false else
+	 */
+	private function delete_all_members(int $convID) : bool {
+
+		//Prepare request on the database
+		$conditions = "ID_".$this->conversationsListTable." = ?";
+		$values = array(
+			$convID
+		);
+
+		//Try to perform request
+		return CS::get()->db->deleteEntry($this->conversationsUsersTable, $conditions, $values);
+
+	}
+
+	/**
+	 * Delete a conversation entry in the database
+	 * 
+	 * @param int $convID The target conversation
+	 * @return bool True in case of success / false else
+	 */
+	private function delete_conversation_entry(int $convID) : bool {
+		return CS::get()->db->deleteEntry($this->conversationsListTable, "ID = ?", array($convID));
+	}
+
+	/**
 	 * Get a list of conversation messages based on specified conditions
 	 *
-	 * @param String $conditions The conditions of the request
+	 * @param string $conditions The conditions of the request
 	 * @param Array $conditionsValues The values of the conditions (Optionnal)
+	 * @param bool $transformPath Transform the path of the files into URLS (true by default)
 	 * @return Array The list of messages
 	 */
-	private function getMessages(string $conditions, array $conditionsValues = array()) : array{
+	private function getMessages(string $conditions, array $conditionsValues = array(), bool $transformPath = true) : array{
 
 		//Prepare database request
 		$tableName = $this->conversationsMessagesTable;
@@ -642,32 +755,19 @@ class conversations {
 		$messages = CS::get()->db->select($tableName, $conditions, $conditionsValues, $requiredFields);
 
 		//Process each message
-		array_walk($messages, function(&$item){
+		if($transformPath){
+			array_walk($messages, function(&$item){
 
-			//Check if the image of the message is not null
-			if($item["image_path"] !== null && $item["image_path"] != ""){
-				//Replace image name with full URL
-				$item["image_path"] = path_user_data($item["image_path"]);
-			}
-		});
+				//Check if the image of the message is not null
+				if($item["image_path"] !== null && $item["image_path"] != ""){
+					//Replace image name with full URL
+					$item["image_path"] = path_user_data($item["image_path"]);
+				}
+			});
+		}
 
 		//Return result
 		return $messages;
-	}
-
-	/**
-	 * Check whether a conversation exists or not
-	 * 
-	 * @param int $convID The ID of the conversation to check
-	 * @return bool TRUE if it exists / false else
-	 */
-	public function exist(int $convID) : bool {
-
-		//Perform a request on the database
-		$tableName = $this->conversationsListTable;
-
-		return CS::get()->db->count($tableName, "WHERE ID = ?", array($convID)) > 0;
-
 	}
 
 }
