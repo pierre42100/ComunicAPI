@@ -635,6 +635,8 @@ class conversations {
 	/**
 	 * Delete a conversation
 	 * 
+	 * Delete all the messages, membership and informations about a conversation
+	 * 
 	 * @param int $conID The conversation to delete
 	 * @return bool True in case of success / False else
 	 */
@@ -660,6 +662,39 @@ class conversations {
 		//Success
 		return true;
 	}
+
+	/**
+	 * Delete a conversation membership
+	 * 
+	 * This function is just removing a user from a conversation by 
+	 * deleting all the messages the user has posted and removing its 
+	 * membership
+	 * 
+	 * @param int $convID The target conversation
+	 * @param int $memberID The ID of the member to delete from the conversation
+	 * @return bool True in case of success / false else
+	 */
+	public function delete_member(int $convID, int $memberID) : bool {
+
+		//Get all the messages of member the conversation
+		$messages = $this->getMessages(
+			"WHERE ID_".$this->conversationsListTable." = ? AND ID_utilisateurs = ?", 
+			array($convID, $memberID));
+
+		//Delete each message
+		foreach($messages as $message){
+			if(!$this->delete_message($message['ID'], $convID))
+				return false;
+		}
+
+		//Delete user membership
+		if(!$this->removeMember($convID, $memberID))
+			return false;
+
+		//Success
+		return true;
+	}
+
 
 	/**
 	 * Delete a single message of a conversation

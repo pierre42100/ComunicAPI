@@ -34,12 +34,8 @@ class conversationsController{
 	public function getOneInformations(){
 		user_login_required();
 
-		//First, check the parametres
-		if(!isset($_POST['conversationID']))
-			Rest_fatal_error(501, "No conversation ID specified with the request");
-		
-		//Extract data
-		$conversationID = toInt($_POST['conversationID']);
+		//Get conversation ID
+		$conversationID = getPostConversationID("conversationID");
 		
 		//Try to get informations about the conversation
 		$conversationsList = CS::get()->components->conversations->getList(userID, $conversationID);
@@ -412,7 +408,9 @@ class conversationsController{
 				Rest_fatal_error(500, "Couldn't delete the conversation from the server !");
 		}
 		else {
-			Rest_fatal_error(500, "Not implemented yet !!");
+			//Delete the membership to the conversation
+			if(!CS::get()->components->conversations->delete_member($conversationID, userID))
+				Rest_fatal_error(500, "Couldn't delete conversation membership !");
 		}
 
 
