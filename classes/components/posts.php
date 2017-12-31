@@ -177,6 +177,10 @@ class Posts {
 		$info["link_description"] = $src["description_page"];
 		$info["link_image"] = $src["image_page"];
 
+		//Get informations about likes
+		$info["likes"] = CS::get()->components->likes->count($info["ID"], Likes::LIKE_POST);
+		$info["userlike"] = user_signed_in() ? CS::get()->components->likes->is_liking(userID, $info["ID"], Likes::LIKE_POST) : false;
+
 		//Load comments, if required
 		if($load_comments)
 			$info["comments"] = CS::get()->components->comments->get($info["ID"]);
