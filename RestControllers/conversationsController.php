@@ -378,6 +378,9 @@ class conversationsController{
 				CS::get()->components->conversations->getNewMessages($conversationID, $last_message_id);
 		}
 
+		//Specify that user has seen last messages
+		CS::get()->components->conversations->markUserAsRead(userID, $conversationID);
+
 		//Return the messges
 		return $messages;
 		
