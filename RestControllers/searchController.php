@@ -19,6 +19,11 @@ class searchController
 		//Check if the query was specified with the request
 		if(!isset($_POST['query']))
 			Rest_fatal_error(400, "Please specify search terms");
+		$query = $_POST['query'];
+
+		//Check the query
+		if(strlen($query) < 1)
+			Rest_fatal_error(401, "Empty requests not allowed !");
 		
 		//Check for search limit
 		$searchLimit = (isset($_POST['searchLimit']) ? toInt($_POST['searchLimit']) : 5);
@@ -28,7 +33,7 @@ class searchController
 			Rest_fatal_error(401, "Invalid search limit !");
 		
 		//Perform research on the database and return results
-		$results = CS::get()->components->search->search_user($_POST['query'], $searchLimit);
+		$results = CS::get()->components->search->search_user($query, $searchLimit);
 		if($results === false)
 			Rest_fatal_error(500, "An error occured while trying to perform a research in user list !");
 		
