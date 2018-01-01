@@ -1,20 +1,20 @@
 <?php
 /**
- * Search user controller
+ * Search controller
  *
  * @author Pierre HUBERT
  */
 
-class searchUser {
+class search {
 
 	/**
 	 * Search for user in the database
 	 *
-	 * @param Sting $query The query to research on the database
-	 * @param Integer $limit The number of results to return on the screen
-	 * @return Array the result of the result
+	 * @param string $query The query to research on the database
+	 * @param int $limit The number of results to return on the screen (default: 10)
+	 * @return array the result of the result
 	 */
-	public function search($query, $limit) : array{
+	public function search_user(string $query, int $limit = 10) : array{
 
 		//Prepare query string
 		$query = "%".str_replace(" ", "%", $query)."%";
@@ -40,4 +40,4 @@ class searchUser {
 }
 
 //Register class
-Components::register("searchUser", new searchUser());
+Components::register("search", new search());
