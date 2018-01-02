@@ -10,9 +10,9 @@ class Tokens{
 	/**
 	 * Check request client tokens
 	 *
-	 * @return Boolean Depends of the validity of the tokens
+	 * @return bool Depends of the validity of the tokens
 	 */
-	public function checkClientRequestTokens(){
+	public function checkClientRequestTokens() : bool{
 		if(!isset($_POST['serviceName']) OR !isset($_POST['serviceToken']))
 			return false; //No token specified
 		
@@ -34,11 +34,11 @@ class Tokens{
 	/**
 	 * Check client API credentials (tokens)
 	 *
-	 * @param 	String 	    $serviceName 	The name of the service
-	 * @param 	String  	$token 		 	The service's token
-	 * @return 	Boolean 			    	False or Tokens ID / Depending of validity of credentials
+	 * @param 	string 	    $serviceName 	The name of the service
+	 * @param 	string  	$token 		 	The service's token
+	 * @return 	bool / array		    	False or Tokens ID / Depending of validity of credentials
 	 */
-	private function validateClientTokens($serviceName, $token){
+	private function validateClientTokens(string $serviceName, string $token) {
 		//Prepare DataBase request
 		$tableName = CS::get()->config->get("dbprefix")."API_ServicesToken";
 		$conditions = "WHERE serviceName = ? AND token = ?";

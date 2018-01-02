@@ -27,12 +27,6 @@ if(!isset($_GET["format"]))
 //Specify we are on Comunic API Server
 header("Technology: Official Comunic API Server");
 
-//Set debug clients tokens
-if($cs->config->get("site_mode") === "debug"){ //DEBUG ONLY
-	$_POST['serviceName'] = "testService";
-	$_POST['serviceToken'] = "testPasswd";
-}
-
 //Check client tokens
 if(!$cs->tokens->checkClientRequestTokens())
 	Rest_fatal_error(401, "Please check your client tokens!");
