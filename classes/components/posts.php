@@ -177,10 +177,11 @@ class Posts {
 		}
 
 		//Countdown timer specific
-		$info["year_end"] = $src["annee_fin"];
-		$info["month_end"] = $src["mois_fin"];
-		$info["day_end"] = $src["jour_fin"];
-
+		if($src['annee_fin'] != 0)
+			$info["time_end"] = strtotime($src["annee_fin"]."/".$src['mois_fin']."/".$src["jour_fin"]);
+		else
+			$info["time_end"] = null;
+		
 		//Weblink specific
 		$info["link_url"] = $src["url_page"];
 		$info["link_title"] = $src["titre_page"];
