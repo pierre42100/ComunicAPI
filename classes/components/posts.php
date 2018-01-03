@@ -168,6 +168,14 @@ class Posts {
 		//Video specific
 		$info["video_id"] = $src["idvideo"];
 
+		//Get informations about the video
+		if(!is_null($info['video_id'])){
+			$info['video_infos'] = CS::get()->components->movies->get_infos($info['video_id']);
+		}
+		else {
+			$info['video_infos'] = null;
+		}
+
 		//Countdown timer specific
 		$info["year_end"] = $src["annee_fin"];
 		$info["month_end"] = $src["mois_fin"];
