@@ -420,14 +420,14 @@ class User{
 		if($visibility == -1)
 			return FALSE; //An error occured
 
-		//Check if the page is public
-		if($visibility == 3)
+		//Check if the page is open
+		if($visibility == User::USER_PAGE_OPEN)
 			return true;
 		
 		if($userID == 0)
 			return false;
 		
-		if($visibility == 2)
+		if($visibility == User::USER_PAGE_PUBLIC)
 			return true;
 		
 		if(CS::get()->components->friends->are_friend($userID, $targetUser))
