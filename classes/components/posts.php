@@ -188,6 +188,14 @@ class Posts {
 		$info["link_description"] = $src["description_page"];
 		$info["link_image"] = $src["image_page"];
 
+		//Survey specific
+		if($info['kind'] == "survey"){
+			$info["data_survey"] = CS::get()->components->survey->get_infos($info['ID']);
+		}
+		else {
+			$info["data_survey"] = null;
+		}
+
 		//Get informations about likes
 		$info["likes"] = CS::get()->components->likes->count($info["ID"], Likes::LIKE_POST);
 		$info["userlike"] = user_signed_in() ? CS::get()->components->likes->is_liking(userID, $info["ID"], Likes::LIKE_POST) : false;

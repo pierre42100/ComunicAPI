@@ -68,7 +68,6 @@ class userController
 	 * @return array The result
 	 */
 	public function getUserInfos() : array{
-		user_login_required();
 
 		//Determine userID
 		if(isset($_POST['userID'])){
