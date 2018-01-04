@@ -173,7 +173,7 @@ function getPostConversationID(string $name = "conversationID") : int {
 
 	//Get conversationID
 	if(!isset($_POST[$name]))
-		Rest_fatal_error(400, "Exepted conversation ID in '".$name."' !");
+		Rest_fatal_error(400, "Excepted conversation ID in '".$name."' !");
 	$conversationID = toInt($_POST[$name]);
 
 	//Check conversationID validity
@@ -186,4 +186,28 @@ function getPostConversationID(string $name = "conversationID") : int {
 	
 	return $conversationID;
 
+}
+
+/**
+ * Get the ID of a post in a rest request
+ * 
+ * @param string $name Optionnal, the name of the post id field
+ * @return int $postID The ID of the post
+ */
+function getPostPostID(string $name = "postID") : int {
+
+	//Get postID
+	if(!isset($_POST[$name]))
+		Rest_fatal_error(400, "Excepted post ID in '".$name."' !");
+	$postID = toInt($_POST[$name]);
+
+	//Check post ID validity
+	if($postID < 1)
+		Rest_fatal_error(400, "Invalid post ID!");
+	
+	//Check if the post exists
+	if(!CS::get()->components->posts->exist($postID))
+		Rest_fatal_error(404, "Specified post does not exists!");
+	
+	return $postID;
 }

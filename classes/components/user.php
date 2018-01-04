@@ -18,6 +18,14 @@ class User{
 	private $userLoginAPItable = "";
 
 	/**
+	 * Pages visiblity levels
+	 */
+	const USER_PAGE_PRIVATE = 0;
+	const USER_PAGE_PUBLIC = 1;
+	const USER_PAGE_OPEN = 2;
+
+
+	/**
 	 * Public constructor
 	 */
 	public function __construct(){
@@ -382,13 +390,13 @@ class User{
 
 		//Check if the page is public
 		if($result[0]["public"] == 0)
-			return 0;
+			return $this::USER_PAGE_PRIVATE;
 
 		//Check if the page is open or not
 		if($result[0]["pageouverte"] == 1)
-			return 3; //Page open
+			return $this::USER_PAGE_OPEN; //Page open
 		else
-			return 2; //Public page
+			return $this::USER_PAGE_PUBLIC; //Public page
 
 	}
 

@@ -20,6 +20,21 @@ class Posts {
 	const VISIBILITY_USER = 3;
 
 	/**
+	 * Access level to a post
+	 */
+	//When a user can't access to a post
+	const NO_ACCESS = 0;
+
+	//When a user can see a post and perform basic actions such as liking
+	const BASIC_ACCESS = 1;
+
+	//When a user has intermediate access to the post (delete post)
+	const INTERMEDIATE_ACCESS = 2;
+
+	//When a user has a full access to the post
+	const FULL_ACCESS = 3;
+
+	/**
 	 * Table informations
 	 */
 	//Name of the table
@@ -130,6 +145,111 @@ class Posts {
 	}
 
 	/**
+	 * Check whether a post exists or not
+	 * 
+	 * @param int $postID The ID of the post to check
+	 * @return bool TRUE if the post exists / FALSE else
+	 */
+	public function exist(int $postID) : bool {
+
+		//Perform a request on the database
+		return CS::get()->db->count($this::TABLE_NAME, "WHERE ID = ?", array($postID)) != 0;
+
+	}
+
+	/**
+	 * Get the access level of a user about a post
+	 * 
+	 * @param int $postID The ID of the post to get
+	 * @param int $userID The ID of the user to check
+	 * @return int The access level over the post
+	 */
+	public function access_level(int $postID, int $userID) : int {
+		
+		//Get informations about the post
+		$post_infos = $this->get_single($postID);
+		
+		//Check if the user is the owner of the post
+		if($post_infos['userID'] == $userID)
+			return $this::FULL_ACCESS;
+
+		//Check if the post was made on the user page
+		if($post_infos["user_page_id"] == $userID)
+			return $this::INTERMEDIATE_ACCESS;
+
+		//Check if the post is private
+		if($post_infos["visibility_level"] == $this::VISIBILITY_USER)
+			return $this::NO_ACCESS;
+		
+		//Check if the post is for friends only
+		if($post_infos["visibility_level"] == $this::VISIBILITY_FRIENDS){
+
+			//Check if user is signed in
+			if($userID == 0)
+				return $this::NO_ACCESS;
+			
+			//Check if this user and the owner of the page are friends or not
+			else if(!CS::get()->components->friends->are_friend($userID, $post_infos['user_page_id']))
+				return $this::NO_ACCESS;
+			
+			else
+				//User can access the post
+				return $this::BASIC_ACCESS;
+		}
+
+		//Check if the post is public
+		if($post_infos['visibility_level'] == $this::VISIBILITY_PUBLIC){
+
+			//Check if the two personns are friend
+			if($userID != 0){
+				if(CS::get()->components->friends->are_friend($userID, $post_infos['user_page_id']))
+					return $this::BASIC_ACCESS;
+			}
+
+			//Get user visibility level
+			$visibilityLevel = CS::get()->components->user->getVisibility($post_infos['user_page_id']);
+
+			//If the page is open, access is free
+			if($visibilityLevel == User::USER_PAGE_OPEN)
+				return $this::BASIC_ACCESS;
+			
+			//Else check if the user is signed in and the page is public 
+			else if($userID != 0 AND $visibilityLevel == User::USER_PAGE_PUBLIC)
+				return $this::BASIC_ACCESS;
+			
+			else
+				return $this::NO_ACCESS;
+		}
+		
+		//Not implemented
+		return $this::NO_ACCESS;
+
+	}
+
+	/**
+	 * Fetch a single post from the database
+	 * 
+	 * @param int $postID The ID of the post to get
+	 * @return array Informations about the post / empty array
+	 * if the post was not found
+	 */
+	private function get_single(int $postID) : array {
+
+		//Perform a request on the database
+		$conditions = "WHERE ID = ?";
+		$values = array($postID);
+		$result = CS::get()->db->select($this::TABLE_NAME, $conditions, $values);
+
+		//Check if we got a response
+		if(count($result) == 0)
+			return array(); //Empty array = error
+		
+		//Return parsed response
+		return $this->parse_post($result[0], false);
+
+	}
+
+	/**
 	 * Parse a user post from the database into
 	 * the standardized version of post structure
 	 * 
@@ -146,6 +266,9 @@ class Posts {
 
 		//Determine user ID
 		$info["userID"] = $src["ID_amis"] == 0 ? $src["ID_personne"] : $src["ID_amis"];
+
+		//Determine user page ID
+		$info["user_page_id"] = $src["ID_personne"];
 
 		//Time when the message was sent
 		$info["post_time"] = strtotime($src["date_envoi"]);
