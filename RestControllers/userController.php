@@ -139,9 +139,19 @@ class userController
 			//User friends won't be displayed
 			$userInfos["number_friends"] = 0;
 
+		//User can not post text on this page by default
+		$userInfos["can_post_texts"] = FALSE;
+		
 		//Get some informations only is user is signed in
 		if(user_signed_in()){
 			$userInfos["user_like_page"] = CS::get()->components->likes->is_liking(userID, $userID, Likes::LIKE_USER);
+
+			//Check if the user can post texts on this page
+			$userInfos["can_post_texts"] = 
+				//If it is his page, yes by default
+				userID == $userID ? TRUE : 
+				//Else check friendship status
+				CS::get()->components->friends->can_post_text(userID, $userID);
 		}
 		
 		//Return user informations
