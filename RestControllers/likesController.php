@@ -42,11 +42,25 @@ class likesController {
 					Rest_fatal_error(401, "You can not access this user information !");
 
 				break;
+			
+
+			//In case of post
+			case "post":
+
+				//Extract informations
+				$id = getPostPostID("id");
+				$componentType = Likes::LIKE_POST;
+
+				//Check user can see the post
+				if(CS::get()->components->posts->access_level($id, userID) === Posts::NO_ACCESS)
+					Rest_fatal_error(401, "You are not allowed to access this post informations !");
+
+				break;
 
 
 			//Default case : error
 			default:
-				Rest_fatal_error(404, "Didn't find specified component type !");
+				Rest_fatal_error(404, "Specifed component type currently not supported !");
 		}
 
 		//Update like status
