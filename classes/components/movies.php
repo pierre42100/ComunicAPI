@@ -13,6 +13,27 @@ class Movies {
 	const MOVIES_TABLE = "galerie_video";
 
 	/**
+	 * Get the entire list of movies of a user
+	 * 
+	 * @param int $userID The ID of the user to get
+	 * @return array The list of movie of the user
+	 */
+	public function get_list(int $userID) : array {
+
+		//Perform a request on the database
+		$conditions = "WHERE ID_user = ? ORDER BY ID DESC";
+		$values = array($userID);
+		
+		$results = CS::get()->db->select($this::MOVIES_TABLE, $conditions, $values);
+
+		$movies = array();
+		foreach($results as $row)
+			$movies[] = $this->parse_db_infos($row);
+
+		return $movies;
+	}
+
+	/**
 	 * Get informations about a movie
 	 * 
 	 * @param int $movieID The ID of the target movie
