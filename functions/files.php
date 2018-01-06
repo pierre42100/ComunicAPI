@@ -8,11 +8,11 @@
 /**
  * Prepare a file creation
  *
- * @param Integer $userID The ID of the user owning the file
- * @param String $componentName The name of the target component
- * @return String the file path (based on user_data folder)
+ * @param int $userID The ID of the user owning the file
+ * @param string $componentName The name of the target component
+ * @return string the file path (based on user_data folder)
  */
-function prepareFileCreation($userID, $componentName){
+function prepareFileCreation(int $userID, string $componentName) : string {
 
 	//Get user data folder name
 	$user_data_folder = path_user_data("", true);
@@ -36,11 +36,11 @@ function prepareFileCreation($userID, $componentName){
 /**
  * Generate a file name for a new file
  *
- * @param String $directory The target directory
- * @param String $extension The file extension
- * @return String The generated file name
+ * @param string $directory The target directory
+ * @param string $extension The file extension
+ * @return string The generated file name
  */
-function generateNewFileName($directory, $extension){
+function generateNewFileName(string $directory, string $extension) : string {
 
 	//First, check if folder exists
 	if(!file_exists($directory))
@@ -60,15 +60,15 @@ function generateNewFileName($directory, $extension){
 /**
  * Reduces an image size
  *
- * @param String $fileName The name of the image to reduce
- * @param String $targetFile The target of the reduced image
- * @param Integer $maxWidth The maximal width of the image
- * @param Integer $maxHeight The maximal height of the image
- * @param String $outFormat The output format
- * @param String $img_string Optionnal, the image string if it is a string
- * @return Boolean True for a success / False for a failure
+ * @param string $fileName The name of the image to reduce
+ * @param string $targetFile The target of the reduced image
+ * @param int $maxWidth The maximal width of the image
+ * @param int $maxHeight The maximal height of the image
+ * @param string $outFormat The output format
+ * @param string $img_string Optionnal, the image string if it is a string
+ * @return bool True for a success / False for a failure
  */
-function reduce_image($fileName, $targetFile, $maxWidth, $maxHeight, $outFormat = "image/png", $img_string=""){
+function reduce_image(string $fileName, string $targetFile, int $maxWidth, int $maxHeight, string $outFormat = "image/png", string $img_string="") : bool{
 	
 	//Check if we have to reduce physical image or an image contained in a variable
 	if($fileName != "string"){
@@ -144,7 +144,7 @@ function reduce_image($fileName, $targetFile, $maxWidth, $maxHeight, $outFormat 
 			return false;
 	}
 
-	//UNSUPORTED
+	//UNSUPPORTED
 	else
 		return false; //Unkown export format
 
