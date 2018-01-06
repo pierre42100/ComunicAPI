@@ -211,3 +211,27 @@ function getPostPostID(string $name = "postID") : int {
 	
 	return $postID;
 }
+
+/**
+ * Check the validity of an file posted in a request
+ * 
+ * @param string $name The name of the $_FILES entry
+ * @return bool True if the file is valid / false else
+ */
+function check_post_file(string $name) : bool {
+
+	//Check if image exists
+	if(!isset($_FILES[$name]))
+		return false;
+	
+	//Check for errors
+	if($_FILES[$name]['error'] != 0)
+		return false;
+	
+	//Check if the file is empty
+	if($_FILES[$name]['size'] < 1)
+		return false;
+
+	return true;
+
+}
