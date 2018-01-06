@@ -151,7 +151,7 @@ class userController
 				//If it is his page, yes by default
 				userID == $userID ? TRUE : 
 				//Else check friendship status
-				CS::get()->components->friends->can_post_text(userID, $userID);
+				CS::get()->components->user->canCreatePosts(userID, $userID);
 		}
 		
 		//Return user informations

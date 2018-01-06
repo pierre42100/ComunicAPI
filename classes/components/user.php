@@ -436,6 +436,36 @@ class User{
 			return false;
 
 	}
+
+	/**
+	 * Check if a user can create a post on another user page
+	 * 
+	 * @param int $userID The ID of the user who could create post
+	 * @param int $targetID The ID of the user who could receive new posts
+	 * @return bool True if the user is allowed to create post / false else
+	 */
+	public function canCreatePosts(int $userID, int $targetID){
+
+		//If the user is signed out, the response is NO by default
+		if($userID == 0)
+			return FALSE;
+
+		//If the two user are friends, the response is yes by default
+		if($userID === $targetID)
+			return TRUE;
+		
+		//Check if the user is allowed to access user page
+		if(!$this->userAllowed($userID, $targetID))
+			return FALSE;
+		
+		//Check if the friendship of the users allow them to create posts
+		if(!CS::get()->components->friends->can_post_text($userID, $targetID))
+			return FALSE;
+		
+		//Else the user is allowed
+		return TRUE;
+
+	}
 	
 	/**
 	 * Check whether a user allow comments on his page or not
