@@ -55,6 +55,16 @@ class Movies {
 	}
 
 	/**
+	 * Check whether a movie specified by its ID exists or not
+	 * 
+	 * @param int $movieID The ID of the movie to check
+	 * @return bool TRUE if the movie exists / false else
+	 */
+	function exist(int $movieID) : bool {
+		return CS::get()->db->count($this::MOVIES_TABLE, "WHERE ID = ?", array($movieID)) > 0;
+	}
+
+	/**
 	 * Parse a video informations
 	 * 
 	 * @param array $db_infos Informations about the movie from

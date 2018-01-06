@@ -213,6 +213,30 @@ function getPostPostID(string $name = "postID") : int {
 }
 
 /**
+ * Get the ID of a movie in a rest request
+ * 
+ * @param string $name Optionnal, the name of the post ID field
+ * @return int $movieID The ID of the movie
+ */
+function getPostMovieId(string $name = "movieID") : int {
+
+	//Get movieID
+	if(!isset($_POST[$name]))
+		Rest_fatal_error(400, "Excepted movie ID in '".$name."' !");
+	$movieID = toInt($_POST[$name]);
+
+	//Check movie ID validity
+	if($movieID < 1)
+		Rest_fatal_error(400, "Invalid movie ID in '".$name."' !");
+	
+	//Check if the movie exists
+	if(!CS::get()->components->movies->exist($movieID))
+		Rest_fatal_error(404, "Specified movie does not exists!");
+
+	return $movieID;
+}
+
+/**
  * Check the validity of an file posted in a request
  * 
  * @param string $name The name of the $_FILES entry
@@ -233,5 +257,26 @@ function check_post_file(string $name) : bool {
 		return false;
 
 	return true;
+
+}
+
+/**
+ * Check the validity of a Youtube video ID
+ * 
+ * @param string $id The ID of the YouTube video
+ * @return bool True if the ID is valid / false else
+ */
+function check_youtube_id(string $id) : bool {
+
+	//Check length
+	if(strlen($id) < 5)
+		return FALSE;
+	
+	//Check for illegal characters
+	if($id !== str_replace(array("/", "\\", "@", "&", "?", ".", "'", '"'), "", $id))
+		return FALSE;
+	
+	//The video is considered as valid
+	return TRUE;
 
 }
