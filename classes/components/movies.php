@@ -60,8 +60,24 @@ class Movies {
 	 * @param int $movieID The ID of the movie to check
 	 * @return bool TRUE if the movie exists / false else
 	 */
-	function exist(int $movieID) : bool {
+	public function exist(int $movieID) : bool {
 		return CS::get()->db->count($this::MOVIES_TABLE, "WHERE ID = ?", array($movieID)) > 0;
+	}
+
+	/**
+	 * Get the ID of the owner of a movie
+	 * 
+	 * @param int $movieID The ID of the target movie
+	 * @return int The ID of the owner of the movie / 0 if none found
+	 */
+	public function get_owner(int $movieID) : int {
+
+		//Get infos about the movie
+		$movieInfos = $this->get_infos($movieID);
+
+		//Return the ID of the owner of the movie
+		return isset($movieInfos["userID"]) ? $movieInfos["userID"] : 0;
+
 	}
 
 	/**
