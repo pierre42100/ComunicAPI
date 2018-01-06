@@ -60,7 +60,7 @@ function generateNewFileName(string $directory, string $extension) : string {
 /**
  * Reduces an image size
  *
- * @param string $fileName The name of the image to reduce
+ * @param string $fileName The name of the image to reduce / "string" to give an image string
  * @param string $targetFile The target of the reduced image
  * @param int $maxWidth The maximal width of the image
  * @param int $maxHeight The maximal height of the image
