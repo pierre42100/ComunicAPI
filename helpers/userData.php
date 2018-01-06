@@ -12,7 +12,7 @@
  * @param Boolean $systemPath Optionnal, defines if system path is required instead of URL
  * @return String The full URL to the userdata file
  */
-function path_user_data($fileURI = "", $systemPath = false){
+function path_user_data(string $fileURI = "", bool $systemPath = false) : string {
 	if(!$systemPath)
 		return CS::get()->config->get("storage_url").$fileURI;
 	else
