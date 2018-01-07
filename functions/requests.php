@@ -69,21 +69,45 @@ function toInt($input) : int{
 /**
  * Remove HTML markup codes (<, >)
  *
- * @param String $input The string to change
- * @return String The updated string
+ * @param string $input The string to change
+ * @return string The updated string
  */
-function removeHTMLnodes($input){
+function removeHTMLnodes(string $input) : string {
 	$output = str_replace("<", "&lt;", $input);
 	return str_replace(">", "&gt;", $output);
 }
 
 /**
+ * Check the security of an HTML string
+ * 
+ * @param string $input The string to check
+ * @return bool TRUE if the string is safe to insert / FALSE else
+ */
+function checkHTMLstring(string $string) : bool {
+
+	//Check for script or style or meta tag
+	if(str_ireplace(array("<string", "<style", "<meta"), "", $string) != $string)
+		return false;
+	
+	//Check for onclick, onkeyup, onmousehover tag
+	if(str_ireplace(array("onclick", "onkeyup", "onmousehover"), "", $string) != $string)
+		return false;
+
+	//Check for images integrated to the post
+	if(preg_match("/data:image/", $string))
+		return false;
+
+	//The message is valid
+	return true;
+}
+
+/**
  * Check a string before inserting it
  *
- * @param String $string The string to check
- * @return Boolean True if the string is valid / false else
+ * @param string $string The string to check
+ * @return bool True if the string is valid / false else
  */
-function check_string_before_insert($string){
+function check_string_before_insert(string $string) : bool {
 
 	//First, empty string are invalid
 	if($string == "")
