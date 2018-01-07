@@ -383,12 +383,14 @@ class conversations {
 		
 		//Prepare database request
 		$tableName = $this->conversationsUsersTable." AS table1 JOIN ".
-			$this->conversationsUsersTable." AS table2";
+			$this->conversationsUsersTable." AS table2 JOIN ".
+			$this->conversationsUsersTable." AS table3";
 		
 		//Prepare conditions
-		$joinCondition = "table1.ID_".$this->conversationsListTable." = table2.ID_".$this->conversationsListTable;
-		$whereConditions = "table1.ID_utilisateurs = ? OR table1.ID_utilisateurs = ?";
-		$groupCondition = "table1.ID_".$this->conversationsListTable." having count(*) = 4";
+		$joinCondition = "(table1.ID_".$this->conversationsListTable." = table2.ID_".$this->conversationsListTable.")".
+			"AND (table1.ID_".$this->conversationsListTable." = table3.ID_".$this->conversationsListTable.")";
+		$whereConditions = "table1.ID_utilisateurs = ? AND table2.ID_utilisateurs = ?";
+		$groupCondition = "table1.ID_".$this->conversationsListTable." having count(*) = 2";
 
 		//Conditions values
 		$condValues = array($user1, $user2);
