@@ -272,8 +272,76 @@ class Posts {
 							int $time_end = 0, string $link_url = null, string $link_title = null,
 							string $link_description = null, string $link_image = null, string $survey_question = null,
 							array $survey_answers = array()) : int {
+		
+		//Generate new post informations
+		//Get the corresponding kind of post for the database
+		$post_kind_db = array_flip($this::POSTS_DB_TYPES)[$kind];
 
-		return -1;
+		//Generate valid date form for time_end value
+		if($time_end != 0){
+			$date_end = date("d/m/Y", $time_end);
+			$array_date_end = explode("/", $date_end);
+
+			//Save the values
+			$day_end = $array_date_end[0];
+			$month_end = $array_date_end[1];
+			$year_end = $array_date_end[2];
+		}
+		
+		//Process user page posts
+		if($kind_page == $this::PAGE_KIND_USER){
+			
+			//Determine who is creating the post
+			$post_user_id = $kind_page_id;
+			$post_friend_id = $kind_page_id == $userID ? 0 : $userID;
+
+		}
+		else {
+			throw new Exception("Unsupported kind of page : ".$kind_page." !");
+		}
+
+		//Generate database entry
+		$data = array(
+			"ID_personne" => $post_user_id,
+			"ID_amis" => $post_friend_id,
+			"date_envoi" => mysql_date(),
+			"texte" => $content,
+			"niveau_visibilite" => $visibility,
+			"type" => $post_kind_db,
+			
+			//Generic files informations
+			"size" => $file_size != 0 ? $file_size : null,
+			"file_type" => $file_type,
+			"path" => $file_path,
+
+			//Movie posts
+			"idvideo" => $videoID != 0 ? $videoID : null,
+
+			//Countdown timer
+			"jour_fin" => isset($day_end) ? $day_end : null,
+			"mois_fin" => isset($month_end) ? $month_end : null,
+			"annee_fin" => isset($year_end) ? $year_end : null,
+
+			//Weblink page
+			"url_page" => $link_url,
+			"titre_page" => $link_title,
+			"description_page" => $link_description,
+			"image_page" => $link_image
+		);
+
+		//Insert the post
+		if(!CS::get()->db->addLine($this::TABLE_NAME, $data))
+			return -1;
+
+		//Get post ID
+		$postID = CS::get()->db->getLastInsertedID();
+
+		//Create the survey if required
+		if($kind == $this::POST_KIND_SURVEY){
+
+		}
+
+		return $postID;
 	}
 
 	/**
