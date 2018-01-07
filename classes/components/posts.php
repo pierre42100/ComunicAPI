@@ -35,21 +35,39 @@ class Posts {
 	const FULL_ACCESS = 3;
 
 	/**
+	 * Kinds of posts page
+	 */
+	//Post on user page
+	const PAGE_KIND_USER = "user";
+
+	/**
+	 * Kinds of post
+	 */
+	const POST_KIND_TEXT = "text";
+	const POST_KIND_IMAGE = "image";
+	const POST_KIND_WEBLINK = "weblink";
+	const POST_KIND_PDF = "pdf";
+	const POST_KIND_MOVIE = "movie";
+	const POST_KIND_COUNTDOWN = "countdown";
+	const POST_KIND_SURVEY = "survey";
+	const POST_KIND_YOUTUBE = "youtube";
+
+	/**
 	 * Table informations
 	 */
 	//Name of the table
 	const TABLE_NAME = "texte";
 
 	//Translation of posts types between the API language and the database structure
-	const POSTS_TYPE = array(
-		"texte" => "text",
-		"image" => "image",
-		"webpage_link" => "weblink",
-		"pdf" => "pdf",
-		"video" => "movie",
-		"count_down" => "countdown",
-		"sondage" => "survey",
-		"youtube" => "youtube"
+	const POSTS_DB_TYPES = array(
+		"texte" => Posts::POST_KIND_TEXT,
+		"image" => Posts::POST_KIND_IMAGE,
+		"webpage_link" => Posts::POST_KIND_WEBLINK,
+		"pdf" => Posts::POST_KIND_PDF,
+		"video" => Posts::POST_KIND_MOVIE,
+		"count_down" => Posts::POST_KIND_COUNTDOWN,
+		"sondage" => Posts::POST_KIND_SURVEY,
+		"youtube" => Posts::POST_KIND_YOUTUBE
 	);
 
 	/**
@@ -280,7 +298,7 @@ class Posts {
 		$info["visibility_level"] = $src["niveau_visibilite"];
 
 		//Determine the kind of post
-		$info["kind"] = $this::POSTS_TYPE[$src["type"]];
+		$info["kind"] = $this::POSTS_DB_TYPES[$src["type"]];
 
 		//Document info
 		$info["file_size"] = $src["size"];
