@@ -245,6 +245,22 @@ class Posts {
 	}
 
 	/**
+	 * Create a post
+	 * 
+	 * @param toCome
+	 * @return int The ID of the created post or -1 in case of failure
+	 */
+	public function create(string $kind_page, int $kind_id, int $userID, string $content, 
+							int $visibility, string $kind, int $file_size = 0, 
+							string $file_type = null, string $file_path = null, int $videoID = 0, 
+							int $time_end = 0, string $link_url = null, string $link_title = null,
+							string $link_description = null, string $link_image = null, string $survey_question = null,
+							array $survey_answers = array()) : int {
+
+		return -1;
+	}
+
+	/**
 	 * Fetch a single post from the database
 	 * 
 	 * @param int $postID The ID of the post to get
