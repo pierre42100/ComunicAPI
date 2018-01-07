@@ -261,6 +261,27 @@ function check_post_file(string $name) : bool {
 }
 
 /**
+ * Check the validity of a URL specified in a request
+ * 
+ * @param string $name The name of the $_POST field containing the URL
+ * @return bool True if the url is valid / false else
+ */
+function check_post_url(string $name) : bool {
+
+	//Check if image exists
+	if(!isset($_POST[$name]))
+		return false;
+	$url = $_POST[$name];
+	
+	//Check URL
+	if(!filter_var($url, FILTER_VALIDATE_URL))
+		return false;
+
+	//The URL seems to be valid
+	return true;
+}
+
+/**
  * Check the validity of a Youtube video ID
  * 
  * @param string $id The ID of the YouTube video
