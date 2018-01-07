@@ -245,12 +245,28 @@ class Posts {
 	}
 
 	/**
-	 * Create a post
+	 * Create a new post
 	 * 
-	 * @param toCome
+	 * @param string $kind_page The kind of target page
+	 * @param int $kind_page_id The ID of the target page
+	 * @param int $userID The ID of the user creating for post
+	 * @param string $content The content of the post
+	 * @param int $visibility The visibility of the post
+	 * @param string $kind The kind of post
+	 * @param int $file_size The size of the associated file (0 by default - no file)
+	 * @param string $file_type The mime type of the associated file
+	 * @param string $file_path The path in user data pointing on the file
+	 * @param int $videoID The ID of the associated personnal user video (0 for no video)
+	 * @param int $time_end The end of the countdown timer (if any)
+	 * @param string $link_url The URL of the link associated with the post (if any)
+	 * @param string $link_title The title of the link associated with the post (if any)
+	 * @param string $link_description The description of the link associated with the post (if any)
+	 * @param string $link_image The link pointing on the image associated with the post (if any)
+	 * @param string $survey_question The question of the survey associated with the post (if any)
+	 * @param array $survey_answers The answers of the survey associated with the post (if any)
 	 * @return int The ID of the created post or -1 in case of failure
 	 */
-	public function create(string $kind_page, int $kind_id, int $userID, string $content, 
+	public function create(string $kind_page, int $kind_page_id, int $userID, string $content, 
 							int $visibility, string $kind, int $file_size = 0, 
 							string $file_type = null, string $file_path = null, int $videoID = 0, 
 							int $time_end = 0, string $link_url = null, string $link_title = null,
