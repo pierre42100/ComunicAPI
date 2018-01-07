@@ -23,6 +23,54 @@ class Survey {
 	const SURVEY_RESPONSE_TABLE = "sondage_reponse";
 
 	/**
+	 * Create a new survey
+	 * 
+	 * @param int $postID The target post for the survey
+	 * @param int $userID The ID of the user creating the survey
+	 * @param string $question The question for the survey
+	 * @param array $answers The answers for the survey
+	 * @return bool True for a sucess / False for a failure
+	 */
+	public function create(int $postID, int $userID, string $question, array $answers) : bool {
+
+		//Create the main survey informations
+		$main_infos = array(
+			"ID_utilisateurs" => $userID,
+			"ID_texte" => $postID,
+			"date_creation" => mysql_date(),
+			"question" => $question
+		);
+
+		//Try to create survey main informations table
+		if(!CS::get()->db->addLine($this::SURVEY_INFOS_TABLE, $main_infos))
+			return false;
+		
+		//Get the ID of the survey
+		$surveyID = CS::get()->db->getLastInsertedID();
+
+		//Check for errors
+		if($surveyID < 1)
+			return false;
+		
+		//Process each answer
+		$answers_data = array();
+		foreach($answers as $line){
+			$answers_data[] = array(
+				"ID_sondage" => $surveyID,
+				"date_creation" => mysql_date(),
+				"Choix" => $line
+			);
+		}
+
+		//Insert all the answers
+		CS::get()->db->addLines($this::SURVEY_CHOICES_TABLE, $answers_data);
+
+		//Success
+		return true;
+
+	}
+
+	/**
 	 * Get informations about a survey
 	 * 
 	 * @param int $postID The ID of the post related to the survey

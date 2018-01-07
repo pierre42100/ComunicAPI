@@ -249,7 +249,7 @@ class Posts {
 	 * 
 	 * @param string $kind_page The kind of target page
 	 * @param int $kind_page_id The ID of the target page
-	 * @param int $userID The ID of the user creating for post
+	 * @param int $userID The ID of the user creating the post
 	 * @param string $content The content of the post
 	 * @param int $visibility The visibility of the post
 	 * @param string $kind The kind of post
@@ -338,7 +338,7 @@ class Posts {
 
 		//Create the survey if required
 		if($kind == $this::POST_KIND_SURVEY){
-
+			CS::get()->components->survey->create($postID, $userID, $survey_question, $survey_answers);
 		}
 
 		return $postID;
