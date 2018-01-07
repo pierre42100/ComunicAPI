@@ -237,6 +237,28 @@ function getPostMovieId(string $name = "movieID") : int {
 }
 
 /**
+ * Get a timestamp posted in a post request
+ * 
+ * @param string $name The name of the $_POST entry
+ * @return int The timestamp if everything went well
+ */
+function getPostTimeStamp(string $name) : int {
+
+	//Check if the variable exists
+	if(!isset($_POST[$name]))
+		Rest_fatal_error(400, "Please specify a timestamp in '".$name."' ! ");
+	$timestamp = toInt($_POST[$name]);
+
+	//Check timestamp validity
+	if($timestamp < 10000)
+		Rest_fatal_error(400, "Please specify a valid timestamp value in ".$timestamp." !");
+	
+	//Return timestamp
+	return $timestamp;
+
+}
+
+/**
  * Check the validity of an file posted in a request
  * 
  * @param string $name The name of the $_FILES entry
@@ -244,7 +266,7 @@ function getPostMovieId(string $name = "movieID") : int {
  */
 function check_post_file(string $name) : bool {
 
-	//Check if image exists
+	//Check if file exists
 	if(!isset($_FILES[$name]))
 		return false;
 	
