@@ -186,7 +186,21 @@ class Posts {
 		
 		//Get informations about the post
 		$post_infos = $this->get_single($postID);
-		
+
+		return $this->access_level_with_infos($post_infos, $userID);
+	}
+
+	/**
+	 * Get the access level of a user about a post
+	 * 
+	 * This function requires the informations about the post
+	 * 
+	 * @param array $post_infos Informations about the post
+	 * @param int $userID The ID of the user to check
+	 * @return int The access level over the post
+	 */
+	public function access_level_with_infos(array $post_infos, int $userID) : int {
+
 		//Check if the user is the owner of the post
 		if($post_infos['userID'] == $userID)
 			return $this::FULL_ACCESS;

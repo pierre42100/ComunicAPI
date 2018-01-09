@@ -33,6 +33,14 @@ class postsController {
 		//Get the post of the user
 		$posts = CS::get()->components->posts->getUserPosts(userID, $userID, $startFrom);
 
+		//Process the list of posts
+		foreach($posts as $num => $infos){
+
+			//Get access level to the post
+			$access_level = CS::get()->components->posts->access_level_with_infos($infos, userID);
+
+		}
+
 		return $posts;
 	}
 
