@@ -13,6 +13,11 @@ class friends {
 	private $friendsTable = "amis";
 
 	/**
+	 * Cache friendship informations
+	 */
+	private $frienship_cache = array();
+
+	/**
 	 * Public construcor
 	 */
 	public function __construct(){
@@ -168,12 +173,16 @@ class friends {
 	/**
 	 * Check wether two users are friend or not
 	 *
-	 * @param $user1 The ID of the first user
-	 * @param $user2 The ID of the second user
+	 * @param int $user1 The ID of the first user
+	 * @param int $user2 The ID of the second user
 	 * @return TRUE if the users are friend / FALSE else
 	 */
 	public function are_friend(int $user1, int $user2) : bool {
 		
+		//Check if the response is in the cache
+		if(isset($this->frienship_cache[$user1."-".$user2]))
+			return $this->frienship_cache[$user1."-".$user2];
+
 		//Query the friends table
 		$tableName = $this->friendsTable;
 		$conditions = "WHERE ID_personne = ? AND ID_amis = ? AND actif = 1";
@@ -183,15 +192,20 @@ class friends {
 		$response = CS::get()->db->select($tableName, $conditions, $condValues);
 
 		//Return the result
-		return count($response) > 0;
+		$are_friend = count($response) > 0;
+
+		//Cache the response
+		$this->frienship_cache[$user1."-".$user2] = $are_friend;
+
+		return $are_friend;
 	}
 
 	/**
 	 * Send a friendship request
 	 * 
-	 * @param $userID The ID of the user creating the request
-	 * @param $targetID The target of the friendship request
-	 * @return TRUE in case of success / FALSE else
+	 * @param int $userID The ID of the user creating the request
+	 * @param int $targetID The target of the friendship request
+	 * @return bool TRUE in case of success / FALSE else
 	 */
 	public function send_request(int $userID, int $targetID) : bool {
 
@@ -211,9 +225,9 @@ class friends {
 	/**
 	 * Delete a friendship request previously created
 	 * 
-	 * @param $userID The ID of the user removing its request
-	 * @param $targetID The ID of the target of the request
-	 * @return TRUE in case of success / false else
+	 * @param int $userID The ID of the user removing its request
+	 * @param int $targetID The ID of the target of the request
+	 * @return bool TRUE in case of success / false else
 	 */
 	public function remove_request(int $userID, int $targetID) : bool {
 
@@ -231,9 +245,9 @@ class friends {
 	 * Check wether a user has sent a friendship 
 	 * request to another friend
 	 * 
-	 * @param $user The ID of the user supposed to have sent a request
-	 * @param $targetUser The ID of the target user
-	 * @return TRUE if a request has been sent / FALSE else
+	 * @param int $user The ID of the user supposed to have sent a request
+	 * @param int $targetUser The ID of the target user
+	 * @return bool TRUE if a request has been sent / FALSE else
 	 */
 	public function sent_request(int $user, int $targetUser) : bool {
 
@@ -252,9 +266,9 @@ class friends {
 	/**
 	 * Check wether a user is following or not another friend
 	 * 
-	 * @param $userID The ID of the user supposed to follow another friend
-	 * @param $friendID The ID of the friend
-	 * @return TRUE if the user is following the other user / FALSE else
+	 * @param int $userID The ID of the user supposed to follow another friend
+	 * @param int $friendID The ID of the friend
+	 * @return bool TRUE if the user is following the other user / FALSE else
 	 */
 	public function is_following(int $userID, int $friendID) : bool {
 
@@ -277,10 +291,10 @@ class friends {
 	/**
 	 * Check wether a friend allows a friend to post text on his page or not
 	 * 
-	 * @param $userID The ID of the user performing the request
-	 * @param $friendID The ID of the friend allowing or denying the user
+	 * @param int $userID The ID of the user performing the request
+	 * @param int $friendID The ID of the friend allowing or denying the user
 	 * to post texts on his page
-	 * @return TRUE if the user is allowed to post texts on the page / FALSE else
+	 * @return bool TRUE if the user is allowed to post texts on the page / FALSE else
 	 */
 	public function can_post_text(int $userID, int $friendID) : bool {
 
