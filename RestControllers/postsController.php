@@ -10,6 +10,16 @@
 class postsController {
 
 	/**
+	 * Access levels for the POST for the api
+	 */
+	const ACCESS_LEVEL_API = array(
+		Posts::NO_ACCESS => "no-access",
+		Posts::BASIC_ACCESS => "basic",
+		Posts::INTERMEDIATE_ACCESS => "intermediate",
+		Posts::FULL_ACCESS => "full"
+	);
+
+	/**
 	 * Get user posts
 	 * 
 	 * @url POST /posts/get_user
@@ -38,6 +48,9 @@ class postsController {
 
 			//Get access level to the post
 			$access_level = CS::get()->components->posts->access_level_with_infos($infos, userID);
+
+			//Save level access in the response
+			$posts[$num]["user_access"] = $this::ACCESS_LEVEL_API[$access_level];
 
 		}
 
