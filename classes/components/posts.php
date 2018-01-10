@@ -359,6 +359,28 @@ class Posts {
 	}
 
 	/**
+	 * Update the visibility level of a post
+	 * 
+	 * @param int $postID The ID of the post to update
+	 * @param int $level The new level for the post
+	 * @return bool TRUE in case of success / FALSE in case of failure
+	 */
+	public function update_level(int $postID, int $level) : bool {
+
+		//Set the new values
+		$new_values = array(
+			"niveau_visibilite" => $level
+		);
+
+		//Set the conditions
+		$conditions = "ID = ?";
+		$condValues = array($postID);
+
+		//Perform the request
+		return CS::get()->db->updateDB($this::TABLE_NAME, $conditions, $new_values, $condValues);
+	}
+
+	/**
 	 * Fetch a single post from the database
 	 * 
 	 * @param int $postID The ID of the post to get

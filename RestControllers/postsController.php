@@ -327,7 +327,32 @@ class postsController {
 
 	}
 
-	
+	/**
+	 * Change the visibility level of a post
+	 * 
+	 * @url POST /posts/set_visibility_level
+	 */
+	public function set_visibility_level(){
+
+		user_login_required();
+		
+		//Get the post ID
+		$postID = getPostPostID("postID");
+
+		//Get the visibility level
+		$new_visibility = $this->getPostVisibilityLevel("new_level");
+
+		//Check if the user is allowed to change the visibility level of the post
+		if(CS::get()->components->posts->access_level($postID, userID) != Posts::FULL_ACCESS)
+			Rest_fatal_error(401, "You are not allowed to change the visibility level of this post !");
+		
+		//Try to update visibility level
+		if(!CS::get()->components->posts->update_level($postID, $new_visibility))
+			Rest_fatal_error(500, "Couldn't update visibility level !");
+
+		//Success
+		return array("success" => "The visibility level has been updated !");
+	}
 
 
 	/**
