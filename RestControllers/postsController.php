@@ -120,23 +120,17 @@ class postsController {
 		//Get the visibility of the post
 		if(!isset($_POST['visibility']))
 			Rest_fatal_error(400, "Please specify the visibility of the post !");
-		switch($_POST['visibility']){
-			case "private":
-				$visibility = Posts::VISIBILITY_USER;
-				break;
-			
-			case "friends":
-				$visibility = Posts::VISIBILITY_FRIENDS;
-				break;
-			
-			case "public":
-				$visibility = Posts::VISIBILITY_PUBLIC;
-				break;
-			
-			default:
-				Rest_fatal_error(500, "Unrecognized visibility level for the post !");
-				break;
-		}
+		$api_visibility = $_POST['visibility'];
+
+		//Get the visibility levels of the API
+		$post_visibility = array_flip($this::VISIBILITY_LEVELS_API);
+
+		//Check for the existence of the visibility level
+		if(!isset($post_visibility[$api_visibility]))
+			Rest_fatal_error(400, "Specified visibility level not recognized !");
+
+		//Save it
+		$visibility = $post_visibility[$api_visibility];
 
 		//Act differently depending of the post content
 		//For text post
