@@ -118,19 +118,7 @@ class postsController {
 			Rest_fatal_error(400, "Your request has been rejected because it has been considered as unsecure !");
 
 		//Get the visibility of the post
-		if(!isset($_POST['visibility']))
-			Rest_fatal_error(400, "Please specify the visibility of the post !");
-		$api_visibility = $_POST['visibility'];
-
-		//Get the visibility levels of the API
-		$post_visibility = array_flip($this::VISIBILITY_LEVELS_API);
-
-		//Check for the existence of the visibility level
-		if(!isset($post_visibility[$api_visibility]))
-			Rest_fatal_error(400, "Specified visibility level not recognized !");
-
-		//Save it
-		$visibility = $post_visibility[$api_visibility];
+		$visibility = $this->getPostVisibilityLevel("visibility");
 
 		//Act differently depending of the post content
 		//For text post
@@ -339,4 +327,30 @@ class postsController {
 
 	}
 
+	
+
+
+	/**
+	 * Get the visibility level specified in a POST request
+	 * 
+	 * @param string $name The name of the POST parameter
+	 * @return int The visibility level
+	 */
+	private function getPostVisibilityLevel(string $name) : int {
+
+		if(!isset($_POST[$name]))
+			Rest_fatal_error(400, "Please specify the visibility of the post !");
+		$api_visibility = $_POST[$name];
+
+		//Get the visibility levels of the API
+		$post_visibility = array_flip($this::VISIBILITY_LEVELS_API);
+
+		//Check for the existence of the visibility level
+		if(!isset($post_visibility[$api_visibility]))
+			Rest_fatal_error(400, "Specified visibility level not recognized !");
+
+		//Return it
+		return $post_visibility[$api_visibility];
+
+	}
 }
