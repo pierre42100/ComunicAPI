@@ -10,6 +10,15 @@
 class postsController {
 
 	/**
+	 * Visibility levels for the API
+	 */
+	const VISIBILITY_LEVELS_API = array(
+		Posts::VISIBILITY_PUBLIC => "public",
+		Posts::VISIBILITY_FRIENDS => "friends",
+		Posts::VISIBILITY_USER => "private"
+	);
+
+	/**
 	 * Access levels for the POST for the api
 	 */
 	const ACCESS_LEVEL_API = array(
@@ -51,6 +60,9 @@ class postsController {
 
 			//Save level access in the response
 			$posts[$num]["user_access"] = $this::ACCESS_LEVEL_API[$access_level];
+
+			//Update visibility level
+			$posts[$num]['visibility_level'] = $this::VISIBILITY_LEVELS_API[$infos['visibility_level']];
 
 		}
 
