@@ -111,6 +111,24 @@ class Likes {
 
 	}
 
+	/**
+	 * Delete all the likes associated to an element
+	 * 
+	 * @param int $id The ID of element to update
+	 * @param string $kind The kind of the component
+	 * @return bool TRUE for a success and FALSE for a failure
+	 */
+	public function delete_all(int $id, string $kind) : bool {
+
+		//Delete on the database
+		return CS::get()->db->deleteEntry(
+			$this::LIKES_TABLE,
+			"ID_type = ? AND type = ?",
+			array($id, $this::KINDS_DB[$kind])
+		);
+
+	}
+
 }
 
 //Register class
