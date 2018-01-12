@@ -354,6 +354,33 @@ class postsController {
 		return array("success" => "The visibility level has been updated !");
 	}
 
+	/**
+	 * Delete post
+	 * 
+	 * @url POST /posts/delete
+	 */
+	public function delete_post(){
+
+		user_login_required();
+
+		//Get the post ID
+		$postID = getPostPostID("postID");
+
+		//Get the user access over the post
+		$user_access = CS::get()->components->posts->access_level($postID, userID);
+
+		//Check if the user is allowed to delete the post or not
+		if($user_access != Posts::FULL_ACCESS && $user_access != Posts::INTERMEDIATE_ACCESS)
+			Rest_fatal_error(401, "You are not allowed to delete this post !");
+
+		//Delete the post
+		if(!CS::get()->components->posts->delete($postID))
+			Rest_fatal_error(500, "Couldn't delete post!");
+
+		//Success
+		return array("success" => "The post has been deleted!");
+	}
+
 
 	/**
 	 * Get the visibility level specified in a POST request
