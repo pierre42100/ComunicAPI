@@ -381,6 +381,62 @@ class Posts {
 	}
 
 	/**
+	 * Delete a post
+	 * 
+	 * @param int $postID The ID of the post to delete
+	 * @return bool TRUE for a success / FALSE for a failure
+	 */
+	public function delete(int $postID) : bool {
+
+		//Get informations about the post
+		$post_infos = $this->get_single($postID);
+
+		//Check if we didn't get informations about the post
+		if(count($post_infos) == 0)
+			return false;
+
+		//Delete the likes associated to the post
+		if(!components()->likes->delete_all($postID, Likes::LIKE_POST))
+			return false;
+		
+		//Delete all the comments associated to the post
+		if(!components()->comments->delete_all($postID))
+			return false;
+
+		//Delete the associated image or PDF (if any)
+		if($post_infos['kind'] == $this::POST_KIND_IMAGE
+		|| $post_infos['kind'] == $this::POST_KIND_PDF){
+
+			//Determine file path
+			$file_path = path_user_data($post_infos["file_path"], true);
+
+			//Check if the file exists
+			if(file_exists($file_path)){
+
+				//Try to delete it
+				if(!unlink($file_path))
+					return false;
+			}
+		}
+
+		//Delete the associated survey (if any)
+		if($post_infos['kind'] == $this::POST_KIND_SURVEY){
+			
+			//Check the post has an associated survey
+			if(components()->survey->exists($postID)){
+
+				//Try to delete survey
+				if(!components()->survey->delete($postID))
+					return false;
+			}
+
+		}
+
+		//Delete the post
+		return CS::get()->db->deleteEntry($this::TABLE_NAME, "ID = ?", array($postID));
+	}
+
+	/**
 	 * Fetch a single post from the database
 	 * 
 	 * @param int $postID The ID of the post to get
