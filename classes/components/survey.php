@@ -97,6 +97,67 @@ class Survey {
 	}
 
 	/**
+	 * Check wether there is a survey associated to a post
+	 * 
+	 * @param int $postID The ID of the post to check
+	 * @return bool TRUE if a survey exists / FALSE else
+	 */
+	public function exists(int $postID) : bool {
+		return CS::get()->db->count($this::SURVEY_INFOS_TABLE, "WHERE ID_texte = ?", array($postID)) > 0;
+	}
+
+	/**
+	 * Get the ID of a survey associated to a post
+	 * 
+	 * @param int $postID The ID of the post
+	 * @return int The ID of the associated survey / 0 if none was found
+	 */
+	public function get_id(int $postID) : int {
+
+		//Perform a request on the database
+		$tableName = $this::SURVEY_INFOS_TABLE;
+		$conditions = "WHERE ID_texte = ?";
+		$values = array($postID);
+		$fields = array("ID");
+		$results = CS::get()->db->select($tableName, $conditions, $values, $fields);
+
+		//Check for results
+		if(count($results) == 0)
+			return 0;
+		
+		return $results[0]["ID"];
+	}
+
+	/**
+	 * Delete the survey associated to a post
+	 * 
+	 * @param int $postID The ID of the post associated with the survey
+	 * @return bool TRUE in case of success / FALSE else
+	 */
+	public function delete(int $postID) : bool {
+
+		//Get the ID of the survey to delete
+		$surveyID = $this->get_id($postID);
+
+		//Check for errors
+		if($surveyID == 0)
+			return false;
+
+		//Delete informations from the responses table
+		CS::get()->db->deleteEntry($this::SURVEY_RESPONSE_TABLE, "ID_sondage = ?", array($surveyID));
+
+		//Delete informations from the choices table
+		CS::get()->db->deleteEntry($this::SURVEY_CHOICES_TABLE, "ID_sondage = ?", array($surveyID));
+
+		//Delete informations from the informations table
+		CS::get()->db->deleteEntry($this::SURVEY_INFOS_TABLE, "ID = ?", array($surveyID));
+		
+		//Success
+		return true;
+
+	}
+
+	/**
 	 * Get survey informations by post ID
 	 * 
 	 * @param int $postID The DI of the related post
