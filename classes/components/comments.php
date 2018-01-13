@@ -39,6 +39,19 @@ class Comments {
 	}
 
 	/**
+	 * Delete all the comments associated to a post
+	 * 
+	 * @param int $postID The ID of the target post
+	 * @return bool TRUE in case of success / FALSE else
+	 */
+	public function delete_all(int $postID) : bool {
+		
+		//Perform the request on the database
+		return CS::get()->db->deleteEntry($this::COMMENTS_TABLE, "ID_texte = ?", array($postID));
+
+	}
+
+	/**
 	 * Parse a comment informations
 	 * 
 	 * @param array $src Informations from the database
