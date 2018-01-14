@@ -337,15 +337,11 @@ class postsController {
 		user_login_required();
 		
 		//Get the post ID
-		$postID = getPostPostID("postID");
-
+		$postID = $this->getFullAccessPostID("postID");
+		
 		//Get the visibility level
 		$new_visibility = $this->getPostVisibilityLevel("new_level");
 
-		//Check if the user is allowed to change the visibility level of the post
-		if(CS::get()->components->posts->access_level($postID, userID) != Posts::FULL_ACCESS)
-			Rest_fatal_error(401, "You are not allowed to change the visibility level of this post !");
-		
 		//Try to update visibility level
 		if(!CS::get()->components->posts->update_level($postID, $new_visibility))
 			Rest_fatal_error(500, "Couldn't update visibility level !");
@@ -404,5 +400,28 @@ class postsController {
 		//Return it
 		return $post_visibility[$api_visibility];
 
+	}
+
+	/**
+	 * This function is called to check if the current user has a full access
+	 * other a post specified by its ID in a post request
+	 * 
+	 * @param string $name The name of the POST parameter
+	 * @return int The ID of the POST (an error is thrown if the user can't be
+	 * authenticated as post owner)
+	 */
+	private function getFullAccessPostID(string $name) : int {
+
+		user_login_required();
+		
+		//Get the post ID
+		$postID = getPostPostID($name);
+
+		//Check if the user is allowed to change the visibility level of the post
+		if(CS::get()->components->posts->access_level($postID, userID) != Posts::FULL_ACCESS)
+			Rest_fatal_error(401, "You do not the full control of this post !");
+		
+		//Return post id
+		return $postID;
 	}
 }
