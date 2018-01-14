@@ -109,13 +109,7 @@ class postsController {
 		$kind = $_POST['kind'];
 
 		//Get the content of the post
-		if(!isset($_POST['content']))
-			Rest_fatal_error(400, "Please specify the content of the post !");
-		$content = $_POST['content'];
-
-		//Check the security of the content
-		if(!checkHTMLstring($content))
-			Rest_fatal_error(400, "Your request has been rejected because it has been considered as unsecure !");
+		$content = getPostContent("content");
 
 		//Get the visibility of the post
 		$visibility = $this->getPostVisibilityLevel("visibility");
@@ -348,6 +342,22 @@ class postsController {
 
 		//Success
 		return array("success" => "The visibility level has been updated !");
+	}
+
+	/**
+	 * Update the content of a post
+	 * 
+	 * @url POST /posts/update_content
+	 */
+	public function update_content(){
+
+		user_login_required();
+		
+		//Get the post ID
+		$postID = $this->getFullAccessPostID("postID");
+
+		//Get the post content
+
 	}
 
 	/**

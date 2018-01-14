@@ -347,3 +347,25 @@ function check_youtube_id(string $id) : bool {
 	return TRUE;
 
 }
+
+/**
+ * Get some content (for post actually) from a $_POST request
+ * and check its validity
+ * 
+ * @param string $name The name of the $_POST field
+ * @return string The content of the  post
+ */
+function getPostContent($name){
+
+	if(!isset($_POST[$name]))
+		Rest_fatal_error(400, "Please specify some content in '"+$name+"' !");
+	$content = $_POST[$name];
+
+	//Check the security of the content
+	if(!checkHTMLstring($content))
+		Rest_fatal_error(400, "Your request has been rejected because it has been considered as unsecure !");
+
+	//Return new content
+	return $content;
+
+}
