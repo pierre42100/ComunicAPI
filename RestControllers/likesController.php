@@ -48,12 +48,8 @@ class likesController {
 			case "post":
 
 				//Extract informations
-				$id = getPostPostID("id");
+				$id = getPostPostIDWithAccess("id");
 				$componentType = Likes::LIKE_POST;
-
-				//Check user can see the post
-				if(CS::get()->components->posts->access_level($id, userID) === Posts::NO_ACCESS)
-					Rest_fatal_error(401, "You are not allowed to access this post informations !");
 
 				break;
 
