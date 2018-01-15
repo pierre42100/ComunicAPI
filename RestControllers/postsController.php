@@ -357,7 +357,14 @@ class postsController {
 		$postID = $this->getFullAccessPostID("postID");
 
 		//Get the post content
+		$new_content = getPostContent("new_content");
 
+		//Try to update post content
+		if(!components()->posts->update_content($postID, $new_content))
+			Rest_fatal_error(500, "An error occured while trying to update post content !");
+
+		//Success
+		return array("success" => "The post content has been updated !");
 	}
 
 	/**
