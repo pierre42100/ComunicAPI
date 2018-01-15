@@ -237,6 +237,27 @@ function getPostPostID(string $name = "postID") : int {
 }
 
 /**
+ * Get the ID of a post in a rest request and check if the current
+ * user is allowed to see it or not (check for basic access at least)
+ * 
+ * @param string $name Optionnal, the name of the post id field
+ * @return int $postID The ID of the post
+ */
+function getPostPostIDWithAccess(string $name = "postID") : int {
+
+	//Get the ID of the post
+	$postID = getPostPostID($name);
+
+	//Check user can see the post
+	if(CS::get()->components->posts->access_level($postID, userID) === Posts::NO_ACCESS)
+		Rest_fatal_error(401, "You are not allowed to access this post informations !");
+	
+	//Return post ID
+	return $postID;
+
+}
+
+/**
  * Get the ID of a movie in a rest request
  * 
  * @param string $name Optionnal, the name of the post ID field
