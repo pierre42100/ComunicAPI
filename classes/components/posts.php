@@ -471,10 +471,12 @@ class Posts {
 	 * Fetch a single post from the database
 	 * 
 	 * @param int $postID The ID of the post to get
+	 * @param bool $load_comments Specify if the comments should be loaded or not
+	 * (no by default)
 	 * @return array Informations about the post / empty array
 	 * if the post was not found
 	 */
-	private function get_single(int $postID) : array {
+	public function get_single(int $postID, bool $load_comments = false) : array {
 
 		//Perform a request on the database
 		$conditions = "WHERE ID = ?";
@@ -486,7 +488,7 @@ class Posts {
 			return array(); //Empty array = error
 		
 		//Return parsed response
-		return $this->parse_post($result[0], false);
+		return $this->parse_post($result[0], $load_comments);
 
 	}
 
