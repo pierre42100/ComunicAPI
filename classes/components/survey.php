@@ -129,6 +129,22 @@ class Survey {
 	}
 
 	/**
+	 * Cancel the response of a user to a survey
+	 * 
+	 * @param int $surveyID The ID of the target survey
+	 * @param int $userID The ID of the user removing his response
+	 * @return bool FALSE in case of failure / TRUE in case of success
+	 */
+	public function cancel_response(int $surveyID, int $userID) : bool {
+		
+		//Perform a request on the database
+		return CS::get()->db->deleteEntry(
+			$this::SURVEY_RESPONSE_TABLE, 
+			"ID_sondage = ? AND ID_utilisateurs = ?", 
+			array($surveyID, $userID));
+	}
+
+	/**
 	 * Delete the survey associated to a post
 	 * 
 	 * @param int $postID The ID of the post associated with the survey
