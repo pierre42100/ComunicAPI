@@ -372,6 +372,37 @@ class Posts {
 			"niveau_visibilite" => $level
 		);
 
+		//Perform update
+		return $this->perform_update($postID, $new_values);
+	}
+
+	/**
+	 * Update the content of a post
+	 * 
+	 * @param int $postID The ID of the post to update
+	 * @param string $new_content The new content for the post
+	 * @return bool TRUE in case of success / FALSE else
+	 */
+	public function update_content(int $postID, string $new_content) : bool {
+		
+		//Make a request on the database
+		$new_values = array(
+			"texte" => $new_content
+		);
+
+		//Perform update
+		return $this->perform_update($postID, $new_values);
+	}
+
+	/**
+	 * Perform the update of some informations of a post
+	 * 
+	 * @param int $postID The ID of the post to update
+	 * @param array $new_values The informations to change in the post
+	 * @return bool TRUE for a success / FALSE for a failure 
+	 */
+	private function perform_update(int $postID, array $new_values) : bool {
+
 		//Set the conditions
 		$conditions = "ID = ?";
 		$condValues = array($postID);
