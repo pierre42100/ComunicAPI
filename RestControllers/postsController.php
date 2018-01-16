@@ -80,7 +80,11 @@ class postsController {
 		$postID = getPostPostIDWithAccess("postID");
 
 		//Get informations about the post
-		$postInfos = components()->posts->get_single($postID, true);
+		$postInfos = components()->posts->get_single($postID, false);
+
+		//Check if we can get the comments of the post
+		if(components()->user->allowComments($postInfos['user_page_id']))
+			$postInfos['comments'] = components()->comments->get($postInfos["ID"]);
 
 		//Check for errors
 		if(count($postInfos) == 0)
