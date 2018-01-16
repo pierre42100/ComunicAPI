@@ -55,14 +55,8 @@ class postsController {
 		//Process the list of posts
 		foreach($posts as $num => $infos){
 
-			//Get access level to the post
-			$access_level = CS::get()->components->posts->access_level_with_infos($infos, userID);
-
-			//Save level access in the response
-			$posts[$num]["user_access"] = $this::ACCESS_LEVEL_API[$access_level];
-
-			//Update visibility level
-			$posts[$num]['visibility_level'] = $this::VISIBILITY_LEVELS_API[$infos['visibility_level']];
+			//Parse post informations
+			$posts[$num] = $this->parsePostForAPI($infos);
 
 		}
 
@@ -82,13 +76,16 @@ class postsController {
 		//Get informations about the post
 		$postInfos = components()->posts->get_single($postID, false);
 
+		//Check for errors
+		if(count($postInfos) == 0)
+			Rest_fatal_error(500, "Couldn't retrieve post informations !");
+
 		//Check if we can get the comments of the post
 		if(components()->user->allowComments($postInfos['user_page_id']))
 			$postInfos['comments'] = components()->comments->get($postInfos["ID"]);
 
-		//Check for errors
-		if(count($postInfos) == 0)
-			Rest_fatal_error(500, "Couldn't retrieve post informations !");
+		//Parse post informations
+		$postInfos = $this->parsePostForAPI($postInfos);
 
 		//Return informations about the post
 		return $postInfos;
@@ -466,5 +463,26 @@ class postsController {
 		
 		//Return post id
 		return $postID;
+	}
+
+	/**
+	 * Parse a post to make it ready to be displayed on the API
+	 * 
+	 * @param array $infos Source informations
+	 * @return array Post informations ready to be returned
+	 */
+	private function parsePostForAPI(array $infos) : array {
+
+		//Get access level to the post
+		$access_level = CS::get()->components->posts->access_level_with_infos($infos, userID);
+
+		//Save level access in the response
+		$infos["user_access"] = $this::ACCESS_LEVEL_API[$access_level];
+
+		//Update visibility level
+		$infos['visibility_level'] = $this::VISIBILITY_LEVELS_API[$infos['visibility_level']];
+
+		//Return the post ready to be shown
+		return $infos;
 	}
 }
