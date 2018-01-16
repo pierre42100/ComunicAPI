@@ -70,6 +70,28 @@ class postsController {
 	}
 
 	/**
+	 * Get informations about a single post
+	 * 
+	 * @url POST /posts/get_single
+	 */
+	public function get_single_post(){
+
+		//Get the post ID
+		$postID = getPostPostIDWithAccess("postID");
+
+		//Get informations about the post
+		$postInfos = components()->posts->get_single($postID, true);
+
+		//Check for errors
+		if(count($postInfos) == 0)
+			Rest_fatal_error(500, "Couldn't retrieve post informations !");
+
+		//Return informations about the post
+		return $postInfos;
+
+	}
+
+	/**
 	 * Create a post
 	 * 
 	 * @url POST /posts/create
