@@ -107,6 +107,20 @@ class Survey {
 	}
 
 	/**
+	 * Check wether a choice exists and is attached to a survey
+	 * 
+	 * @param int $surveyID the ID of the survey
+	 * @param int $choiceID The ID of the choice to check
+	 * @return bool TRUE if a choice exists and is valid / FALSE else
+	 */
+	public function choice_exists(int $surveyID, int $choiceID) : bool {
+		return CS::get()->db->count(
+			$this::SURVEY_CHOICES_TABLE, 
+			"WHERE ID_sondage = ? AND ID = ?", 
+			array($surveyID, $choiceID)) > 0;
+	}
+
+	/**
 	 * Get the ID of a survey associated to a post
 	 * 
 	 * @param int $postID The ID of the post
@@ -126,6 +140,28 @@ class Survey {
 			return 0;
 		
 		return $results[0]["ID"];
+	}
+
+	/**
+	 * Send a response to a survey
+	 * 
+	 * @param int $userID The ID of the user giving a response to the survey
+	 * @param int $surveyID The ID of the target survey
+	 * @param int $choiceID The ID of the selected choice
+	 * @return bool TRUE for a success / FALSE for a failure
+	 */
+	public function send_response(int $userID, int $surveyID, int $choiceID){
+		
+		//Generate the new data line
+		$data = array(
+			"ID_utilisateurs" => $userID,
+			"ID_sondage" => $surveyID,
+			"ID_sondage_choix" => $choiceID,
+			"date_envoi" => mysql_date()
+		);
+
+		//Try to save response
+		return CS::get()->db->addLine($this::SURVEY_RESPONSE_TABLE, $data);
 	}
 
 	/**
