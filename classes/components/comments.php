@@ -52,6 +52,18 @@ class Comments {
 	}
 
 	/**
+	 * Check if a comment exists or not
+	 * 
+	 * @param int $commentID The ID of the comment to check
+	 * @return bool
+	 */
+	public function exists(int $commentID) : bool {
+
+		return CS::get()->db->count($this::COMMENTS_TABLE, "WHERE ID = ?", array($commentID)) > 0;
+
+	}
+
+	/**
 	 * Parse a comment informations
 	 * 
 	 * @param array $src Informations from the database
