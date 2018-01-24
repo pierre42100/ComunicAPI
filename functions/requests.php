@@ -258,6 +258,34 @@ function getPostPostIDWithAccess(string $name = "postID") : int {
 }
 
 /**
+ * Get the ID of a comment that the user is allowed to access
+ * 
+ * @param string $name The name of the comment field
+ * @return int $commentID The ID of the comment
+ */
+function getPostCommentIDWithAccess($name) : int {
+
+	//Get comment ID
+	if(!isset($_POST[$name]))
+		Rest_fatal_error(400, "Comment ID not specified in '".$name."'!");
+	$commentID = (int) $_POST[$name];
+
+	//Check if the comment exists
+	if(!components()->comments->exists($commentID))
+		Rest_fatal_error(404, "Specified comment not found!");
+
+	//Get the ID of the associated post
+	$postID = components()->comments->getAssociatedPost($commentID);
+
+	//Check the current user can access this post
+	if(CS::get()->components->posts->access_level($postID, userID) === Posts::NO_ACCESS)
+		Rest_fatal_error(401, "You are not allowed to access this post informations !");
+
+	//Return comment ID
+	return $commentID;
+}
+
+/**
  * Get the ID of a movie in a rest request
  * 
  * @param string $name Optionnal, the name of the post ID field
