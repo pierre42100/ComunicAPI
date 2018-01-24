@@ -39,6 +39,30 @@ class Comments {
 	}
 
 	/**
+	 * Get a single comment informations
+	 * 
+	 * @param int $commentID The ID of the comment to get
+	 * @param bool $include_likes Specify if likes has to be loaded
+	 * @return array Information about the comment
+	 */
+	public function get_single(int $commentID, bool $include_likes = false) : array {
+
+		//Perform a request on the database
+		$conditions = "WHERE ID = ?";
+		$values = array($commentID);
+
+		//Fetch the comment on the database
+		$result = CS::get()->db->select($this::COMMENTS_TABLE, $conditions, $values);
+		
+		//Check for results
+		if(count($result) == 0)
+			return array();
+		
+		//Return result
+		return $this->parse_comment($result[0], $include_likes);
+	}
+
+	/**
 	 * Delete all the comments associated to a post
 	 * 
 	 * @param int $postID The ID of the target post
@@ -47,8 +71,8 @@ class Comments {
 	public function delete_all(int $postID) : bool {
 		
 		//Perform the request on the database
-		return CS::get()->db->deleteEntry($this::COMMENTS_TABLE, "ID_texte = ?", array($postID));
-
+		//return CS::get()->db->deleteEntry($this::COMMENTS_TABLE, "ID_texte = ?", array($postID));
+		return false;
 	}
 
 	/**
@@ -64,16 +88,33 @@ class Comments {
 	}
 
 	/**
+	 * Get the ID of the post associated to a comment
+	 * 
+	 * @param int $commentID The ID of the comment
+	 * @return int The ID of the associated post / 0 in case of failure
+	 */
+	public function getAssociatedPost(int $commentID) : int {
+
+		//Get a single comment informations
+		$commentInfos = $this->get_single($commentID);
+
+		//Check if we have got the required information and return it
+		return isset($commentInfos["postID"]) ? $commentInfos["postID"] : 0;
+	}
+
+	/**
 	 * Parse a comment informations
 	 * 
 	 * @param array $src Informations from the database
+	 * @param bool $load_likes Specify if the likes have to be loaded or not
 	 * @return array Informations about the comments ready to be sent
 	 */
-	private function parse_comment(array $src): array {
+	private function parse_comment(array $src, bool $load_likes = true): array {
 		$info = array();
 
 		$info["ID"] = $src["ID"];
 		$info["userID"] = $src["ID_personne"];
+		$info["postID"] = $src["ID_texte"];
 		$info["time_sent"] = strtotime($src["date_envoi"]);
 		$info["content"] = $src["commentaire"];
 
@@ -87,9 +128,11 @@ class Comments {
 			$info["img_url"] = null;
 		}
 
-		//Get informations about likes
-		$info["likes"] = CS::get()->components->likes->count($info["ID"], Likes::LIKE_COMMENT);
-		$info["userlike"] = user_signed_in() ? CS::get()->components->likes->is_liking(userID, $info["ID"], Likes::LIKE_COMMENT) : false;
+		if($load_likes){
+			//Get informations about likes
+			$info["likes"] = CS::get()->components->likes->count($info["ID"], Likes::LIKE_COMMENT);
+			$info["userlike"] = user_signed_in() ? CS::get()->components->likes->is_liking(userID, $info["ID"], Likes::LIKE_COMMENT) : false;
+		}
 
 		return $info;
 	}
