@@ -103,6 +103,21 @@ class Comments {
 	}
 
 	/**
+	 * Check if a user is the owner of a comment or not
+	 * 
+	 * @param int $userID The ID of the user to check
+	 * @param int $commentID The ID of the comment to check
+	 * @return bool TRUE if the user is the owner of the post / FALSE else
+	 */
+	public function is_owner(int $userID, int $commentID) : bool {
+		return CS::get()->db->count(
+			$this::COMMENTS_TABLE, 
+			"WHERE ID = ? AND ID_personne = ?", 
+			array($commentID, $userID)
+		) > 0;
+	}
+
+	/**
 	 * Parse a comment informations
 	 * 
 	 * @param array $src Informations from the database
