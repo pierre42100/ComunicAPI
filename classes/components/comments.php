@@ -16,9 +16,11 @@ class Comments {
 	 * Fetch the comments of a post
 	 * 
 	 * @param int $postID The ID of the post
+	 * @param bool $load_comments Specify whether the comments should be
+	 * loaded or not (default to true)
 	 * @return array The list of comments of the post
 	 */
-	public function get(int $postID) : array {
+	public function get(int $postID, bool $load_comments = true) : array {
 
 		//Perform a request on the database
 		$conditions = "WHERE ID_texte = ? ORDER BY ID";
@@ -31,7 +33,7 @@ class Comments {
 		$comments = array();
 
 		foreach($result as $entry){
-			$comments[] = $this->parse_comment($entry);
+			$comments[] = $this->parse_comment($entry, $load_comments);
 		}
 
 		return $comments;
@@ -70,9 +72,73 @@ class Comments {
 	 */
 	public function delete_all(int $postID) : bool {
 		
-		//Perform the request on the database
-		//return CS::get()->db->deleteEntry($this::COMMENTS_TABLE, "ID_texte = ?", array($postID));
-		return false;
+		//Get the list of comments for the post
+		$comments = $this->get($postID, FALSE);
+
+		foreach($comments as $comment){
+
+			//Delete the comment
+			if(!$this->process_delete($comment))
+				return false;
+
+		}
+
+		//Success
+		return true;
+	}
+
+	/**
+	 * Delete a single comment
+	 * 
+	 * @param int $commentID The ID of the comment to delete
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function delete(int $commentID) : bool {
+		
+		//Get informations about the comment
+		$commentInfos = $this->get_single($commentID, false);
+
+		//Check for errors
+		if(count($commentInfos) == 0)
+			return false;
+		
+		//Process deletion
+		return $this->process_delete($commentInfos);
+	}
+
+	/**
+	 * Process comment deletion
+	 * 
+	 * @param array $commentInfos Informations about the comment to delete
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	private function process_delete(array $commentInfos) : bool {
+
+		//Get comment ID
+		$commentID = $commentInfos["ID"];
+
+		//Check if an image is associated to the comment
+		if(strlen($commentInfos['img_path']) > 2){
+
+			$image_path = path_user_data($commentInfos['img_path'], true);
+
+			//Delete the image if it exists
+			if(file_exists($image_path))
+				unlink($image_path);
+
+		}
+
+		//Delete the likes associated to the comments
+		if(!components()->likes->delete_all($commentID, Likes::LIKE_COMMENT))
+			return false;
+
+		//Delete the comment
+		if(!CS::get()->db->deleteEntry($this::COMMENTS_TABLE, "ID = ?", array($commentID)))
+			return false;
+
+		//Success
+		return true;
+
 	}
 
 	/**
