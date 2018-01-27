@@ -52,6 +52,17 @@ class likesController {
 				$componentType = Likes::LIKE_POST;
 
 				break;
+			
+
+				
+			//In case of comments
+			case "comment":
+				
+				//Extract informations
+				$id = getPostCommentIDWithAccess("id");
+				$componentType = Likes::LIKE_COMMENT;
+
+				break;
 
 
 			//Default case : error
