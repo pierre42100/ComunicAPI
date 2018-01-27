@@ -8,6 +8,27 @@
 class commentsController {
 
 	/**
+	 * Get informations about a single comment
+	 * 
+	 * @url POST /comments/get_single
+	 */
+	public function get_single_infos(){
+
+		//Get the comment ID
+		$commentID = getPostCommentIDWithAccess("commentID");
+
+		//Get informations about the comment
+		$infos = components()->comments->get_single($commentID, TRUE);
+
+		//Check for errors
+		if(count($infos) == 0)
+			Rest_fatal_error(500, "Couldn't fetch informations about the comment !");
+
+		//Return informations about the comment
+		return $infos;
+	}
+
+	/**
 	 * Edit a comment content
 	 * 
 	 * @url POST /comments/edit
