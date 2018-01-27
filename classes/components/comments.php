@@ -154,6 +154,29 @@ class Comments {
 	}
 
 	/**
+	 * Edit a comment content
+	 * 
+	 * @param int $commentID The ID of the comment to update
+	 * @param string $content The new content for the comment
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function edit(int $commentID, string $content) : bool {
+
+		//Perform a request on the database
+		$newValues = array(
+			"commentaire" => $content
+		);
+
+		//Try to perform request
+		return CS::get()->db->updateDB(
+			$this::COMMENTS_TABLE, 
+			"ID = ?", 
+			$newValues, 
+			array($commentID));
+
+	}
+
+	/**
 	 * Get the ID of the post associated to a comment
 	 * 
 	 * @param int $commentID The ID of the comment
