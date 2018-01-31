@@ -154,21 +154,13 @@ class postsController {
 			if(!check_post_file("image"))
 				Rest_fatal_error(400, "An error occured while receiving image !");
 
-			//Generate target file name
-			$target_userdata_folder = prepareFileCreation(userID, "imgpost");
-			$target_file_path = $target_userdata_folder.generateNewFileName(path_user_data($target_userdata_folder, true), "png");
-			$target_file_sys_path = path_user_data($target_file_path, true);
-
-			//Try to resize, convert image and put it in its new location
-			if(!reduce_image($_FILES['image']["tmp_name"], $target_file_sys_path, 2000, 2000, "image/png")){
-				//Returns error
-				Rest_fatal_error(500, "Couldn't resize sent image !");
-			}
+			//Save post image
+			$file_path = save_post_image("image", userID, "imgpost", 2000, 2000);
 
 			//Save image information
-			$file_type = "image/png";
-			$file_size = filesize($target_file_sys_path);
-			$file_path = $target_file_path;
+			$file_sys_path = path_user_data($file_path, true);
+			$file_type = mime_content_type($file_sys_path);
+			$file_size = filesize($file_sys_path);
 		}
 
 		//For YouTube posts

@@ -418,3 +418,30 @@ function getPostContent($name){
 	return $content;
 
 }
+
+/**
+ * Save an image in user data directory from a POST request
+ * 
+ * @param string $fieldName The name of the POST field
+ * @param int $userID The ID of the user making the request
+ * @param string $folder The target folder in the user data directory
+ * @param int $maxw The maximum width of the image
+ * @param int $maxh The maximum height of the image
+ * @return string The path of the image (quit the script in case of failure)
+ */
+function save_post_image(string $fieldName, int $userID, string $folder, int $maxw, int $maxh) : string {
+
+	$target_userdata_folder = prepareFileCreation($userID, $folder);
+	$target_file_path = $target_userdata_folder.generateNewFileName(path_user_data($target_userdata_folder, true), "png");
+	$target_file_sys_path = path_user_data($target_file_path, true);
+
+	//Try to resize, convert image and put it in its new location
+	if(!reduce_image($_FILES[$fieldName]["tmp_name"], $target_file_sys_path, $maxw, $maxh, "image/png")){
+		//Returns error
+		Rest_fatal_error(500, "Couldn't resize sent image !");
+	}
+
+	//Return image path
+	return $target_file_path;
+
+}
