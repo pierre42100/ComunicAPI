@@ -8,6 +8,51 @@
 class commentsController {
 
 	/**
+	 * Create a comment
+	 * 
+	 * @url POST /comments/create
+	 */
+	public function create(){
+
+		user_login_required();
+
+		//Get the ID of the associated post
+		$postID = getPostPostIDWithAccess("postID");
+
+		//Check if an image was included in the request
+		if(check_post_file("image")){
+
+			//Get comment content
+			$content = $this->get_comment_content("content", false);
+
+			//Save the image
+			$image_path = save_post_image("image", userID, "imgcommentaire", 700, 700);
+		}
+		
+		//Else check the content of the comment before getting it
+		else
+			$content = $this->get_comment_content("content", true);
+
+		//Try to create the comment
+		$commentID = components()->comments->create(
+			$postID, 
+			userID, 
+			$content, 
+			isset($image_path) ? $image_path : ""
+		);
+
+		//Check for errors
+		if($commentID < 1)
+			Rest_fatal_error(500, "An error occured while trying to create comment !");
+
+		//Success
+		return array(
+			"success" => "The comment was created!",
+			"commentID" => $commentID
+		);
+	}
+
+	/**
 	 * Get informations about a single comment
 	 * 
 	 * @url POST /comments/get_single
@@ -96,9 +141,10 @@ class commentsController {
 	 * Get a comment content from $_POST field
 	 * 
 	 * @param string $name The name of post field containing the commment content
+	 * @param bool $need_check TRUE if the comment content has to be checked / FALSE else
 	 * @return string The comment content, if it passed security checks
 	 */
-	private function get_comment_content(string $name) : string {
+	private function get_comment_content(string $name, bool $need_check = true) : string {
 
 		//Get comment content
 		if(!isset($_POST[$name]))
@@ -106,7 +152,7 @@ class commentsController {
 		$comment_content = (string) $_POST[$name];
 
 		//Perform security check
-		if(!check_string_before_insert($comment_content))
+		if(!check_string_before_insert($comment_content) && $need_check)
 			Rest_fatal_error(400, "Please check new comment content !");
 		
 		//Make the comment secure before insertion

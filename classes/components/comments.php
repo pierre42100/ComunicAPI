@@ -13,6 +13,34 @@ class Comments {
 	const COMMENTS_TABLE = "commentaires";
 
 	/**
+	 * Create a comment
+	 * 
+	 * @param int $postID The ID of the associated post
+	 * @param int $userID The ID of the associated user
+	 * @param string $content The content of the comment
+	 * @param string $image The path of an associated image (if any)
+	 * @return int The ID of the created comment or 0 in case of failure
+	 */
+	public function create(int $postID, int $userID, string $content, string $image = "") : int {
+
+		//Generate data set
+		$data = array(
+			"ID_texte" => $postID,
+			"ID_personne" => $userID,
+			"date_envoi" => mysql_date(),
+			"commentaire" => $content,
+			"image_commentaire" => $image == "" ? "" : "file:".$image
+		);
+
+		//Insert it in the database
+		if(!CS::get()->db->addLine($this::COMMENTS_TABLE, $data))
+			return 0;
+		
+		//Get the ID of the last inserted comment and return it
+		return CS::get()->db->getLastInsertedID();
+	}
+
+	/**
 	 * Fetch the comments of a post
 	 * 
 	 * @param int $postID The ID of the post
