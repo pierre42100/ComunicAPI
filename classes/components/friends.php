@@ -28,7 +28,7 @@ class friends {
 	 * Get and returns the list of the friends of a user
 	 *
 	 * @param int $userID The ID of the user
-	 * @return array The list of the friends of the user
+	 * @return array The list of the friends of the user (Friend objects)
 	 */
 	public function getList(int $userID) : array {
 		
@@ -51,12 +51,7 @@ class friends {
 		//Process results
 		$friendsList = array();
 		foreach($results as $process){
-			$friendsList[] = array(
-				"ID_friend" => $process["ID_amis"],
-				"accepted" => $process["actif"],
-				"following" => $process["abonnement"],
-				"time_last_activity" => $process["last_activity"]
-			);
+			$friendsList[] = $this->parse_friend_db_infos($process);
 		}
 
 		//Return result
@@ -352,6 +347,25 @@ class friends {
 
 		return CS::get()->db->count($tableName, $conditions, $condValues);
 
+	}
+
+	/**
+	 * Parse friend informations from the database
+	 * 
+	 * @param array $data Informations about the friend from the database
+	 * @return Friend Parsed friend object
+	 */
+	private function parse_friend_db_infos(array $data) : Friend {
+		
+		$friend = new Friend();
+		
+		//Parse informations
+		$friend->setFriendID($data["ID_amis"]);
+		$friend->setAccepted($data["actif"] == 1);
+		$friend->setFollowing($data["abonnement"] == 1);
+		$friend->setLastActivityTime($data["last_activity"]);
+
+		return $friend;
 	}
 }
 

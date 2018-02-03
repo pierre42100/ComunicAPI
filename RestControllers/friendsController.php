@@ -22,11 +22,20 @@ class friendsController{
 		if($friendsList === false)
 			Rest_fatal_error(500, "Couldn't get friends list !");
 		
+		//Process the list
+		$api_list = array();
+		foreach($friendsList as $friend){
+
+			//Parse friend informations
+			$api_list[] = $this->parseFriendAPI($friend);
+
+		}
+
 		//Update the last activity of the user
 		CS::get()->components->user->updateLastActivity(userID);
-		
+
 		//Return list
-		return $friendsList;
+		return $api_list;
 	}
 
 	/**
@@ -212,5 +221,24 @@ class friendsController{
 		
 		//Success
 		return array("success" => "Friendship status has been updated!");
+	}
+
+	/**
+	 * Convert a friend object into an object readable by the api
+	 * 
+	 * @param Friend $friend The input friend
+	 * @return array Informations about the friend readable by the api
+	 */
+	private function parseFriendAPI(Friend $friend) : array {
+
+		//Parse informations about the friend
+		$data = array(
+			"ID_friend" => $friend->getFriendID(),
+			"accepted" => $friend->isAccepted() ? 1 : 0,
+			"following" => $friend->isFollowing() ? 1 : 0,
+			"time_last_activity" => $friend->getLastActivityTime()
+		);
+
+		return $data;
 	}
 }
