@@ -27,10 +27,10 @@ class friends {
 	/**
 	 * Get and returns the list of the friends of a user
 	 *
-	 * @param Integer $userID The ID of the user
-	 * @return Array The list of the friends of the user
+	 * @param int $userID The ID of the user
+	 * @return array The list of the friends of the user
 	 */
-	public function getList($userID) : array {
+	public function getList(int $userID) : array {
 		
 		//Prepare the request on the database
 		$tableName = $this->friendsTable.", utilisateurs";
@@ -67,12 +67,12 @@ class friends {
 	/**
 	 * Respond to a friendship request
 	 *
-	 * @param Integer $userID The ID of the user who respond to the request
-	 * @param Integer $friendID The ID of the target friend
-	 * @param Boolean $accept Defines wether the friend request was accepted or not
-	 * @return Boolean True or false depending of the success of the operation
+	 * @param int $userID The ID of the user who respond to the request
+	 * @param int $friendID The ID of the target friend
+	 * @param bool $accept Defines wether the friend request was accepted or not
+	 * @return bool True or false depending of the success of the operation
 	 */
-	 public function respondRequest($userID, $friendID, $accept){
+	 public function respondRequest(int $userID, int $friendID, bool $accept) : bool {
 		//If the request is to refuse friendship request, there isn't any security check to perform
 		if(!$accept){
 			//Perform a request on the database
