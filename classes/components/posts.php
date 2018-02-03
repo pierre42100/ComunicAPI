@@ -163,6 +163,74 @@ class Posts {
 	}
 
 	/**
+	 * Get the list of latest posts for a user
+	 * 
+	 * @param int $userID The ID of the user requesting its list of posts
+	 * @param int $startPoint The startpoint of the research (default: 0 = none)
+	 * @param int $limit The limit of the research (default: 10)
+	 * @return array The list of newest posts for the user
+	 */
+	public function get_latest(int $userID, int $startPoint = 0, int $limit = 10) : array {
+
+		//Check the value of limit (security)
+		if($limit < 1){
+			throw new Exception("The limit of the query must absolutly be positive !");
+		}
+
+		//Arbitrary visibility level
+		$visibilityLevel = self::VISIBILITY_FRIENDS;
+
+		//Get the list of friends of the user
+		$friendsList = components()->friends->getList($userID);
+
+
+		//Prepare the request on the database
+		//Add the visibility level conditions
+		$conditions = "WHERE niveau_visibilite <= ? AND (ID_personne = ?";
+		$dataConds = array($visibilityLevel, $userID);
+
+		//Process the list of friends of the user
+		foreach($friendsList as $friend){
+			$friendID = $friend->getFriendID();
+			$conditions .= " OR ID_personne = ?";
+			$dataConds[] = $friendID;
+		}
+
+		//Close user list conditions
+		$conditions .= ")";
+		
+		//Add startpoint condition if required (and get older messages)
+		if($startPoint != 0){
+			$conditions .= " AND ID <= ? ";
+			$dataConds[] = $startPoint;
+		}
+
+		//Specify order and limit
+		$conditions.= " ORDER BY ID DESC LIMIT ".$limit;
+
+		//Perform the request
+		$list = CS::get()->db->select(
+			$this::TABLE_NAME,
+			$conditions,
+			$dataConds
+		);
+
+		//Parse the list of posts
+		$posts = array();
+		foreach($list as $row){
+			
+			//Check if the user allow the comments
+			$allow_comments = CS::get()->components->user->allowComments($row["ID_personne"]);
+
+			//Parse post informations
+			$posts[] = $this->parse_post($row, $allow_comments);
+		}
+
+		//Return the list of posts
+		return $posts;
+	}
+
+	/**
 	 * Check whether a post exists or not
 	 * 
 	 * @param int $postID The ID of the post to check

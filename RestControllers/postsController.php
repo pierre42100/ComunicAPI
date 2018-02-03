@@ -52,16 +52,34 @@ class postsController {
 		//Get the post of the user
 		$posts = CS::get()->components->posts->getUserPosts(userID, $userID, $startFrom);
 
-		//Process the list of posts
-		foreach($posts as $num => $infos){
-
-			//Parse post informations
-			$posts[$num] = $this->parsePostForAPI($infos);
-
-		}
-
-		return $posts;
+		//Return parsed list of posts
+		return $this->parsePostsList($posts);
 	}
+
+	/**
+	 * Get the latest posts for the user
+	 * 
+	 * @url POST /posts/get_latest
+	 */
+	public function get_latest_posts(){
+
+		user_login_required();
+
+		//Check if there is a startpoint for the posts
+		if(isset($_POST['startFrom'])){
+			$startFrom = toInt($_POST['startFrom']);
+		}
+		else
+			$startFrom = 0; //No start point
+
+		//Get the post of the user
+		$posts = CS::get()->components->posts->get_latest(userID, $startFrom, 10);
+
+		//Return parsed list of posts
+		return $this->parsePostsList($posts);
+
+	}
+
 
 	/**
 	 * Get informations about a single post
@@ -455,6 +473,25 @@ class postsController {
 		
 		//Return post id
 		return $postID;
+	}
+
+	/**
+	 * Process a list of post for the API
+	 * 
+	 * @param array $list The list of posts to process
+	 * @return array The parsed list of posts for API
+	 */
+	private function parsePostsList(array $list) : array {
+
+		//Process the list of posts
+		foreach($list as $num => $infos){
+
+			//Parse post informations
+			$list[$num] = $this->parsePostForAPI($infos);
+
+		}
+
+		return $list;
 	}
 
 	/**
