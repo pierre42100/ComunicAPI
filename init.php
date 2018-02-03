@@ -51,6 +51,11 @@ $tokens = new Tokens();
 $cs->register("tokens", $tokens);
 unset($tokens);
 
+//Include models
+foreach(glob(PROJECT_PATH."classes/models/*.php") as $classFile){
+    require_once $classFile;
+}
+
 //Include components
 foreach(glob(PROJECT_PATH."classes/components/*.php") as $classFile){
     require_once $classFile;
