@@ -97,7 +97,7 @@ class Notification {
 	/**
 	 * Set notification source user id
 	 * 
-	 * @param int $notificatID The ID of the notification
+	 * @param int $from_user_id The ID of the user
 	 */
 	public function set_from_user_id(int $from_user_id){
 		$this->from_user_id = $from_user_id;
@@ -115,7 +115,7 @@ class Notification {
 	/**
 	 * Set notification destination user id
 	 * 
-	 * @param int $notificatID The ID of the notification
+	 * @param int $dest_user_id The ID of the destination
 	 */
 	public function set_dest_user_id(int $dest_user_id){
 		$this->dest_user_id = $dest_user_id;
@@ -124,11 +124,81 @@ class Notification {
 	/**
 	 * Get notification destination user id
 	 * 
-	 * @return int The dest_user_id of the notification
+	 * @return int The dest_user_id of the destination
 	 */
 	public function get_dest_user_id() : int {
 		return $this->dest_user_id;
 	}
 
+	/**
+	 * Set notification target element id
+	 * 
+	 * @param int $elem_id The ID of the target element ID
+	 */
+	public function set_on_elem_id(int $on_elem_id){
+		$this->on_elem_id = $on_elem_id;
+	}
 
+	/**
+	 * Get notification target element id
+	 * 
+	 * @return int The on_elem_id of the notification
+	 */
+	public function get_on_elem_id() : int {
+		return $this->on_elem_id;
+	}
+
+	/**
+	 * Set notification target element type
+	 * 
+	 * @param string $elem_type The type of the target element type
+	 */
+	public function set_on_elem_type(string $on_elem_type){
+		$this->on_elem_type = $on_elem_type;
+	}
+
+	/**
+	 * Get notification target element type
+	 * 
+	 * @return string The on_elem_type of the notification
+	 */
+	public function get_on_elem_type() : string {
+		return $this->on_elem_type;
+	}
+
+	/**
+	 * Set notification event type
+	 * 
+	 * @param string $type The type of the notification
+	 */
+	public function set_type(string $type){
+		$this->type = $type;
+	}
+
+	/**
+	 * Get notification event type
+	 * 
+	 * @return string The type of the notification
+	 */
+	public function get_type() : string {
+		return $this->type;
+	}
+
+	/**
+	 * Set notification target container element type (if any)
+	 * 
+	 * @param int $from_container_id The type of the target container element id
+	 */
+	public function set_from_container_id(int $from_container_id){
+		$this->from_container_id = $from_container_id;
+	}
+
+	/**
+	 * Get notification target container element id
+	 * 
+	 * @return int The from_container_id of the notification
+	 */
+	public function get_from_container_id() : int {
+		return $this->from_container_id;
+	}
 }
