@@ -520,6 +520,34 @@ class DBLibrary {
             exit($this->echoPDOException($e));
         }
     }
+
+    /**
+     * Convert an array of conditions into a condition string and an array of conditions values
+     * 
+     * @param array $conditions The conditions to convert
+     * @return array The result
+     */
+    public function splitConditionsArray(array $conditions) : array {
+
+        //Create the string
+        $sql = "";
+        $values = array();
+
+        //Process each element
+        foreach($conditions as $field => $value){
+
+            //Add AND separator if required
+            if(strlen($sql) > 0)
+                $sql .= " AND ";
+            
+            $sql .= $field . " = ?";
+            $values[] = $value;
+        }
+
+        //Return the result
+        return array($sql, $values);
+
+    }
     
     /**
      * Echo an exception
