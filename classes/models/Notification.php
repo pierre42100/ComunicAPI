@@ -10,8 +10,11 @@ class Notification {
 	/**
 	 * Elements type
 	 */
+	const USER_PAGE = "user_page";
 	const CONVERSATION = "conversation";
-	const POST_TEXT = "post";
+	const CONVERSATION_MESSAGE = "conversation_message";
+	const POST = "post";
+	const POST_TEXT = "post_text";
 	const POST_IMAGE = "post_img";
 	const POST_YOUTUBE = "post_youtube";
 	const POST_MOVIE = "post_movie";
@@ -24,8 +27,16 @@ class Notification {
 	/**
 	 * Event type
 	 */
+	const COMMENT_CREATED = "comments";
 	const ELEM_CREATED = "elem_created";
 	const ELEM_UPDATED = "elem_updated";
+
+	/**
+	 * Event visibility
+	 */
+	const EVENT_PRIVATE = "event_private";
+	const EVENT_PUBLIC = "event_public";
+
 
 	//Private fields
 	private $id;
@@ -36,9 +47,23 @@ class Notification {
 	private $on_elem_id;
 	private $on_elem_type;
 	private $type;
+	private $event_visibility;
 	private $from_container_id;
 	private $from_container_type;
 
+	/**
+	 * Default constructor of the notification
+	 */
+	public function __construct(){
+		
+		//Notification not seen by default
+		$this->seen = false;
+
+		//By default, the notification does not have any contener
+		$this->from_container_id = 0;
+		$this->from_container_type = "";
+
+	}
 
 	/**
 	 * Set notification id
@@ -183,6 +208,24 @@ class Notification {
 	 */
 	public function get_type() : string {
 		return $this->type;
+	}
+
+	/**
+	 * Set notification event visibility
+	 * 
+	 * @param string $visibility The visibility of the notification
+	 */
+	public function set_event_visibility(string $event_visibility){
+		$this->event_visibility = $event_visibility;
+	}
+
+	/**
+	 * Get notification event visibility
+	 * 
+	 * @return string The visibility of the notification
+	 */
+	public function get_event_visibility() : string {
+		return $this->event_visibility;
 	}
 
 	/**
