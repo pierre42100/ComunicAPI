@@ -39,6 +39,7 @@ class Notification {
 	private $from_container_id;
 	private $from_container_type;
 
+
 	/**
 	 * Set notification id
 	 * 
@@ -200,5 +201,23 @@ class Notification {
 	 */
 	public function get_from_container_id() : int {
 		return $this->from_container_id;
+	}
+
+	/**
+	 * Set notification target element type
+	 * 
+	 * @param string $elem_type The type of the target element type
+	 */
+	public function set_from_container_type(string $from_container_type){
+		$this->from_container_type = $from_container_type;
+	}
+
+	/**
+	 * Get notification target element type
+	 * 
+	 * @return string The from_container_type of the notification
+	 */
+	public function get_from_container_type() : string {
+		return $this->from_container_type;
 	}
 }
