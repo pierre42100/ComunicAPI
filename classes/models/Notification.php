@@ -27,7 +27,7 @@ class Notification {
 	/**
 	 * Event type
 	 */
-	const COMMENT_CREATED = "comments";
+	const COMMENT_CREATED = "comment_created";
 	const ELEM_CREATED = "elem_created";
 	const ELEM_UPDATED = "elem_updated";
 
@@ -111,6 +111,15 @@ class Notification {
 	}
 
 	/**
+	 * Check if the notification has a specified creation time
+	 * 
+	 * @return bool TRUE if the creation time was specified
+	 */
+	public function has_time_create() : bool {
+		return $this->time_create != null;
+	}
+
+	/**
 	 * Set the seen state of the notification
 	 * 
 	 * @param bool $seen TRUE for seen
@@ -130,6 +139,15 @@ class Notification {
 	}
 
 	/**
+	 * Check if the seen state of the notification has been set or not
+	 * 
+	 * @return bool TRUE if the seen state of the notification is set / FALSE else
+	 */
+	public function has_seen_state() : bool {
+		return $this->seen != null;
+	}
+
+	/**
 	 * Set notification source user id
 	 * 
 	 * @param int $from_user_id The ID of the user
@@ -145,6 +163,15 @@ class Notification {
 	 */
 	public function get_from_user_id() : int {
 		return $this->from_user_id;
+	}
+
+	/**
+	 * Check if the notification has a given user source
+	 * 
+	 * @return bool TRUE if the source of the notification has been specified / FALSE else
+	 */
+	public function has_from_user_id() : bool {
+		return $this->from_user_id != null;
 	}
 
 	/**
@@ -226,6 +253,15 @@ class Notification {
 	 */
 	public function get_type() : string {
 		return $this->type;
+	}
+
+	/**
+	 * Check if the notification has a given creation time
+	 * 
+	 * @return bool TRUE if the notification has a type / FALSE else
+	 */
+	public function has_type() : bool {
+		return $this->type != null;
 	}
 
 	/**
