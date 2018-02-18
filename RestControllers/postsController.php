@@ -431,10 +431,11 @@ class postsController {
 		if(!CS::get()->components->posts->delete($postID))
 			Rest_fatal_error(500, "Couldn't delete post!");
 
-		/*//Delete related notifications
+		//Delete related notifications
 		$notification = new Notification();
 		$notification->set_on_elem_type(Notification::POST);
-		$notification->set_on_elem_id($postID);*/
+		$notification->set_on_elem_id($postID);
+		components()->notifications->delete($notification);
 
 		//Success
 		return array("success" => "The post has been deleted!");
