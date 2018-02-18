@@ -56,11 +56,7 @@ class commentsController {
 		components()->notifications->push($notification);
 
 		//Delete any other notification targeting this user about this post
-		$notification = new Notification();
-		$notification->set_on_elem_type(Notification::POST);
-		$notification->set_on_elem_id($postID);
-		$notification->set_dest_user_id(userID);
-		components()->notifications->delete($notification);
+		delete_user_notifications_other_post(userID, $postID);
 
 		//Success
 		return array(
