@@ -175,6 +175,37 @@ class notificationComponent {
 	}
 
 	/**
+	 * Delete notifications
+	 * 
+	 * @param Notification $notification The notification to delete
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function delete(Notification $notification) : bool {
+
+		//If the notification has an ID we delete a notification by its ID
+		if($notification->has_id()){
+			//Delete a notification by its ID
+			$conditions = "id = ?";
+			$values = array($notification->get_id());
+		}
+		
+		//Delete the notification
+		else{
+
+			//Delete a specific notification
+			$data = $this->noticationToDB($notification, FALSE);
+			$array = CS::get()->db->splitConditionsArray($data);
+			$conditions = $array[0];
+			$values = $array[2];
+
+		}
+
+
+		//Delete the notification
+		return CS::get()->db->deleteEntry(self::NOTIFICATIONS_TABLE, $conditions, $values);
+	}
+
+	/**
 	 * Convert a notification object into database array
 	 * 
 	 * @param Notification $notification The notification to convert
@@ -188,7 +219,8 @@ class notificationComponent {
 		
 		$data['seen'] = $notification->is_seen() ? 1 : 0;
 		$data['from_user_id'] = $notification->get_from_user_id();
-		$data['dest_user_id'] = $notification->get_dest_user_id();
+		if($notification->has_dest_user_id())
+			$data['dest_user_id'] = $notification->get_dest_user_id();
 		$data['type'] = $notification->get_type();
 		$data['on_elem_id'] = $notification->get_on_elem_id();
 		$data['on_elem_type'] = $notification->get_on_elem_type();

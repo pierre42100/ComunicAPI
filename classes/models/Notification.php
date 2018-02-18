@@ -75,12 +75,21 @@ class Notification {
 	}
 
 	/**
-	 * Get notification iD
+	 * Get notification ID
 	 * 
 	 * @return int The ID of the notification
 	 */
 	public function get_id() : int {
 		return $this->id;
+	}
+
+	/**
+	 * Check if the notification object has an ID or not
+	 * 
+	 * @return bool TRUE if the notification as an ID / FALSE else
+	 */
+	public function has_id() : bool {
+		return $this->id != null;
 	}
 
 	/**
@@ -154,6 +163,15 @@ class Notification {
 	 */
 	public function get_dest_user_id() : int {
 		return $this->dest_user_id;
+	}
+
+	/**
+	 * Check if the notification has a destination user ID
+	 * 
+	 * @return bool TRUE if the destination user ID was specified
+	 */
+	public function has_dest_user_id() : bool {
+		return $this->dest_user_id != null;
 	}
 
 	/**
