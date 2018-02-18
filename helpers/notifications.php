@@ -12,7 +12,9 @@
  * @param int $postID Target post
  * @return bool TRUE in case of success / FALSE else
  */
-function delete_user_notifications_other_post(int $userID, int $postID) : bool {
+function delete_user_notifications_over_post(int $userID, int $postID) : bool {
+
+	user_login_required();
 
 	$notification = new Notification();
 	$notification->set_on_elem_type(Notification::POST);

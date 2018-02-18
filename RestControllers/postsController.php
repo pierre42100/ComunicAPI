@@ -404,6 +404,9 @@ class postsController {
 		if(!components()->posts->update_content($postID, $new_content))
 			Rest_fatal_error(500, "An error occured while trying to update post content !");
 
+		//Delete any notification targeting this user about the post
+		delete_user_notifications_over_post(userID, $postID);
+
 		//Success
 		return array("success" => "The post content has been updated !");
 	}

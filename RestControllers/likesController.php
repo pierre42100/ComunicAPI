@@ -51,6 +51,9 @@ class likesController {
 				$id = getPostPostIDWithAccess("id");
 				$componentType = Likes::LIKE_POST;
 
+				//Delete any notification targeting this user about the post
+				delete_user_notifications_over_post(userID, $id);
+
 				break;
 			
 

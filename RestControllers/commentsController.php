@@ -55,8 +55,8 @@ class commentsController {
 		$notification->set_type(Notification::COMMENT_CREATED);
 		components()->notifications->push($notification);
 
-		//Delete any other notification targeting this user about this post
-		delete_user_notifications_other_post(userID, $postID);
+		//Delete any other notification targeting this user about the post
+		delete_user_notifications_over_post(userID, $postID);
 
 		//Success
 		return array(
