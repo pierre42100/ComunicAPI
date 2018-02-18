@@ -21,6 +21,10 @@ class notificationComponent {
 	 */
 	public function push(Notification $notification) : bool {
 
+		//Check if the time of creation of the notification has to be set
+		if(!$notification->has_time_create())
+			$notification->set_time_create(time());
+
 		//Determine the visibility level of the notification
 		if($notification->get_on_elem_type() == Notification::POST){
 
@@ -94,7 +98,7 @@ class notificationComponent {
 		//Mark the notification as public
 		$notification->set_event_visibility(Notification::EVENT_PUBLIC);
 
-		//Process the list of users
+		//Process the list of userso
 		foreach($usersID as $current_user){
 
 			//Set the current user id for the notification
@@ -217,11 +221,14 @@ class notificationComponent {
 
 		$data = array();
 		
-		$data['seen'] = $notification->is_seen() ? 1 : 0;
-		$data['from_user_id'] = $notification->get_from_user_id();
+		if($notification->has_seen_state())
+			$data['seen'] = $notification->is_seen() ? 1 : 0;
+		if($notification->has_from_user_id())
+			$data['from_user_id'] = $notification->get_from_user_id();
 		if($notification->has_dest_user_id())
 			$data['dest_user_id'] = $notification->get_dest_user_id();
-		$data['type'] = $notification->get_type();
+		if($notification->has_type())
+			$data['type'] = $notification->get_type();
 		$data['on_elem_id'] = $notification->get_on_elem_id();
 		$data['on_elem_type'] = $notification->get_on_elem_type();
 
