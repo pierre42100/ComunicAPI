@@ -200,7 +200,7 @@ class notificationComponent {
 			$data = $this->noticationToDB($notification, FALSE);
 			$array = CS::get()->db->splitConditionsArray($data);
 			$conditions = $array[0];
-			$values = $array[2];
+			$values = $array[1];
 
 		}
 
