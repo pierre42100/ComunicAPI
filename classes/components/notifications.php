@@ -14,6 +14,24 @@ class notificationComponent {
 	const NOTIFICATIONS_TABLE = "comunic_notifications";
 
 	/**
+	 * Count the number of unread notifications of a user
+	 * 
+	 * @param int $userID Target user ID
+	 * @return int The number of unread notifications
+	 */
+	public function count_unread(int $userID) : int {
+
+		//Set the conditions of the request
+		$conditions = "WHERE dest_user_id = ? AND seen = 0";
+		$values = array($userID);
+
+		//Compute and return result
+		return CS::get()->db->count(self::NOTIFICATIONS_TABLE, $conditions, $values);
+
+	}
+
+
+	/**
 	 * Push a new notification
 	 * 
 	 * @param Notification $notification The notification to push
