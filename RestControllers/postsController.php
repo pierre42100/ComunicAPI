@@ -346,6 +346,14 @@ class postsController {
 		if($postID < 0)
 			Rest_fatal_error(400, "Couldn't create post !");
 
+		//Create a notification
+		$notification = new Notification();
+		$notification->set_from_user_id(userID);
+		$notification->set_on_elem_id($postID);
+		$notification->set_on_elem_type(Notification::POST);
+		$notification->set_type(Notification::ELEM_CREATED);
+		components()->notifications->push($notification);
+
 		//Success
 		return array(
 			"success" => "The post has been created !",
@@ -422,6 +430,11 @@ class postsController {
 		//Delete the post
 		if(!CS::get()->components->posts->delete($postID))
 			Rest_fatal_error(500, "Couldn't delete post!");
+
+		/*//Delete related notifications
+		$notification = new Notification();
+		$notification->set_on_elem_type(Notification::POST);
+		$notification->set_on_elem_id($postID);*/
 
 		//Success
 		return array("success" => "The post has been deleted!");
