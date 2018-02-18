@@ -46,16 +46,21 @@ class commentsController {
 			Rest_fatal_error(500, "An error occured while trying to create comment !");
 
 
-		//Create a notification
+		//Create a notification about the comments created
 		$notification = new Notification();
 		$notification->set_time_create(time());
 		$notification->set_from_user_id(userID);
 		$notification->set_on_elem_id($postID);
 		$notification->set_on_elem_type(Notification::POST);
 		$notification->set_type(Notification::COMMENT_CREATED);
-		
-		//Push notification
 		components()->notifications->push($notification);
+
+		//Delete any other notification targeting this user about this post
+		$notification = new Notification();
+		$notification->set_on_elem_type(Notification::POST);
+		$notification->set_on_elem_id($postID);
+		$notification->set_dest_user_id(userID);
+		components()->notifications->delete($notification);
 
 		//Success
 		return array(
