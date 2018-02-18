@@ -33,34 +33,35 @@ class notificationComponent {
 
 			//Check if the notification is private or not
 			if($infos_post['visibility_level'] == Posts::VISIBILITY_USER){
-				
+
 				//Push the notification only to the user, and only if it is not him
-				if($notification->get_from_user_id() == $infos_post['userID'])
+				if($notification->get_from_user_id() == $infos_post['user_page_id'])
 					return false; //Nothing to be done
 
 				//Set the target user
 				$notification->set_dest_user_id($infos_post['user_page_id']);
 
 				//Push the notification
-				return $notification->push_private($notification);
+				return $this->push_private($notification);
 			}
 			else {
 
 				//Get the list of friends of the user
-				$friendslist = components()->friends->getList($infos_post['user_page_id']);
+				$friendslist = components()->friends->getList($notification->get_from_user_id());
 
 				//Generate the list of target users
 				$target_users = array();
 				foreach($friendslist as $friend){
-
+						
+					//Check if target user and page owner are friends
+					if(!components()->friends->are_friend($friend->getFriendID(), $notification->get_from_container_id())
+						AND $friend->getFriendID() != $notification->get_from_container_id())
+						continue;
+										
 					//Check if the friend is following his friend
 					if(!components()->friends->is_following($friend->getFriendID(), $notification->get_from_user_id())){
 						continue;
 					}
-
-					//Check if target user and page owner are friends
-					if(!components()->friends->are_friend($friend->getFriendID(), $notification->get_from_container_id()))
-						continue;
 					
 					//Add the user to the list
 					$target_users[] = $friend->getFriendID();
