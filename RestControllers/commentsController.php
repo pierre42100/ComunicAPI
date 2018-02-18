@@ -48,7 +48,7 @@ class commentsController {
 
 		//Create a notification
 		$notification = new Notification();
-		$notification->set_time(time());
+		$notification->set_time_create(time());
 		$notification->set_from_user_id(userID);
 		$notification->set_on_elem_id($postID);
 		$notification->set_on_elem_type(Notification::POST);

@@ -40,7 +40,7 @@ class Notification {
 
 	//Private fields
 	private $id;
-	private $time;
+	private $time_create;
 	private $seen;
 	private $from_user_id;
 	private $dest_user_id;
@@ -86,19 +86,19 @@ class Notification {
 	/**
 	 * Set notification creation time
 	 * 
-	 * @param int $time The creation time
+	 * @param int $time_create The creation time
 	 */
-	public function set_time(int $time){
-		$this->time = $time;
+	public function set_time_create(int $time_create){
+		$this->time_create = $time_create;
 	}
 
 	/**
-	 * Get notification time
+	 * Get notification creation time
 	 * 
-	 * @return int The time of the notification
+	 * @return int The creation time of the notification
 	 */
-	public function get_time() : int {
-		return $this->time;
+	public function get_time_create() : int {
+		return $this->time_create;
 	}
 
 	/**

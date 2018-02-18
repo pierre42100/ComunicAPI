@@ -59,7 +59,7 @@ class notificationComponent {
 					}
 
 					//Check if target user and page owner are friends
-					if(!components()->friends->are_friend($friend->getFriendID(), $notification->from_container_id()))
+					if(!components()->friends->are_friend($friend->getFriendID(), $notification->get_from_container_id()))
 						continue;
 					
 					//Add the user to the list
@@ -89,6 +89,9 @@ class notificationComponent {
 	 * @return bool FALSE for a failure
 	 */
 	private function push_public(Notification $notification, array $usersID) : bool {
+
+		//Mark the notification as public
+		$notification->set_event_visibility(Notification::EVENT_PUBLIC);
 
 		//Process the list of users
 		foreach($usersID as $current_user){
@@ -120,6 +123,9 @@ class notificationComponent {
 	 */
 	private function push_private(Notification $notification) : bool {
 
+		//Mark the notification as private
+		$notification->set_event_visibility(Notification::EVENT_PRIVATE);
+
 		//Check if a similar notification already exists or not
 		if($this->similar_exists($notification))
 			return false; //A similar notification already exists
@@ -140,15 +146,7 @@ class notificationComponent {
 		
 		//Prepare the request
 		$tableName = self::NOTIFICATIONS_TABLE;
-		$conditions = array(
-
-			"seen" => $notification->is_seen() ? 1 : 0,
-			"dest_user_id" => $notification->get_dest_user_id(),
-			"on_elem_id" => $notification->get_on_elem_id(),
-			"on_elem_type" => $notification->get_on_elem_type(),
-			"type" => $notification->get_type()
-
-		);
+		$conditions = $this->noticationToDB($notification, false);
 
 		//Make conditions
 		$process_conditions = CS::get()->db->splitConditionsArray($conditions);
@@ -169,21 +167,38 @@ class notificationComponent {
 	private function create(Notification $notification) : bool {
 
 		//Generate notification datas
-		$values = $this->noticationToDB($notification);
+		$values = $this->noticationToDB($notification, TRUE);
 
+		//Save the notification in the database
+		return CS::get()->db->addLine(self::NOTIFICATIONS_TABLE, $values);
 	}
 
 	/**
 	 * Convert a notification object into database array
 	 * 
 	 * @param Notification $notification The notification to convert
+	 * @param bool $full_entry  TRUE to process the entire notification, else only
+	 * the main informations will be processed
 	 * @return array The converted array
 	 */
-	private function noticationToDB(Notification $notification) : array {
+	private function noticationToDB(Notification $notification, bool $full_entry = TRUE) : array {
 
 		$data = array();
-
 		
+		$data['seen'] = $notification->is_seen() ? 1 : 0;
+		$data['from_user_id'] = $notification->get_from_user_id();
+		$data['dest_user_id'] = $notification->get_dest_user_id();
+		$data['type'] = $notification->get_type();
+		$data['on_elem_id'] = $notification->get_on_elem_id();
+		$data['on_elem_type'] = $notification->get_on_elem_type();
+
+		//Specify complementary fields only if required
+		if($full_entry){
+			$data['from_container_id'] = $notification->get_from_container_id();
+			$data['from_container_type'] = $notification->get_from_container_type();
+			$data['time_create'] = $notification->get_time_create();
+			$data['visibility'] = $notification->get_event_visibility();
+		}
 
 		return $data;
 	}
