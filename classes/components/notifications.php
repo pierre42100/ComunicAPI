@@ -30,6 +30,29 @@ class notificationComponent {
 
 	}
 
+	/**
+	 * Get the list of unread notifications of a user
+	 * 
+	 * @param int $userID The target user ID
+	 * @return array The list of notifications
+	 */
+	public function list_unread(int $userID) : array {
+
+		//Perform a request on the server
+		$conditions = "WHERE dest_user_id = ? AND seen = 0 ORDER BY id DESC";
+		$values = array($userID);
+
+		//Perform the request
+		$results = CS::get()->db->select(self::NOTIFICATIONS_TABLE, $conditions, $values);
+
+		//Process the list of results
+		$list = array();
+		foreach($results as $row)
+			$list[] = $this->dbToNotification($row);
+		
+		//Return result
+		return $list;
+	}
 
 	/**
 	 * Push a new notification
@@ -259,6 +282,33 @@ class notificationComponent {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Convert a notification database entry into a Notification object
+	 * 
+	 * @param array $row The database entry to process
+	 * @return Notification The generated notification
+	 */
+	private function dbToNotification(array $row) : Notification {
+
+		$notif = new Notification();
+
+		//Parse database entry
+		$notif->set_id($row['id']);
+		$notif->set_seen($row['seen'] == 1);
+		$notif->set_time_create($row['time_create']);
+		$notif->set_from_user_id($row['from_user_id']);
+		$notif->set_dest_user_id($row['dest_user_id']);
+		$notif->set_on_elem_id($row['on_elem_id']);
+		$notif->set_on_elem_type($row['on_elem_type']);
+		$notif->set_type($row['type']);
+		$notif->set_event_visibility($row['visibility']);
+		$notif->set_from_container_id($row['from_container_id']);
+		$notif->set_from_container_type($row['from_container_type']);
+
+		return $notif;
+
 	}
 
 }
