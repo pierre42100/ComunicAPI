@@ -262,6 +262,8 @@ class notificationComponent {
 
 		$data = array();
 		
+		if($notification->has_id())
+			$data['id'] = $notification->get_id();
 		if($notification->has_seen_state())
 			$data['seen'] = $notification->is_seen() ? 1 : 0;
 		if($notification->has_from_user_id())
@@ -270,8 +272,10 @@ class notificationComponent {
 			$data['dest_user_id'] = $notification->get_dest_user_id();
 		if($notification->has_type())
 			$data['type'] = $notification->get_type();
-		$data['on_elem_id'] = $notification->get_on_elem_id();
-		$data['on_elem_type'] = $notification->get_on_elem_type();
+		if($notification->has_on_elem_id())
+			$data['on_elem_id'] = $notification->get_on_elem_id();
+		if($notification->has_on_elem_type())
+			$data['on_elem_type'] = $notification->get_on_elem_type();
 
 		//Specify complementary fields only if required
 		if($full_entry){

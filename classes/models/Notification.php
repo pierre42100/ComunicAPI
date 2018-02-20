@@ -89,7 +89,7 @@ class Notification {
 	 * @return bool TRUE if the notification as an ID / FALSE else
 	 */
 	public function has_id() : bool {
-		return $this->id != null;
+		return ($this->id != null) && ($this->id != 0);
 	}
 
 	/**
@@ -220,6 +220,16 @@ class Notification {
 	}
 
 	/**
+	 * Check if the id of element targeted by the notification has been
+	 * specified or not
+	 * 
+	 * @return bool TRUE if the ID of the target element has been specified
+	 */
+	public function has_on_elem_id() : bool {
+		return $this->on_elem_id != null;
+	}
+
+	/**
 	 * Set notification target element type
 	 * 
 	 * @param string $elem_type The type of the target element type
@@ -235,6 +245,16 @@ class Notification {
 	 */
 	public function get_on_elem_type() : string {
 		return $this->on_elem_type;
+	}
+
+	/**
+	 * Check if the type of element targeted by the notification has been
+	 * specified or not
+	 * 
+	 * @return bool TRUE if the ID of the target element has been specified
+	 */
+	public function has_on_elem_type() : bool {
+		return $this->on_elem_type != null;
 	}
 
 	/**
