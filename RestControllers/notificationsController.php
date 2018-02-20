@@ -96,6 +96,22 @@ class notificationsController {
 
 	}
 
+	/**
+	 * Delete all the notifications of a user
+	 * 
+	 * @url POST notifications/delete_all
+	 */
+	public function delete_all(){
+
+		user_login_required();
+
+		//Try to delete the list of notifications of the user
+		if(!components()->notifications->delete_all_user(userID))
+			Rest_fatal_error(500, "Could not delete user's notifications !");
+
+		//Success
+		return array("success" => "The notifications have been deleted !");
+	}
 
 	/**
 	 * Get a valid notification ID in a POST request
