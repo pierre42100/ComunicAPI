@@ -55,6 +55,30 @@ class notificationComponent {
 	}
 
 	/**
+	 * Get the informations about a single notification
+	 * 
+	 * @param int $notifID The target notification ID
+	 * @return Notification The target notification
+	 */
+	public function get_single(int $notifID) : Notification {
+
+		//Perform database request
+		$conditions = "WHERE id = ?";
+		$values = array($notifID);
+
+		//Perform the request
+		$result = CS::get()->db->select(self::NOTIFICATIONS_TABLE, $conditions, $values);
+
+		//Check for error
+		if(count($result) == 0)
+			return new Notification(); //Return empty notification
+		
+		//Parse and return notification
+		return $this->dbToNotification($result[0]);
+
+	}
+
+	/**
 	 * Push a new notification
 	 * 
 	 * @param Notification $notification The notification to push
