@@ -27,6 +27,26 @@ class notificationsController {
 
 	}
 
+	/**
+	 * Count all the new kinds of data
+	 * 
+	 * - notifications
+	 * - unread conversations
+	 * 
+	 * @url POST notifications/count_all_news
+	 */
+	public function count_all_news(){
+
+		user_login_required();
+
+		//Get and return the data
+		return array(
+			"notifications" => components()->notifications->count_unread(userID),
+			"conversations" => components()->conversations->number_user_unread(userID)
+		);
+
+	}
+
 
 	/**
 	 * Get the list of unread notifications of a user
