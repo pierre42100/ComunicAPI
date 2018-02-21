@@ -387,6 +387,22 @@ class conversationsController{
 	}
 
 	/**
+	 * Get the number of unread conversations of the user
+	 * 
+	 * @url POST conversations/get_number_unread
+	 */
+	public function get_number_unread(){
+
+		user_login_required();
+
+		//Get the number of unread conversations of the user
+		$number_unread_conversations = components()->conversations->number_user_unread(userID);
+
+		//Return result
+		return array("nb_unread" => $number_unread_conversations);
+	}
+
+	/**
 	 * Delete a conversation
 	 * 
 	 * @url POST /conversations/delete

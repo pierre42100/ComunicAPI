@@ -767,6 +767,24 @@ class conversations {
 	}
 
 	/**
+	 * Get the number of unread conversations of a user
+	 * 
+	 * @param int $userID Target user ID
+	 * @return int The number of unread conversations of the user
+	 */
+	public function number_user_unread(int $userID) : int {
+
+		//Prepare database request
+		$tableName = $this->conversationsUsersTable;
+		$conditions = "WHERE ID_utilisateurs = ? AND saw_last_message = 0";
+		$values = array($userID);
+
+		//Perform request and return result
+		return CS::get()->db->count($tableName, $conditions, $values);
+
+	}
+
+	/**
 	 * Get a list of conversation messages based on specified conditions
 	 *
 	 * @param string $conditions The conditions of the request
