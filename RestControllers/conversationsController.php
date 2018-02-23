@@ -403,6 +403,22 @@ class conversationsController{
 	}
 
 	/**
+	 * Get the list of unread notifications
+	 * 
+	 * @url POST /conversations/get_list_unread
+	 */
+	public function get_list_unread(){
+
+		user_login_required();
+
+		//Get the list of unread conversations of the user
+		$list_unread_conversations = components()->conversations->get_list_unread(userID);
+
+		//Return result
+		return $list_unread_conversations;
+	}
+
+	/**
 	 * Delete a conversation
 	 * 
 	 * @url POST /conversations/delete

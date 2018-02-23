@@ -785,6 +785,42 @@ class conversations {
 	}
 
 	/**
+	 * Get the list of unread conversations of a user
+	 * 
+	 * @param int $userID Target user ID
+	 * @return array The list of unread conversations of the user
+	 */
+	public function get_list_unread(int $userID) : array {
+
+		//Perform the request on the server
+		$tablesName = $this->conversationsUsersTable." as users, ".$this->conversationsListTable." as list, ".$this->conversationsMessagesTable." as messages";
+		$conditions = "WHERE users.ID_utilisateurs = ? AND users.following = 1 AND users.saw_last_message = 0 AND users.ID_comunic_conversations_list = list.ID
+		AND list.ID = messages.ID_comunic_conversations_list AND list.last_active = messages.time_insert";
+		$values = array($userID);
+
+		//Perform the request
+		$results = CS::get()->db->select($tablesName, $conditions, $values);
+
+		//Process the list of results
+		$list = array();
+		foreach($results as $result){
+
+			//Generate the entry
+			$entry = array(
+				"id" => $result['ID_comunic_conversations_list'],
+				"conv_name" => $result["name"],
+				"last_active" => $result['last_active'],
+				"userID" => $result["ID_utilisateurs"],
+				"message" => $result["message"]
+			);
+
+			$list[] = $entry;
+		}
+
+		return $list;
+	}
+
+	/**
 	 * Get a list of conversation messages based on specified conditions
 	 *
 	 * @param string $conditions The conditions of the request
