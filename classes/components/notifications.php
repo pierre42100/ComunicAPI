@@ -143,6 +143,18 @@ class notificationComponent {
 			}
 
 		}
+
+		//Handles friendship request notifications
+		else if($notification->get_on_elem_type() == Notification::FRIENDSHIP_REQUEST){
+
+			//Complete the notification
+			$notification->set_from_container_id(0);
+			$notification->set_from_container_type("");
+			
+			//Push the notification in private way
+			return $this->push_private($notification);
+
+		}
 		
 		//Unsupported element
 		else {

@@ -66,13 +66,16 @@ class friendsController{
 		if(!CS::get()->components->friends->send_request(userID, $friendID))
 			Rest_fatal_error(500, "Couldn't create friendship request !");
 		
+		//Create notification
+		create_friendship_notification(userID, $friendID, Notification::SENT_FRIEND_REQUEST);
+
 		//Success
 		return array("success" => "The friendship request has been created !");
 
 	}
 
 	/**
-	 * Remove a previously send frienship request
+	 * Remove a previously sent frienship request
 	 * 
 	 * @url POST /friends/removeRequest
 	 */
@@ -90,6 +93,9 @@ class friendsController{
 		if(!CS::get()->components->friends->remove_request(userID, $friendID))
 			Rest_fatal_error(500, "An error occured while trying to remove the friendship request !");
 		
+		//Delete all related notifications
+		delete_notifications_friendship_request(userID, $friendID);
+
 		//This is a success
 		return array("success" => "The friendship request has been removed!");
 	}
@@ -117,6 +123,11 @@ class friendsController{
 		if($result != true)
 			Rest_fatal_error(500, "Couldn't respond to friendship request !");
 		
+		//Send notification
+		create_friendship_notification(userID, $friendID, 
+			$acceptRequest ? Notification::ACCEPTED_FRIEND_REQUEST : Notification::REJECTED_FRIEND_REQUEST
+		);
+		
 		//Else it is a success
 		return array("success" => "A response was given to friendship request !");
 	}
@@ -137,11 +148,15 @@ class friendsController{
 		$friendID = toInt($_POST['friendID']);
 		$result = CS::get()->components->friends->remove(userID, $friendID);
 
-		//Check if the operation is a result
+		//Check if the operation is a success
 		if(!$result)
 			Rest_fatal_error(500, "Couldn't remove user from the friendlist for an unexcepted reason !");
-		else
-			return array("success" => "The friend was removed from the list !");
+		
+		//Delete any related notification
+		delete_notifications_friendship_request(userID, $friendID);
+
+		//Success
+		return array("success" => "The friend was removed from the list !");
 	}
 
 	/**

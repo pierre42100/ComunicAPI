@@ -23,11 +23,15 @@ class Notification {
 	const POST_TIMER = "post_timer";
 	const POST_SURVEY = "post_survey";
 	const COMMENT = "comment";
+	const FRIENDSHIP_REQUEST = "friend";
 
 	/**
 	 * Event type
 	 */
 	const COMMENT_CREATED = "comment_created";
+	const SENT_FRIEND_REQUEST = "sent_friend_request";
+	const ACCEPTED_FRIEND_REQUEST = "accepted_request";
+	const REJECTED_FRIEND_REQUEST = "rejected_request";
 	const ELEM_CREATED = "elem_created";
 	const ELEM_UPDATED = "elem_updated";
 
