@@ -12,6 +12,7 @@ class Friend {
 	private $accepted;
 	private $following;
 	private $last_activity_time;
+	private $can_post_texts;
 
 	//Set and get friend ID
 	public function setFriendID(int $id){
@@ -43,5 +44,13 @@ class Friend {
 	}
 	public function getLastActivityTime() : int {
 		return $this->last_activity_time;
+	}
+
+	//Set and get the post creation authorization status
+	public function setCanPostTexts(bool $can_post_texts){
+		$this->can_post_texts = $can_post_texts;
+	}
+	public function canPostTexts() : bool {
+		return $this->can_post_texts;
 	}
 }

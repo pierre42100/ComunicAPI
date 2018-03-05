@@ -13,7 +13,13 @@ class friendsController{
 	 * @url POST /friends/getList
 	 */
 	public function getFriendsList(){
+
 		user_login_required(); //Login required
+
+		//Check if the user want all the informations about its friends or not
+		$all_infos = false;
+		if(isset($_POST['complete']))
+			$all_infos = $_POST['complete'] === "true";
 
 		//Try to get friends list
 		$friendsList = CS::get()->components->friends->getList(userID);
@@ -27,7 +33,7 @@ class friendsController{
 		foreach($friendsList as $friend){
 
 			//Parse friend informations
-			$api_list[] = $this->parseFriendAPI($friend);
+			$api_list[] = $this->parseFriendAPI($friend, $all_infos);
 
 		}
 
@@ -36,6 +42,15 @@ class friendsController{
 
 		//Return list
 		return $api_list;
+	}
+
+	/**
+	 * Get the list of friends of a specific user
+	 * 
+	 * @url POST /friends/get_user_list
+	 */
+	public function get_user_list(){
+
 	}
 
 	/**
@@ -242,17 +257,28 @@ class friendsController{
 	 * Convert a friend object into an object readable by the api
 	 * 
 	 * @param Friend $friend The input friend
+	 * @param bool $all_infos Specify if whether all the informations about the
+	 * friendship should be returned or not
 	 * @return array Informations about the friend readable by the api
 	 */
-	private function parseFriendAPI(Friend $friend) : array {
+	private function parseFriendAPI(Friend $friend, bool $all_infos = FALSE) : array {
 
 		//Parse informations about the friend
 		$data = array(
 			"ID_friend" => $friend->getFriendID(),
 			"accepted" => $friend->isAccepted() ? 1 : 0,
-			"following" => $friend->isFollowing() ? 1 : 0,
 			"time_last_activity" => $friend->getLastActivityTime()
 		);
+
+		//Check if all the informations about the friendship should be returned or not
+		if($all_infos){
+			
+			//Following status
+			$data["following"] = $friend->isFollowing() ? 1 : 0;
+
+			//Can posts text on page
+			$data["canPostTexts"] = $friend->canPostTexts();
+		}
 
 		return $data;
 	}

@@ -43,6 +43,7 @@ class friends {
 			$this->friendsTable.".ID_amis",
 			$this->friendsTable.".actif",
 			$this->friendsTable.".abonnement",
+			$this->friendsTable.".autoriser_post_page"
 		);
 
 		//Perform the request on the database
@@ -364,6 +365,7 @@ class friends {
 		$friend->setAccepted($data["actif"] == 1);
 		$friend->setFollowing($data["abonnement"] == 1);
 		$friend->setLastActivityTime($data["last_activity"]);
+		$friend->setCanPostTexts($data["autoriser_post_page"] == 1);
 
 		return $friend;
 	}
