@@ -51,6 +51,28 @@ class friendsController{
 	 */
 	public function get_user_list(){
 
+		//Get the ID of the target user
+		$userID = getPostUserID("userID");
+
+		//Check whether the friends list of the user is public or not
+		if(!components()->user->userAllowed(userID, $userID))
+			Rest_fatal_error(401, "You are not allowed to access these informations !");
+		
+		//Check if the friendlist of the user is public or not
+		if(!components()->user->isFriendsListPublic($userID))
+			Rest_fatal_error(401, "The friends list of the user is not public !");
+		
+		//Get the list of friend of the user
+		$friends = CS::get()->components->friends->getList($userID);
+
+		//Process and return it
+		$IDs = array();
+
+		foreach($friends as $friend){
+			$IDs[] = $friend->getFriendID();
+		}
+
+		return $IDs;
 	}
 
 	/**

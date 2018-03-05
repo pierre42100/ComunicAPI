@@ -2,7 +2,7 @@
 /**
  * Main user class
  *
- * @author Pierre HUBER
+ * @author Pierre HUBERT
  */
 
 class User{
@@ -494,6 +494,35 @@ class User{
 
 		//Return result
 		return $result[0]["bloquecommentaire"] == 0;
+	}
+
+	/**
+	 * Check whether a user allow a public access over its friends list or not
+	 * 
+	 * @param int $userID The ID of the user
+	 * @return bool True if the friends list of the user is public / FALSE else
+	 */
+	public function isFriendsListPublic(int $userID) : bool {
+		
+		//Fetch the information in the database
+		$conditions = "WHERE ID = ?";
+		$condValues = array($userID);
+		$fields = array("liste_amis_publique");
+
+		//Perform the request
+		$result = CS::get()->db->select(
+			$this->userTable,
+			$conditions,
+			$condValues,
+			$fields
+		);
+
+		//Check for errors
+		if(count($result) == 0)
+			return FAlSE;
+
+		//Return result
+		return $result[0]["liste_amis_publique"] == 1;
 	}
 
 	/**
