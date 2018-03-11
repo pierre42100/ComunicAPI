@@ -69,7 +69,11 @@ class friendsController{
 		$IDs = array();
 
 		foreach($friends as $friend){
-			$IDs[] = $friend->getFriendID();
+			
+			//Return only accepted friendships
+			if($friend->isAccepted())
+				$IDs[] = $friend->getFriendID();
+
 		}
 
 		return $IDs;
