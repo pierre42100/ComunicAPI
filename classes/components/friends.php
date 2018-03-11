@@ -344,6 +344,29 @@ class friends {
 	}
 
 	/**
+	 * Update the posts authorization status for a friendship
+	 * 
+	 * @param int $userID The ID of the user updating the authorization status
+	 * @param int $friendID The ID of the target friend
+	 * @param boolean $allow The new authorization status
+	 * @return bool TRUE in case of success / FALSE else
+	 */
+	public function set_can_post_texts(int $userID, int $friendID, bool $allow) : bool {
+
+		//Update the table
+		$tableName = $this->friendsTable;
+		$conditions = "ID_personne = ? AND ID_amis = ?";
+		$conditionsValues = array($userID, $friendID);
+		$newValues = array(
+			"autoriser_post_page" => $allow ? 1 : 0
+		);
+
+		//Perform the request
+		return CS::get()->db->updateDB($tableName, $conditions, $newValues, $conditionsValues);
+
+	}
+
+	/**
 	 * Count the number of friends of a user
 	 * 
 	 * @param int $userID The target user ID

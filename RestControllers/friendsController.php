@@ -303,6 +303,36 @@ class friendsController{
 	}
 
 	/**
+	 * Update the post text authorization status
+	 * 
+	 * @url POST /friends/set_can_post_texts
+	 */
+	public function update_can_post_texts(){
+
+		user_login_required(); //Login required
+
+		//Check if the a friendID has been specified
+		$friendID = getPostUserID('friendID');
+
+		//Check if a follow status has been specified
+		if(!isset($_POST['allow']))
+			Rest_fatal_error(400, "Please specify an authorization status!");
+		
+		$can_post_texts = $_POST['allow'] === "true";
+
+		//Check if the two personns are friend
+		if(!CS::get()->components->friends->are_friend(userID, $friendID))
+			Rest_fatal_error(401, "You are not friend with this personn!");
+		
+		//Update status
+		if(!components()->friends->set_can_post_texts(userID, $friendID, $can_post_texts))
+			Rest_fatal_error(500, "Coudl not update friendship status !");
+
+		//Success
+		return array("success" => "Updated authorization status !");
+	}
+
+	/**
 	 * Convert a friend object into an object readable by the api
 	 * 
 	 * @param Friend $friend The input friend
