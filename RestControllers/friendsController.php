@@ -80,6 +80,29 @@ class friendsController{
 	}
 
 	/**
+	 * Get friendship informations about a specific friend
+	 * 
+	 * @url POST /friends/get_single_infos
+	 */
+	public function get_single_infos(){
+
+		user_login_required();
+
+		//Get friendID
+		$friendID = getPostUserID('friendID');
+
+		//Get informations about the friendship
+		$list = components()->friends->getList(userID, $friendID);
+
+		//Check if the friend was found or not
+		if(count($list) == 0)
+			Rest_fatal_error(404, "Specified friend not found !");
+
+		//Return informations about the friend
+		return $this->parseFriendAPI($list[0], true);
+	}
+
+	/**
 	 * Send a friendship request
 	 * 
 	 * @url POST /friends/sendRequest

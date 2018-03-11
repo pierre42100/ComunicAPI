@@ -28,14 +28,24 @@ class friends {
 	 * Get and returns the list of the friends of a user
 	 *
 	 * @param int $userID The ID of the user
+	 * @param int $friendID The ID of a specific friend (default -1)
 	 * @return array The list of the friends of the user (Friend objects)
 	 */
-	public function getList(int $userID) : array {
+	public function getList(int $userID, int $friendID = -1) : array {
 		
 		//Prepare the request on the database
 		$tableName = $this->friendsTable.", utilisateurs";
-		$condition = "WHERE ID_personne = ? AND amis.ID_amis = utilisateurs.ID ORDER BY utilisateurs.last_activity DESC";
+		$condition = "WHERE ID_personne = ? AND amis.ID_amis = utilisateurs.ID ";
 		$condValues = array($userID);
+
+		//Check if the request is targeting a specific friend
+		if($friendID != -1){
+			$condition .= " AND ID_amis = ?";
+			$condValues[] = $friendID;
+		}
+
+		//Complete conditions
+		$condition .= "ORDER BY utilisateurs.last_activity DESC";
 
 		//Specify which fields to get
 		$fieldsList = array(
