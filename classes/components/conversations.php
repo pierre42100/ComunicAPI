@@ -776,7 +776,7 @@ class conversations {
 
 		//Prepare database request
 		$tableName = $this->conversationsUsersTable;
-		$conditions = "WHERE ID_utilisateurs = ? AND saw_last_message = 0";
+		$conditions = "WHERE ID_utilisateurs = ? AND saw_last_message = 0 AND following = 1";
 		$values = array($userID);
 
 		//Perform request and return result
