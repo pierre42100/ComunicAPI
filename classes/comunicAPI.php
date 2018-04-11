@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-class CS{
+class CS {
 
     /**
      * @var CS $instance Instance object copy

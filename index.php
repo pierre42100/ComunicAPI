@@ -53,7 +53,7 @@ else {
 //Check if login tokens where specified
 if(isset($_POST['userToken1']) AND isset($_POST['userToken2'])){
 	//Try to login user
-	$userID = $cs->components->user->getUserIDfromToken(APIServiceID, array(
+	$userID = $cs->components->account->getUserIDfromToken(APIServiceID, array(
 		$_POST['userToken1'],
 		$_POST['userToken2']
 	));

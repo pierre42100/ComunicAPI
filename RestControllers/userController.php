@@ -28,7 +28,7 @@ class userController
 		$userPassword = $_POST['userPassword'];
 
 		//Try to perform login
-		$loginTokens = CS::get()->components->user->generateUserLoginTokens($userMail, $userPassword, APIServiceID, $db);
+		$loginTokens = CS::get()->components->account->generateUserLoginTokens($userMail, $userPassword, APIServiceID, $db);
 
 		if(count($loginTokens) == 0)
 			throw new RestException(401, "Invalid e-mail address / password !");
@@ -53,7 +53,7 @@ class userController
 		user_login_required();
 
 		//Try to delete token
-		if(!CS::get()->components->user->deleteUserLoginToken(userID, APIServiceID))
+		if(!CS::get()->components->account->deleteUserLoginToken(userID, APIServiceID))
 			throw new RestException(500, "Something went wrong while trying to logout user !");
 
 		//Everything is ok
