@@ -5,6 +5,9 @@
  * @author Pierre HUBERT
  */
 
+//Enable access to exceptions handler
+use \Jacwright\RestServer\RestException;
+
 class accountController {
 
 	/**
