@@ -19,7 +19,6 @@ class User{
 	const USER_PAGE_PUBLIC = 1;
 	const USER_PAGE_OPEN = 2;
 
-
 	/**
 	 * Public constructor
 	 */
