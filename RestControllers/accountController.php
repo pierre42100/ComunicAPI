@@ -47,15 +47,64 @@ class accountController {
 	 * @url POST /user/disconnectUSER
 	 * @url POST /account/logout
 	 */
-	 public function disconnectUSER(){
+	public function disconnectUSER(){
 
-	   user_login_required();
+		user_login_required();
 
-	   //Try to delete token
-	   if(!CS::get()->components->account->deleteUserLoginToken(userID, APIServiceID))
-		   throw new RestException(500, "Something went wrong while trying to logout user !");
+		//Try to delete token
+		if(!CS::get()->components->account->deleteUserLoginToken(userID, APIServiceID))
+			throw new RestException(500, "Something went wrong while trying to logout user !");
 
-	   //Everything is ok
-	   return array("success" => "The user has been disconnected !");
-	 }
+		//Everything is ok
+		return array("success" => "The user has been disconnected !");
+	}
+
+	/**
+	 * Create an account
+	 * 
+	 * @url POST /account/create
+	 */
+	public function createAccount(){
+
+		//Check post fields existence
+		if(!check_post_parametres(array("emailAddress", "firstName", "lastName", "password")))
+			Rest_fatal_error(400, "Please check given parameters");
+
+		//Check the first and the last name of the user
+		$firstName = $_POST["firstName"];
+		$lastName = $_POST["lastName"];
+		if(strlen($firstName) < 2 || strlen($lastName) < 2)
+			Rest_fatal_error(400, "Please check the length of the first and the last name");
+
+		//Check the given email address
+		$email = $_POST['emailAddress'];
+		if(!filter_var($email, FILTER_VALIDATE_EMAIL))
+			Rest_fatal_error(400, "Specified email address is invalid !");
+		
+		//Check the given password
+		$password = $_POST["password"];
+		if(strlen($password) < 3)
+			Rest_fatal_error(400, "Please specify a stronger password !");
+
+		
+		//Check if the email address is already associated with an account
+		if(components()->account->exists_email($email))
+			Rest_fatal_error(401, "The specified email address is already associated with an account!");
+		
+		//Create new account object
+		$newAccount = new NewAccount();
+		$newAccount->firstName = $firstName;
+		$newAccount->lastName = $lastName;
+		$newAccount->email = $email;
+		$newAccount->password = $password;
+
+		//Try to create the account
+		if(!components()->account->create($newAccount))
+			Rest_fatal_error(500, "An error occured while trying to create the account !");
+
+		//Success
+		return array(
+			"success" => "The account has been created !"
+		);
+	}
 }

@@ -175,6 +175,30 @@ class Account {
 	}
 
 	/**
+	 * Intend to create an account
+	 * 
+	 * @param NewAccount $account The new account to create
+	 * @return bool TRUE in case of success / FALSE else
+	 */
+	public function create(NewAccount $newAccount) : bool {
+
+		//Crypt password
+		$password = $this->cryptPassword($newAccount->password);
+		
+		//Set the values
+		$values = array(
+			"nom" => $newAccount->lastName,
+			"prenom" => $newAccount->firstName,
+			"date_creation" => mysql_date(),
+			"mail" => $newAccount->email,
+			"password" => $password
+		);
+
+		//Try to insert the user in the database
+		return CS::get()->db->addLine(self::USER_TABLE, $values);
+	}
+
+	/**
 	 * Crypt user password
 	 *
 	 * @param string $userPassword The password to crypt
