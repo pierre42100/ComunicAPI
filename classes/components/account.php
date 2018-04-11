@@ -158,6 +158,23 @@ class Account {
 	}
 
 	/**
+	 * Check whether an email address is linked to an account or not
+	 * 
+	 * @return bool TRUE if the email is linked to an account / FALSE else
+	 */
+	public function exists_email(string $email) : bool {
+
+		//Perform an API request
+		$tableName = self::USER_TABLE;
+		$conditions = "WHERE mail = ?";
+		$values = array($email);
+
+		//Return result
+		return CS::get()->db->count($tableName, $conditions, $values) > 0;
+
+	}
+
+	/**
 	 * Crypt user password
 	 *
 	 * @param string $userPassword The password to crypt
