@@ -13,7 +13,7 @@ class UserComponent {
 	const USER_TABLE = "utilisateurs";
 
 	/**
-	 * Pages visiblity levels
+	 * User pages visiblity levels
 	 */
 	const USER_PAGE_PRIVATE = 0;
 	const USER_PAGE_PUBLIC = 1;
@@ -72,8 +72,8 @@ class UserComponent {
 	/**
 	 * Get Multiple Users Infos
 	 *
-	 * @param Array $usersID The users ID
-	 * @return Array The result of the function (user informations) (empty one if it fails)
+	 * @param array $usersID The users ID
+	 * @return array The result of the function (user informations as User objects) (empty one if it fails)
 	 */
 	public function getMultipleUserInfos(array $usersID) : array {
 		//Prepare database request
@@ -96,7 +96,7 @@ class UserComponent {
 		
 		//Process result
 		foreach($usersInfos as $processUser){
-			$result[$processUser['ID']] = $this->generateUserInfosArray($processUser);
+			$result[$processUser['ID']] = $this->parseDbToUser($processUser);
 		}
 
 		//Return result
@@ -247,13 +247,13 @@ class UserComponent {
 			return FALSE; //An error occured
 
 		//Check if the page is open
-		if($visibility == User::USER_PAGE_OPEN)
+		if($visibility == UserComponent::USER_PAGE_OPEN)
 			return true;
 		
 		if($userID == 0)
 			return false;
 		
-		if($visibility == User::USER_PAGE_PUBLIC)
+		if($visibility == UserComponent::USER_PAGE_PUBLIC)
 			return true;
 		
 		if(CS::get()->components->friends->are_friend($userID, $targetUser))
@@ -349,57 +349,6 @@ class UserComponent {
 
 		//Return result
 		return $result[0]["liste_amis_publique"] == 1;
-	}
-
-	/**
-	 * Generate and return an array containing informations about a user
-	 * given the database entry
-	 *
-	 * @param array $userInfos The user entry in the database
-	 * @param bool $advanced Get advanced informations about user or not (to display its profile for example)
-	 * @return array The informations ready to be returned
-	 */
-	private function generateUserInfosArray(array $userInfos, bool $advanced = false) : array{
-		//Prepare return
-		$return = array();
-		$return['userID'] = $userInfos['ID'];
-		$return['firstName'] = $userInfos['prenom'];
-		$return['lastName'] = $userInfos['nom'];
-		$return['publicPage'] = $userInfos['public'] == 1;
-		$return['openPage'] = $userInfos['pageouverte'] == 1;
-		$return['virtualDirectory'] = $userInfos['sous_repertoire'];
-
-		//Add account image url
-		$return['accountImage'] = CS::get()->components->accountImage->getPath($return['userID']);
-
-		//Check if we have to fetch advanced informations
-		if($advanced){
-			
-			//Public friend list
-			$return['friend_list_public'] = $userInfos['liste_amis_publique'] == 1;
-
-			//Personnal website
-			$return['personnalWebsite'] = $userInfos['site_web'];
-
-			//Block comment his his page ?
-			$return['noCommentOnHisPage'] = $userInfos['bloquecommentaire'] == 1;
-
-			//Allow user to post informations on his page
-			$return['allowPostFromFriendOnHisPage'] = $userInfos['autoriser_post_amis'] == 1;
-
-			//Account creation date
-			$return['account_creation_time'] = strtotime($userInfos['date_creation']);
-
-			//Add background image url
-			$return['backgroundImage'] = CS::get()->components->backgroundImage->getPath($return['userID']);
-
-			//Get the number of likes of the page
-			$return['pageLikes'] = CS::get()->components->likes->count($return['userID'], Likes::LIKE_USER);
-
-		}
-
-		//Return result
-		return $return;
 	}
 
 	/**

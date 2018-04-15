@@ -41,25 +41,30 @@ class userController
 		//Check if it is a wide request or not
 		if(count($usersID) <= 10)
 			//Try to get user infos
-			$userInfos = CS::get()->components->user->getMultipleUserInfos($usersID);
+			$usersInfo = CS::get()->components->user->getMultipleUserInfos($usersID);
 		else {
 			//Divide request in multiples ones
-			$userInfos = array();
+			$usersInfo = array();
 			foreach(array_chunk($usersID, 10) as $process_users_ID){
 				
 				//Get informations about the IDS
 				foreach(CS::get()->components->user->getMultipleUserInfos($process_users_ID) as $key=>$val){
-					$userInfos[$key] = $val;
+					$usersInfo[$key] = $val;
 				}
 			}
 		}
 		
 		//Check if response is empty
-		if(count($userInfos) == 0)
+		if(count($usersInfo) == 0)
 			throw new RestException(401, "Couldn't get user data !");
 		
+		//Parse User objects into API-readable objects
+		foreach($usersInfo as $num=>$info){
+			$usersInfo[$num] = $this->userToAPI($info);
+		}
+
 		//Return result
-		return $userInfos;
+		return $usersInfo;
 	}
 
 	/**

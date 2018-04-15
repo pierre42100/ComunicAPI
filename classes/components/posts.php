@@ -310,11 +310,11 @@ class Posts {
 			$visibilityLevel = CS::get()->components->user->getVisibility($post_infos['user_page_id']);
 
 			//If the page is open, access is free
-			if($visibilityLevel == User::USER_PAGE_OPEN)
+			if($visibilityLevel == UserComponent::USER_PAGE_OPEN)
 				return $this::BASIC_ACCESS;
 			
 			//Else check if the user is signed in and the page is public 
-			else if($userID != 0 AND $visibilityLevel == User::USER_PAGE_PUBLIC)
+			else if($userID != 0 AND $visibilityLevel == UserComponent::USER_PAGE_PUBLIC)
 				return $this::BASIC_ACCESS;
 			
 			else
