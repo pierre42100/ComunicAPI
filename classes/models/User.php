@@ -16,6 +16,15 @@ class User {
 	private $virtualDirectory;
 	private $accountImageURL;
 
+	/**
+	 * Public constructor of this object
+	 */
+	public function __construct(){
+		
+		//Set the user ID to 0 by default (invalid user)
+		$this->set_id(0);
+
+	}
 
 	//Set and get user ID
 	private function set_id(int $id){
@@ -82,5 +91,14 @@ class User {
 
 	private function get_accountImageURL() : string {
 		return $this->accountImageURL;
+	}
+
+	/**
+	 * Check wether is object is valid or not
+	 * 
+	 * @return bool TRUE if this object is valid / FALSE else
+	 */
+	public function isValid() : bool {
+		return $this->id > 0;
 	}
 }
