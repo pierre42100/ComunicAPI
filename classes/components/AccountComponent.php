@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-class Account {
+class AccountComponent {
 
 	/**
 	 * @var String $userTable The name of the user table
@@ -39,7 +39,7 @@ class Account {
 			$email,
 			$this->cryptPassword($password)
 		);
-		$userInfos = CS::get()->db->select(Account::USER_TABLE, $conditions, $values);
+		$userInfos = CS::get()->db->select(self::USER_TABLE, $conditions, $values);
 
 		//Check if there is anything
 		if(count($userInfos) == 0)
@@ -210,4 +210,4 @@ class Account {
 }
 
 //Register class
-Components::register("account", new Account());
+Components::register("account", new AccountComponent());
