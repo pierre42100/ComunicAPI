@@ -284,6 +284,10 @@ class UserComponent {
 		if(!$this->userAllowed($userID, $targetID))
 			return FALSE;
 		
+		//Check if the user allow posts on his page
+		if(!$this->allowPosts($targetID))
+			return FALSE;
+
 		//Check if the friendship of the users allow them to create posts
 		if(!CS::get()->components->friends->can_post_text($userID, $targetID))
 			return FALSE;
@@ -320,6 +324,34 @@ class UserComponent {
 
 		//Return result
 		return $result[0]["bloquecommentaire"] == 0;
+	}
+
+	/**
+	 * Check whether a user allow posts on his page or not
+	 * 
+	 * @return bool TRUE if the psots are allowed / FALSE else
+	 */
+	private function allowPosts(int $userID) : bool {
+
+		//Fetch the information in the database
+		$conditions = "WHERE ID = ?";
+		$condValues = array($userID);
+		$fields = array("autoriser_post_amis");
+
+		//Perform the request
+		$result = CS::get()->db->select(
+			self::USER_TABLE,
+			$conditions,
+			$condValues,
+			$fields
+		);
+
+		//Check for errors
+		if(count($result) == 0)
+			return FAlSE;
+
+		//Return result
+		return $result[0]["autoriser_post_amis"] == 1;
 	}
 
 	/**
