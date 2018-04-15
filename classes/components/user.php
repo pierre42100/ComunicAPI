@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-class User{
+class UserComponent {
 
 	/**
 	 * @var String $userTable The name of the user table
@@ -388,4 +388,4 @@ class User{
 }
 
 //Register class
-Components::register("user", new User());
+Components::register("user", new UserComponent());
