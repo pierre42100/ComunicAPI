@@ -34,6 +34,10 @@ class AdvancedUser extends User {
 		$this->personnalWebsite = $personnalWebsite == "" ? null : $personnalWebsite;
 	}
 
+	public function has_personnalWebsite() : bool {
+		return $this->personnalWebsite != null;
+	}
+
 	public function get_personnalWebsite() : string {
 		return $this->personnalWebsite != null ? $this->personnalWebsite : "null";
 	}

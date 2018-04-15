@@ -25,17 +25,31 @@ class UserComponent {
 	public function __construct(){
 		
 	}
+
+	/**
+	 * Get advanced information about a user
+	 * 
+	 * @param int $userID Target user ID
+	 * @return AdvancedUser Informations about the user (invalid object in case of failure)
+	 */
+	public function getUserAdvancedInfo(int $userID) : AdvancedUser {
+
+		//Perform a request over the database
+		$data = $this->getDBUserInfo($userID);
+		
+		if(count($data) == 0)
+			return new AdvancedUser(); //Return invalid object
+		
+		return $this->parseDbToAdvancedUser($data);
+	}
 	
 	/**
-	 * Get Single User Infos
+	 * Get Single User Infos from database and return its information as an array
 	 *
 	 * @param int $userID The user ID
-	 * @param bool $advanced Get advanced information about user, for its page for example
-	 * @return User Information about the user (invalid object in case of failure)
-	 * Notice : If advanced information are request, then the User object can be casted to
-	 * AdvancedUser object.
+	 * @return array Information about the user (empty array in case of failure)
 	 */
-	public function getUserInfos(int $userID, bool $advanced = false) : User {
+	private function getDBUserInfo(int $userID) : array {
 		//Prepare database request
 		$tablesName = self::USER_TABLE;
 		$conditions = "WHERE utilisateurs.ID = ?";
@@ -51,11 +65,9 @@ class UserComponent {
 			return array(); //No result
 		
 		//Return parsed result
-		if(!$advanced)
-			return $this->parseDbToUser($userInfos[0]);
-		else
-			return $this->parseDbToAdvancedUser($userInfos[0]);
+		return($userInfos[0]);
 	}
+
 
 	/**
 	 * Get Multiple Users Infos
@@ -407,7 +419,8 @@ class UserComponent {
 		$user->set_firstName($entry['prenom']);
 		$user->set_lastName($entry['nom']);
 		$user->set_publicPage($entry['public'] == 1);
-		$user->set_virtualDirectory($entry['sous_repertoire']);
+		$user->set_openPage($entry['pageouverte'] == 1);
+		$user->set_virtualDirectory($entry['sous_repertoire'] == null ? "" : $entry['sous_repertoire']);
 		$user->set_accountImageURL(
 			CS::get()->components->accountImage->getPath($user->get_id()));
 		

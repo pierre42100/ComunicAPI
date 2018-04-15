@@ -80,6 +80,10 @@ class User {
 		$this->virtualDirectory = $virtualDirectory == "" ? null : $virtualDirectory;
 	}
 
+	public function has_virtualDirectory() : bool {
+		return $this->virtualDirectory != null;
+	}
+
 	public function get_virtualDirectory() : string {
 		return $this->virtualDirectory != null ? $this->virtualDirectory : "null";
 	}
