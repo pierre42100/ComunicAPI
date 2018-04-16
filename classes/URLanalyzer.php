@@ -48,11 +48,20 @@ class URLAnalyzer {
 			if(preg_match("/property/", $entry) AND preg_match("/og:/", $entry)){
 
 				//Search for property tag and content tag
-				preg_match("#property=[\"\']og:(.*?)[\"\']#is", $entry, $matches1);
-				preg_match("#content=[\"\'](.*?)[\"\']#is", $entry, $matches2);
+				//"
+				preg_match("#property=[\"]og:(.*?)[\"]#is", $entry, $matches1);
+				preg_match("#content=[\"](.*?)[\"]#is", $entry, $matches2);
 
 				$name = isset($matches1[1]) ? $matches1[1] : 1;
 				$value = isset($matches2[1]) ? $matches2[1] : "";
+
+				//'
+				preg_match("#property=[\']og:(.*?)[\']#is", $entry, $matches1);
+				preg_match("#content=[\'](.*?)[\']#is", $entry, $matches2);
+
+				$name = isset($matches1[1]) ? $matches1[1] : $name;
+				$value = isset($matches2[1]) ? $matches2[1] : $value;
+
 				$list[$name] = $value;
 			}
 		}
