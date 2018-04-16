@@ -10,14 +10,15 @@ class GeneralSettings {
 	//Private fields
 	private $id;
 	private $email;
-	private $firstname;
-	private $lastname;
+	private $firstName;
+	private $lastName;
 	private $publicPage;
 	private $openPage;
 	private $allowComments;
 	private $allowPostsFriends;
 	private $allowComunicMails;
 	private $friendsListPublic;
+	private $virtualDirectory;
 	private $personnalWebsite;
 
 	//Set and get user ID
@@ -125,6 +126,19 @@ class GeneralSettings {
 
 	public function get_virtualDirectory() : string {
 		return $this->virtualDirectory != null ? $this->virtualDirectory : "null";
+	}
+
+	//Set and get the personnal website of the user
+	public function set_personnalWebsite(string $personnalWebsite){
+		$this->personnalWebsite = $personnalWebsite == "" ? null : $personnalWebsite;
+	}
+
+	public function has_personnalWebsite() : bool {
+		return $this->personnalWebsite != null;
+	}
+
+	public function get_personnalWebsite() : string {
+		return $this->personnalWebsite != null ? $this->personnalWebsite : "null";
 	}
 
 	/**
