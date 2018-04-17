@@ -29,6 +29,27 @@ class SettingsController {
 	}
 
 	/**
+	 * Check the availability of a user directory
+	 * 
+	 * @url POST /settings/check_user_directory_availability
+	 */
+	public function checkUserDirectoryAvailability() {
+
+		//User login needed
+		user_login_required();
+
+		//Get user directory
+		$userDirectory = getPostUserDirectory("directory");
+
+		//Check if the directory is available
+		if(!components()->settings->checkUserDirectoryAvailability($userDirectory, userID))
+			Rest_fatal_error(401, "The specified domain is not available!");
+
+		//Else the domain is available
+		return array("success" => "The domain is available!");
+	}
+
+	/**
 	 * Turn a GeneralSettings object into a valid API object
 	 * 
 	 * @param GeneralSettings $settings The object to convert

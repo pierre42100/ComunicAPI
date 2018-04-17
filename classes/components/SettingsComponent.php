@@ -28,6 +28,28 @@ class SettingsComponents {
 	}
 
 	/**
+	 * Check whether a directory is already linked to a user or not. If yes,
+	 * check if it linked to a specified user ID.
+	 * 
+	 * @param string $directory The directory to check
+	 * @param int $userID Target user ID
+	 * @return bool TRUE if the directory is available for the current user,
+	 * FALSE else
+	 */
+	public function checkUserDirectoryAvailability(string $directory, int $userID) : bool {
+
+		//Redirect the request to the user component
+		$folderUserID = components()->user->findByFolder($directory);
+
+		//Check if the folder is available
+		if($folderUserID == 0)
+			return TRUE;
+		
+		//Check else if the user is owning this domain or not
+		return $folderUserID == $userID;
+	}
+
+	/**
 	 * Get Single User Infos from database and return its information as an array
 	 *
 	 * @param int $userID The user ID

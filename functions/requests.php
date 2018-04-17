@@ -485,6 +485,6 @@ function getPostUserDirectory(string $name) : string {
 		Rest_fatal_error(401, "Specified directory seems to be invalid!");
 	
 	//Return the directory
-	return $name;
+	return $directory;
 
 }
