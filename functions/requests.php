@@ -445,3 +445,46 @@ function save_post_image(string $fieldName, int $userID, string $folder, int $ma
 	return $target_file_path;
 
 }
+
+/**
+ * Check a user directory validity
+ * 
+ * @param string $directory The directory to check
+ * @return bool TRUE if the domain seems to be valid / FALSE else
+ */
+function checkUserDirectoryValidity(string $directory) : bool {
+	
+	//Check domain length
+	if(strlen($directory) < 4)
+		return FALSE;
+	
+	//Check if the domain contains forbidden characters
+	if(str_replace(array(".html", ".txt", ".php", "à", "â", "é", "ê", "@", "/", "\"", "'", '"'), "", $directory) != $directory)
+		return FALSE;
+
+	//If we get there, the domain is valid
+	return TRUE;
+}
+
+/**
+ * Get a user post directory from a $_POST request and transform it to make it SQL-safe
+ * 
+ * @param string $name The name of the $_POST Request
+ * @return string The user virtual directory, safe for saving
+ * @throws RESTException If the directory is missing, or invalid
+ */
+function getPostUserDirectory(string $name) : string {
+
+	//Check if the $_POST variable exists or not
+	if(!isset($_POST[$name]))
+		Rest_fatal_error(400, "Please specify a user directory in '".$name."'!");
+	$directory = (string) $_POST[$name];
+
+	//Check domain validity
+	if(!checkUserDirectoryValidity($directory))
+		Rest_fatal_error(401, "Specified directory seems to be invalid!");
+	
+	//Return the directory
+	return $name;
+
+}
