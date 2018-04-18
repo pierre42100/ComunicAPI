@@ -8,10 +8,10 @@
 /**
  * Check $_POST parametres associated to a request
  *
- * @param Array $varList The list of variables to check
- * @return Boolean True or false depending of the success of the operation
+ * @param array $varList The list of variables to check
+ * @return bool True or false depending of the success of the operation
  */
-function check_post_parametres(array $varList){
+function check_post_parametres(array $varList) : bool {
 
 	//Check each fields
 	foreach($varList as $process){
@@ -36,7 +36,7 @@ function check_post_parametres(array $varList){
  * @param String $list The input list
  * @return Array The list of user / an empty list in case of errors
  */
-function numbers_list_to_array($list) : array{
+function numbers_list_to_array($list) : array {
 	//Split the list into an array
 	$array = explode(",", $list);
 	$usersList = array();
@@ -54,6 +54,47 @@ function numbers_list_to_array($list) : array{
 
 	//Return the result
 	return $usersList;
+}
+
+/**
+ * Check a string included in a $_POST request safely.
+ * This function make a REST_Error if an error occur while
+ * processing the value
+ * 
+ * @param string $name The name of the $_POST field
+ * @param int $minLength The minimal length for the string (default 1)
+ * @return string The string
+ */
+function postString(string $name, int $minLength = 1) : string {
+
+	//Check variable existence
+	if(!isset($_POST[$name]))
+		Rest_fatal_error(400, "Please add a POST string named '".$name."' in the request !");
+	$value = (string) $_POST[$name];
+
+	//Check variable length
+	if(strlen($value) < $minLength)
+		Rest_fatal_error(400, "Specified string in '".$name."' is too short!");
+
+	return $value;
+
+}
+
+/**
+ * Get a boolean given in a $_POST request safely.
+ * This function make a REST_Error if an error occur while
+ * processing the value
+ * 
+ * @param string $name The name of the $_POST field
+ * @return bool The boolean
+ */
+function postBool(string $name) : bool {
+
+	//Check variable existence
+	if(!isset($_POST[$name]))
+		Rest_fatal_error(400, "Please add a POST boolean named '".$name."' in the request !");
+
+	return $_POST[$name] == "true";
 }
 
 /**

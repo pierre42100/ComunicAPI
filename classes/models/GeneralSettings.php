@@ -78,6 +78,16 @@ class GeneralSettings {
 		return $this->openPage;
 	}
 
+	/**
+	 * Make sure the public and the open status of the page
+	 * are coherent
+	 */
+	public function rationalizePublicOpenStatus(){
+		//Make sure the page is not open if it is not public
+		if(!$this->is_publicPage())
+			$this->set_openPage(false);
+	}
+
 	//Set and get the comments status on user page
 	public function set_allowComments(bool $allowComments){
 		$this->allowComments = $allowComments;

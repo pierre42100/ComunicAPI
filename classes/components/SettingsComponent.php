@@ -28,6 +28,21 @@ class SettingsComponents {
 	}
 
 	/**
+	 * Save new version of the general settings of a user
+	 * 
+	 * @param GeneralSettings $settings The settings to save in the database
+	 * @return bool TRUE in case of success / FALSE else
+	 */
+	public function save_general(GeneralSettings $settings) : bool {
+
+		//Convert GeneralSettings object into database entry
+		$entry = $this->generalSettingsToDb($settings);
+
+		//Save information in the database
+		return $this->saveDBUserInfo($settings->get_id(), $entry);
+	}
+
+	/**
 	 * Check whether a directory is already linked to a user or not. If yes,
 	 * check if it linked to a specified user ID.
 	 * 
@@ -75,6 +90,24 @@ class SettingsComponents {
 	}
 
 	/**
+	 * Save new user information in the database
+	 * 
+	 * @param int $userID The ID of the user to update
+	 * @param array $values The new values to update in the database
+	 * @return bool TRUE in case of success / FALSE else
+	 */
+	private function saveDBUserInfo(int $userID, array $info) : bool {
+
+		//Prepare the request
+		$table = AccountComponent::USER_TABLE;
+		$conditions = "ID = ?";
+		$conditionsValues = array($userID);
+
+		//Perform the request
+		return CS::get()->db->updateDB($table, $conditions, $info, $conditionsValues);
+	}
+
+	/**
 	 * Parse a user information entry into GeneralSettings object
 	 * 
 	 * @param array $entry The database entry to process
@@ -99,6 +132,30 @@ class SettingsComponents {
 
 		return $obj;
 
+	}
+
+	/**
+	 * Turn GeneralSettings object into database entry
+	 * 
+	 * @param GeneralSettings $settings Settings entry to turn into database entry
+	 * @return array Generated entry
+	 */
+	private function generalSettingsToDb(GeneralSettings $settings) : array {
+
+		$data = array();
+
+		$data["prenom"] = $settings->get_firstName();
+		$data["nom"] = $settings->get_lastName();
+		$data["public"] = $settings->is_publicPage() ? 1 : 0;
+		$data["pageouverte"] = $settings->is_openPage() ? 1 : 0;
+		$data["bloquecommentaire"] = $settings->is_allowComments() ? 0 : 1;
+		$data["autoriser_post_amis"] = $settings->is_allowPostsFriends() ? 1 : 0;
+		$data["autorise_mail"] = $settings->is_allowComunicMails() ? 1 : 0;
+		$data["liste_amis_publique"] = $settings->is_friendsListPublic() ? 1 : 0;
+		$data["sous_repertoire"] = $settings->has_virtualDirectory() ? $settings->get_virtualDirectory() : "";
+		$data["site_web"] = $settings->has_personnalWebsite() ? $settings->get_personnalWebsite() : "";
+
+		return $data;
 	}
 
 }
