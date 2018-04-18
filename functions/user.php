@@ -9,9 +9,9 @@
  * A function that check login information are specified,
  * else it quit the scripts because of missing login
  *
- * @return Boolean True for a success
+ * @return bool True for a success
  */
-function user_login_required() : bool{
+function user_login_required() : bool {
     if(!user_signed_in()){
         Rest_fatal_error(401, "This function requires user to be logged in!");
     }
@@ -23,7 +23,7 @@ function user_login_required() : bool{
 /**
  * Check wether the user is signed in or not
  *
- * @return TRUE if user is signed in / FALSE else
+ * @return bool TRUE if user is signed in / FALSE else
  */
 function user_signed_in() : bool {
 
@@ -38,4 +38,24 @@ function user_signed_in() : bool {
     //User seems to be signed in
     return true;
 
+}
+
+/**
+ * Check the validity of a password provided in a $_POST request
+ * 
+ * @param int $userID The ID of the user to check
+ * @param string $name The name of the POST field containing the password
+ * @return bool TRUE in case of success / (stop by default in case of failure)
+ */
+function check_post_password(int $userID, string $name) : bool {
+
+    //Get POST field
+    $password = postString($name, 2);
+
+    //Check the password
+    if(!components()->account->checkUserPassword($userID, $password))
+        Rest_fatal_error(401, "The password is invalid!");
+    
+    //Else the password seems to be valid
+    return TRUE;
 }

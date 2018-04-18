@@ -199,6 +199,32 @@ class AccountComponent {
 	}
 
 	/**
+	 * Check if a password is valid for a user
+	 * 
+	 * @param int $userID Target user ID : The ID of the user to check
+	 * @param string $password The password to check
+	 * @return bool TRUE if the password is valid / FALSE else
+	 */
+	public function checkUserPassword(int $userID, string $password){
+
+		//Crypt password
+		$password = $this->cryptPassword($password);
+
+		//Prepare request over the database
+		$conditions = array(
+			"ID" => $userID,
+			"password" => $password
+		);
+
+		$data = CS::get()->db->splitConditionsArray($conditions);
+		$sql_conds = "WHERE ".$data[0];
+		$values = $data[1];
+
+		//Perform request and return result
+		return CS::get()->db->count(self::USER_TABLE, $sql_conds, $values) > 0;
+	}
+
+	/**
 	 * Crypt user password
 	 *
 	 * @param string $userPassword The password to crypt
