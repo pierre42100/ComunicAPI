@@ -126,6 +126,38 @@ class SettingsController {
 	}
 
 	/**
+	 * Set (update) security settings
+	 * 
+	 * Warning !!! This method is really sensitive, please double check any
+	 * user input data !
+	 * 
+	 * @url POST /settings/set_security
+	 */
+	public function setSecurity(){
+
+		//User login required
+		user_login_required();
+
+		//Make sure the password is valid
+		check_post_password(userID, "password");
+
+		//Create a security settings object and fill it with the new information
+		$settings = new SecuritySettings();
+		$settings->set_id(userID);
+		$settings->set_security_question_1(postString("security_question_1", 0));
+		$settings->set_security_answer_1(postString("security_answer_1", 0));
+		$settings->set_security_question_2(postString("security_question_2", 0));
+		$settings->set_security_answer_2(postString("security_answer_2", 0));
+		
+		//Try to update settings
+		if(!components()->settings->save_security($settings))
+			Rest_fatal_error(500, "Coud not save security settings!");
+		
+		//Success
+		return array("success" => "The security settings of the user have been successfully saved !");
+	}
+
+	/**
 	 * Turn a GeneralSettings object into a valid API object
 	 * 
 	 * @param GeneralSettings $settings The object to convert

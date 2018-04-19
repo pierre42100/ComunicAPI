@@ -85,6 +85,21 @@ class SettingsComponents {
 	}
 
 	/**
+	 * Save new version of the security settings of a user
+	 * 
+	 * @param SecuritySettings $settings The settings to save in the database
+	 * @return bool TRUE in case of success / FALSE else
+	 */
+	public function save_security(SecuritySettings $settings) : bool {
+
+		//Convert SecuritySettings object into database entry
+		$entry = $this->SecuritySettingsToDb($settings);
+
+		//Save information in the database
+		return $this->saveDBUserInfo($settings->get_id(), $entry);
+	}
+
+	/**
 	 * Get Single User Infos from database and return its information as an array
 	 *
 	 * @param int $userID The user ID
@@ -196,6 +211,24 @@ class SettingsComponents {
 
 		return $obj;
 
+	}
+
+	/**
+	 * Turn SecuritySettings object into database entry
+	 * 
+	 * @param SecuritySettings $settings Settings entry to turn into database entry
+	 * @return array Generated entry
+	 */
+	private function SecuritySettingsToDb(SecuritySettings $settings) : array {
+
+		$data = array();
+
+		$data["question1"] = $settings->has_security_question_1() ? $settings->get_security_question_1() : "";
+		$data["reponse1"] = $settings->has_security_answer_1() ? $settings->get_security_answer_1() : "";
+		$data["question2"] = $settings->has_security_question_2() ? $settings->get_security_question_2() : "";
+		$data["reponse2"] = $settings->has_security_answer_2() ? $settings->get_security_answer_2() : "";
+
+		return $data;
 	}
 
 }
