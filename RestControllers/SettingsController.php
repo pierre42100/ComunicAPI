@@ -99,6 +99,33 @@ class SettingsController {
 	}
 
 	/**
+	 * Get security settings
+	 * 
+	 * Warning !!! This method is really sensitive, please double check any
+	 * user input data !
+	 * 
+	 * @url POST /settings/get_security
+	 */
+	public function getSecurity(){
+
+		//User login required
+		user_login_required();
+
+		//Make sure the password is valid
+		check_post_password(userID, "password");
+
+		//Fetch user security settings
+		$settings = components()->settings->get_security(userID);
+
+		//Check settings validity
+		if(!$settings->isValid())
+			Rest_fatal_error(500, "Could not get user security settings!");
+		
+		//Parse and return settings entry
+		return $this->SecuritySettingsToAPI($settings);
+	}
+
+	/**
 	 * Turn a GeneralSettings object into a valid API object
 	 * 
 	 * @param GeneralSettings $settings The object to convert
@@ -120,6 +147,25 @@ class SettingsController {
 		$data["public_friends_list"] = $settings->is_friendsListPublic();
 		$data["virtual_directory"] = $settings->get_virtualDirectory();
 		$data["personnal_website"] = $settings->get_personnalWebsite();
+
+		return $data;
+	}
+
+	/**
+	 * Turn a SecuritySettings object into a valid API object
+	 * 
+	 * @param SecuritySettings $settings The object to convert
+	 * @return array Generated API object
+	 */
+	private function SecuritySettingsToAPI(SecuritySettings $settings) : array {
+
+		$data = array();
+
+		$data["id"] = $settings->get_id();
+		$data["security_question_1"] = $settings->has_security_question_1() ? $settings->get_security_question_1() : "";
+		$data["security_answer_1"] = $settings->has_security_answer_1() ? $settings->get_security_answer_1() : "";
+		$data["security_question_2"] = $settings->has_security_question_2() ? $settings->get_security_question_2() : "";
+		$data["security_answer_2"] = $settings->has_security_answer_2() ? $settings->get_security_answer_2() : "";
 
 		return $data;
 	}

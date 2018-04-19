@@ -65,6 +65,26 @@ class SettingsComponents {
 	}
 
 	/**
+	 * Get and return security settings of a user
+	 * 
+	 * @param int $userID Target user ID
+	 * @return SecuritySettings An object containing the value / invalid object in
+	 * case of failure
+	 */
+	public function get_security(int $userID) : SecuritySettings {
+
+		//Get user database entry
+		$entry = $this->getDBUserInfo($userID);
+
+		//Check for error
+		if(count($entry) == 0)
+			return new SecuritySettings(); //Return invalid object
+		
+		//Parse database entry into SecuritySettings entry
+		return $this->dbToSecuritySettings($entry);
+	}
+
+	/**
 	 * Get Single User Infos from database and return its information as an array
 	 *
 	 * @param int $userID The user ID
@@ -156,6 +176,26 @@ class SettingsComponents {
 		$data["site_web"] = $settings->has_personnalWebsite() ? $settings->get_personnalWebsite() : "";
 
 		return $data;
+	}
+
+	/**
+	 * Parse a user information entry into SecuritySettings object
+	 * 
+	 * @param array $entry The database entry to process
+	 * @return SecuritySettings Generated SecuritySettings entry
+	 */
+	private function dbToSecuritySettings(array $entry) : SecuritySettings {
+
+		$obj = new SecuritySettings();
+
+		$obj->set_id($entry['ID']);
+		$obj->set_security_question_1($entry["question1"]);
+		$obj->set_security_answer_1($entry["reponse1"]);
+		$obj->set_security_question_2($entry["question2"]);
+		$obj->set_security_answer_2($entry["reponse2"]);
+
+		return $obj;
+
 	}
 
 }
