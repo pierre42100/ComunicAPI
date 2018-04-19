@@ -5,10 +5,9 @@
  * @author Pierre HUBERT
  */
 
-class GeneralSettings {
+class GeneralSettings extends BaseUserModel {
 
 	//Private fields
-	private $id;
 	private $email;
 	private $firstName;
 	private $lastName;
@@ -20,15 +19,6 @@ class GeneralSettings {
 	private $friendsListPublic;
 	private $virtualDirectory;
 	private $personnalWebsite;
-
-	//Set and get user ID
-	public function set_id(int $id){
-		$this->id = $id;
-	}
-
-	public function get_id() : int {
-		return $this->id;
-	}
 
 	//Set and get the email address of the user
 	public function set_email(string $email){
@@ -149,14 +139,5 @@ class GeneralSettings {
 
 	public function get_personnalWebsite() : string {
 		return $this->personnalWebsite != null ? $this->personnalWebsite : "null";
-	}
-
-	/**
-	 * Check wether is object is valid or not
-	 * 
-	 * @return bool TRUE if this object is valid / FALSE else
-	 */
-	public function isValid() : bool {
-		return $this->id > 0;
 	}
 }

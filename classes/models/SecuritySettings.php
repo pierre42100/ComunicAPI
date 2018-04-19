@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-class SecuritySettings {
+class SecuritySettings extends BaseUserModel {
 
 	//Private fields
 	private $security_question_1;
@@ -54,7 +54,7 @@ class SecuritySettings {
 	public function get_security_question_2() : string {
 		return $this->security_question_2 != null ? $this->security_question_2 : "null";
 	}
-	
+
 
 	//Set and get second security answer
 	public function set_security_answer_2(string $security_answer_2){

@@ -5,36 +5,18 @@
  * @author Pierre HUBERT
  */
 
-class User {
+//This model requires the BaseUserModel to be loaded
+require_once __DIR__."/BaseUserModel.php";
+
+class User extends BaseUserModel {
 
 	//Private fields
-	private $id;
 	private $firstName;
 	private $lastName;
 	private $publicPage;
 	private $openPage;
 	private $virtualDirectory;
 	private $accountImageURL;
-
-	/**
-	 * Public constructor of this object
-	 */
-	public function __construct(){
-		
-		//Set the user ID to 0 by default (invalid user)
-		$this->set_id(0);
-
-	}
-
-	//Set and get user ID
-	public function set_id(int $id){
-		$this->id = $id;
-	}
-
-	public function get_id() : int {
-		return $this->id;
-	}
-
 
 	//Set and get the first name of the user
 	public function set_firstName(string $firstName){
@@ -95,14 +77,5 @@ class User {
 
 	public function get_accountImageURL() : string {
 		return $this->accountImageURL;
-	}
-
-	/**
-	 * Check wether is object is valid or not
-	 * 
-	 * @return bool TRUE if this object is valid / FALSE else
-	 */
-	public function isValid() : bool {
-		return $this->id > 0;
 	}
 }
