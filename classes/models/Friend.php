@@ -2,7 +2,7 @@
 /**
  * Friend model
  * 
- * @author Pierre HUBER
+ * @author Pierre HUBERT
  */
 
 class Friend {
