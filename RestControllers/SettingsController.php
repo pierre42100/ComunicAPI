@@ -158,6 +158,30 @@ class SettingsController {
 	}
 
 	/**
+	 * Update user password
+	 * 
+	 * @url POST /settings/update_password
+	 */
+	public function updatePassword(){
+
+		//User login required
+		user_login_required();
+
+		//Check the old password
+		check_post_password(userID, "oldPassword");
+
+		//Get and save the new password
+		$newPassword = postString("newPassword");
+
+		//Try to save password
+		if(!components()->account->set_new_user_password(userID, $newPassword))
+			Rest_fatal_error(500, "Could not update user password!");
+		
+		//Success
+		return array("success" => "The password has been updated !");
+	}
+
+	/**
 	 * Turn a GeneralSettings object into a valid API object
 	 * 
 	 * @param GeneralSettings $settings The object to convert

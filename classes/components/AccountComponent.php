@@ -225,6 +225,25 @@ class AccountComponent {
 	}
 
 	/**
+	 * Update user password
+	 * 
+	 * @param int $userID Target user ID
+	 * @param string $password The new password to set to the user
+	 * @return bool TRUE in case of success / FALSE else
+	 */
+	public function set_new_user_password(int $userID, string $password) : bool {
+
+		//Crypt the password
+		$password = $this->cryptPassword($password);
+
+		//Prepare database update
+		$modif = array("password" => $password);
+
+		//Perform the request
+		return CS::get()->db->updateDB(self::USER_TABLE, "ID = ?", $modif, array($userID));
+	}
+
+	/**
 	 * Crypt user password
 	 *
 	 * @param string $userPassword The password to crypt
