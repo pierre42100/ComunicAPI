@@ -500,7 +500,7 @@ function checkUserDirectoryValidity(string $directory) : bool {
 		return FALSE;
 	
 	//Check if the domain contains forbidden characters
-	if(str_replace(array(".html", ".txt", ".php", "à", "â", "é", "ê", "@", "/", "\"", "'", '"'), "", $directory) != $directory)
+	if(str_replace(array(".html", ".txt", ".php", "à", "â", "é", "ê", "@", "/", "\"", "'", '"', "<", ">", "?", "&", "#"), "", $directory) != $directory)
 		return FALSE;
 
 	//If we get there, the domain is valid

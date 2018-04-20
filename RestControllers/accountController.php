@@ -96,8 +96,8 @@ class accountController {
 		
 		//Create new account object
 		$newAccount = new NewAccount();
-		$newAccount->firstName = $firstName;
-		$newAccount->lastName = $lastName;
+		$newAccount->firstName = removeHTMLnodes($firstName);
+		$newAccount->lastName = removeHTMLnodes($lastName);
 		$newAccount->email = $email;
 		$newAccount->password = $password;
 

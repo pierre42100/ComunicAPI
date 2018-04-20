@@ -57,8 +57,8 @@ class SettingsController {
 		//Create and fill a GeneralSettings object with the new values
 		$settings = new GeneralSettings();
 		$settings->set_id(userID);
-		$settings->set_firstName(postString("firstName", 3));
-		$settings->set_lastName(postString("lastName", 3));
+		$settings->set_firstName(removeHTMLnodes(postString("firstName", 3)));
+		$settings->set_lastName(removeHTMLnodes(postString("lastName", 3)));
 		$settings->set_publicPage(postBool("isPublic"));
 		$settings->set_openPage(postBool("isOpen"));
 		$settings->rationalizePublicOpenStatus();
@@ -68,6 +68,12 @@ class SettingsController {
 		$settings->set_personnalWebsite(postString("personnalWebsite", 0));
 		$settings->set_virtualDirectory($virtualDirectory);
 		$settings->set_allowComunicMails(postBool("allow_comunic_mails"));
+
+		//Check personnal webiste
+		if($settings->has_personnalWebsite()){
+			if(!filter_var($settings->get_personnalWebsite(), FILTER_VALIDATE_URL))
+				Rest_fatal_error(401, "Invalid personnal URL!");
+		}
 
 		//Try to update settings
 		if(!components()->settings->save_general($settings))
