@@ -10,6 +10,13 @@ class BaseUniqueObject {
 	//Private fields
 	private $id = 0;
 
+	/**
+	 * Public constructor
+	 */
+	public function __construct(){
+		$this->id = 0;
+	}
+
 	//Set and get object ID
 	public function set_id(int $id){
 		$this->id = $id;
