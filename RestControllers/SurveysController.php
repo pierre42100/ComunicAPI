@@ -7,7 +7,7 @@
  * @author Pierre HUBERT
  */
 
-class surveysController {
+class SurveysController {
 
 	/**
 	 * Cancel a response to a survey
@@ -85,6 +85,27 @@ class surveysController {
 		//Return survey ID
 		return $surveyID;
 
+	}
+
+	/**
+	 * Parse a survey object into a valid API entry
+	 * 
+	 * @param Survey $survey The survey object to convert
+	 * @return array Generated API entry
+	 */
+	public static function SurveyToAPI(Survey $survey) : array {
+
+		$data = array();
+
+		$data["ID"] = $survey->get_id();
+		$data["userID"] = $survey->get_userID();
+		$data["postID"] = $survey->get_postID();
+		$data["creation_time"] = $survey->get_time_sent();
+		$data["question"] = $survey->get_question();
+		$data["user_choice"] = $survey->get_user_choice();
+		$data["choices"] = $survey->get_choices();
+
+		return $data;
 	}
 
 }

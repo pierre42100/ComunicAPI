@@ -74,24 +74,22 @@ class SurveyComponent {
 	 * Get informations about a survey
 	 * 
 	 * @param int $postID The ID of the post related to the survey
-	 * @return array Informations about the survey / empty array in case of failure
+	 * @return Survey Informations about the survey / invalid Survey in case of failure
 	 */
-	public function get_infos(int $postID) : array {
-
-		$survey = array();
+	public function get_infos(int $postID) : Survey {
 
 		//Get informations about the survey
 		$survey = $this->get_survey_infos($postID);
 
 		//Check for errors
-		if(count($survey) == 0)
-			return array();
+		if(!$survey->isValid())
+			return new Survey();
 
 		//Get the choice of the user
-		$survey['user_choice'] = user_signed_in() ? $this->get_user_choice($survey['ID'], userID) : 0;
+		$survey->set_user_choice(user_signed_in() ? $this->get_user_choice($survey->get_id(), userID) : 0);
 		
 		//Get the choices of the survey
-		$survey['choices'] = $this->get_survey_choices($survey['ID']);
+		$survey->set_choices($this->get_survey_choices($survey->get_id()));
 		
 		return $survey;
 	}
@@ -213,10 +211,10 @@ class SurveyComponent {
 	 * Get survey informations by post ID
 	 * 
 	 * @param int $postID The DI of the related post
-	 * @return array Informations about the survey, or an empty array in case
+	 * @return Survey Information about the survey, or an invalid object in case
 	 * of failure
 	 */
-	private function get_survey_infos(int $postID) : array {
+	private function get_survey_infos(int $postID) : Survey {
 
 		//Fetch the database
 		$conditions = "WHERE ID_texte = ?";
@@ -225,30 +223,29 @@ class SurveyComponent {
 		$result = CS::get()->db->select($this::SURVEY_INFOS_TABLE, $conditions, $condVals);
 		
 		if(count($result) == 0)
-			return array();
+			return new Survey();
 
 		else
-			return $this->parse_survey_infos($result[0]);
+			return $this->dbToSurvey($result[0]);
 	}
 
 	/**
-	 * Parse survey informations from database
+	 * Turn survey entry from the database into Survey object
 	 * 
-	 * @param array $db_infos Informations from the database
-	 * @return array Informations about the post
+	 * @param array $data Data from the database
+	 * @return Survey Generated survey object
 	 */
-	private function parse_survey_infos(array $db_infos) : array {
+	private function dbToSurvey(array $data) : Survey {
 
-		$infos = array();
+		$survey = new Survey();
 
-		//Get informations
-		$infos['ID'] = $db_infos['ID'];
-		$infos['userID'] = $db_infos['ID_utilisateurs'];
-		$infos['postID'] = $db_infos['ID_texte'];
-		$infos['creation_time'] = strtotime($db_infos['date_creation']);
-		$infos['question'] = $db_infos['question'];
+		$survey->set_id($data['ID']);
+		$survey->set_userID($data["ID_utilisateurs"]);
+		$survey->set_postID($data["ID_texte"]);
+		$survey->set_time_sent(strtotime($data['date_creation']));
+		$survey->set_question($data['question']);
 
-		return $infos;
+		return $survey;
 	}
 
 	/**

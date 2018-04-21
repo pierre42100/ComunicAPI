@@ -528,6 +528,10 @@ class postsController {
 		//Update visibility level
 		$infos['visibility_level'] = $this::VISIBILITY_LEVELS_API[$infos['visibility_level']];
 
+		//Turn survey into API entry (if any)
+		if($infos["data_survey"] != null)
+			$infos["data_survey"] = SurveysController::SurveyToAPI($infos["data_survey"]);
+
 		//Parse comments if required
 		if(isset($infos['comments'])){
 			if($infos['comments'] != null){
