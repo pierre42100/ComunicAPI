@@ -12,10 +12,20 @@ class Comment extends BaseUniqueObject {
 	private $postID;
 	private $time_sent;
 	private $content;
-	private $image_path;
-	private $image_url;
+	private $img_path;
+	private $img_url;
 	private $likes;
 	private $userLike;
+
+	/**
+	 * Public constructor
+	 */
+	public function __construct(){
+		//Initialize some values
+		$this->postID = 0;
+		$this->userID = 0;
+		$this->likes = -1;
+	}
 
 	//Set and get user ID
 	public function set_userID(int $userID){
@@ -29,6 +39,10 @@ class Comment extends BaseUniqueObject {
 	//Set and get post ID
 	public function set_postID(int $postID){
 		$this->postID = $postID;
+	}
+
+	public function has_postID() : bool {
+		return $this->postID > 0;
 	}
 
 	public function get_postID() : int {
@@ -86,6 +100,10 @@ class Comment extends BaseUniqueObject {
 	//Set and get the number of likes over the comment
 	public function set_likes(int $likes){
 		$this->likes = $likes;
+	}
+
+	public function has_likes() : bool {
+		return $this->likes > -1;
 	}
 
 	public function get_likes() : int {

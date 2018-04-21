@@ -76,14 +76,14 @@ class commentsController {
 		$commentID = getPostCommentIDWithAccess("commentID");
 
 		//Get informations about the comment
-		$infos = components()->comments->get_single($commentID, TRUE);
+		$comment = components()->comments->get_single($commentID, TRUE);
 
 		//Check for errors
-		if(count($infos) == 0)
+		if(!$comment->isValid())
 			Rest_fatal_error(500, "Couldn't fetch informations about the comment !");
 
 		//Return informations about the comment
-		return $infos;
+		return $this->commentToAPI($comment);
 	}
 
 	/**
@@ -173,5 +173,31 @@ class commentsController {
 
 		//Return comment conent
 		return $comment_content;
+	}
+
+	/**
+	 * Turn a comment object into a readable object
+	 * 
+	 * @param Comment $comment The comment to convert
+	 * @return array Informations about the comment
+	 */
+	private function commentToAPI(Comment $comment) : array {
+		$data = array();
+
+		$data["ID"] = $comment->get_id();
+		$data["userID"] = $comment->get_userID();
+		$data["postID"] = $comment->get_postID();
+		$data["time_sent"] = $comment->get_time_sent();
+		$data["content"] = $comment->get_content();
+
+		$data["img_path"] = $comment->has_img_path() ? $comment->get_img_path() : null;
+		$data["img_url"] = $comment->has_img_url() ? $comment->get_img_url() : null;
+
+		if($comment->has_likes()){
+			$data["likes"] = $comment->get_likes();
+			$data["userlike"] = $comment->get_userlike();
+		}
+
+		return $data;
 	}
 }

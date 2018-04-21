@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-abstract class BaseUniqueObject {
+class BaseUniqueObject {
 
 	//Private fields
 	private $id = 0;

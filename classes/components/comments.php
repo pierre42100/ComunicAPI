@@ -73,9 +73,9 @@ class Comments {
 	 * 
 	 * @param int $commentID The ID of the comment to get
 	 * @param bool $include_likes Specify if likes has to be loaded
-	 * @return array Information about the comment
+	 * @return Comment Information about the comment (invalid comment in case of failure)
 	 */
-	public function get_single(int $commentID, bool $include_likes = false) : array {
+	public function get_single(int $commentID, bool $include_likes = false) : Comment {
 
 		//Perform a request on the database
 		$conditions = "WHERE ID = ?";
@@ -86,10 +86,10 @@ class Comments {
 		
 		//Check for results
 		if(count($result) == 0)
-			return array();
+			return new Comment();
 		
 		//Return result
-		return $this->parse_comment($result[0], $include_likes);
+		return $this->dbToComment($result[0], $include_likes);
 	}
 
 	/**
@@ -127,7 +127,7 @@ class Comments {
 		$commentInfos = $this->get_single($commentID, false);
 
 		//Check for errors
-		if(count($commentInfos) == 0)
+		if(!$commentInfos->isValid())
 			return false;
 		
 		//Process deletion
@@ -137,18 +137,18 @@ class Comments {
 	/**
 	 * Process comment deletion
 	 * 
-	 * @param array $commentInfos Informations about the comment to delete
+	 * @param Comment $commentInfos Informations about the comment to delete
 	 * @return bool TRUE for a success / FALSE else
 	 */
-	private function process_delete(array $commentInfos) : bool {
+	private function process_delete(Comment $commentInfos) : bool {
 
 		//Get comment ID
-		$commentID = $commentInfos["ID"];
+		$commentID = $commentInfos->get_id();
 
 		//Check if an image is associated to the comment
-		if(strlen($commentInfos['img_path']) > 2){
+		if($commentInfos->has_img_path()){
 
-			$image_path = path_user_data($commentInfos['img_path'], true);
+			$image_path = path_user_data($commentInfos->get_img_path(), true);
 
 			//Delete the image if it exists
 			if(file_exists($image_path))
@@ -213,10 +213,10 @@ class Comments {
 	public function getAssociatedPost(int $commentID) : int {
 
 		//Get a single comment informations
-		$commentInfos = $this->get_single($commentID);
+		$comment = $this->get_single($commentID);
 
 		//Check if we have got the required information and return it
-		return isset($commentInfos["postID"]) ? $commentInfos["postID"] : 0;
+		return $comment->has_postID() ? $comment->get_postID() : 0;
 	}
 
 	/**
@@ -270,6 +270,38 @@ class Comments {
 	}
 
 
+	/**
+	 * Turn a comment database entry into a Comment object
+	 * 
+	 * @param array $data Database entry
+	 * @param bool $load_likes Specify if the likes have to be loaded or not
+	 * @return Comment Generated comment object
+	 */
+	private function dbToComment(array $data, bool $load_likes = true) : Comment {
+
+		$comment = new Comment();
+
+		$comment->set_id($data["ID"]);
+		$comment->set_userID($data["ID_personne"]);
+		$comment->set_postID($data["ID_texte"]);
+		$comment->set_time_sent(strtotime($data["date_envoi"]));
+		$comment->set_content($data["commentaire"]);
+		
+		//Check for image
+		if($data["image_commentaire"] != ""){
+			$comment->set_img_path(str_replace("file:", "", $data["image_commentaire"]));
+			$info->set_img_url(path_user_data($info->get_img_path(), false));
+		}
+
+		if($load_likes){
+			//Get informations about likes
+			$comment->set_likes(CS::get()->components->likes->count($comment->get_id(), Likes::LIKE_COMMENT));
+			$comment->set_userLike(user_signed_in() ? CS::get()->components->likes->is_liking(userID, $comment->get_id(), Likes::LIKE_COMMENT) : false);
+		}
+
+		return $comment;
+
+	}
 }
 
 //Register class
