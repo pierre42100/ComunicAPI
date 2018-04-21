@@ -81,17 +81,17 @@ class Survey {
 		$survey = array();
 
 		//Get informations about the survey
-		$survey['infos'] = $this->get_survey_infos($postID);
+		$survey = $this->get_survey_infos($postID);
 
 		//Check for errors
-		if(count($survey['infos']) == 0)
+		if(count($survey) == 0)
 			return array();
-		
-		//Get the choices of the survey
-		$survey['choices'] = $this->get_survey_choices($survey['infos']['ID']);
 
 		//Get the choice of the user
-		$survey['user_choice'] = user_signed_in() ? $this->get_user_choice($survey['infos']['ID'], userID) : 0;
+		$survey['user_choice'] = user_signed_in() ? $this->get_user_choice($survey['ID'], userID) : 0;
+		
+		//Get the choices of the survey
+		$survey['choices'] = $this->get_survey_choices($survey['ID']);
 		
 		return $survey;
 	}
