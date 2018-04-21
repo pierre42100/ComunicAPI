@@ -220,50 +220,25 @@ class conversationsController{
 		if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
 			Rest_fatal_error(401, "Specified user doesn't belongs to the conversation !");
 
-		//Check if informations were specified about the new message or not
-		if(!isset($_POST['message']) AND !isset($_POST['image']))
-			Rest_fatal_error(401, "Nothing to be sent with the new message !");
+		//Check if information were specified about the new message or not
+		if(!isset($_POST['message']))
+			Rest_fatal_error(401, "New conversation messages must contain a message (can be empty if there is an image) !");
 		
 		//Else extract informations
-		$message = (isset($_POST['message']) ? $_POST['message'] : "");
-		$image = (isset($_POST['image']) ? $_POST['image'] : false);
+		$message = (string) (isset($_POST['message']) ? $_POST['message'] : "");
+
+		//Check for image
+		$image = "";
+		if(check_post_file("image")){
+
+			//Save image and retrieve its URI
+			$image = save_post_image("image", userID, "conversations", 1200, 1200);
+
+		}
 
 		//Check message validity
-		if(!check_string_before_insert($message) && !$image)
-			Rest_fatal_error(401, "Invalid message sending request !");
-
-		//Check for images
-		if($image){
-			//Get image informations
-			$arrayImage = explode(";", $image);
-			if(count($arrayImage) != 2)
-				Rest_fatal_error(400, "Invalid image informations !");
-			
-			$image = str_replace("base64,", "", $arrayImage[1]);
-
-			//Try to base64_decode image
-			$decoded_image = base64_decode($image, true);
-			
-			//Check for errors
-			if(!$decoded_image)
-				Rest_fatal_error(500, "Couldn't extract image !");
-			
-			//Get target folder
-			$targetFolder = prepareFileCreation(userID, "conversations");
-
-			//Generate target file name
-			$targetFileName = $targetFolder.generateNewFileName(path_user_data($targetFolder, true), "png");
-			$relativeFileName = path_user_data($targetFileName, true);
-
-			//Try to resize image
-			if(!reduce_image("string", $relativeFileName, 1200, 1200, "image/png", $decoded_image)){
-				//Returns error
-				Rest_fatal_error(500, "Couldn't resize image !");
-			}
-
-			//Save image URI
-			$image = $targetFileName;
-		}
+		if(!check_string_before_insert($message) && $image == "")
+			Rest_fatal_error(401, "Invalid message creation request !");
 
 		//Insert the new message
 		if(!CS::get()->components->conversations->sendMessage(userID, $conversationID, $message, $image))

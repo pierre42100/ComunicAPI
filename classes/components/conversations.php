@@ -425,10 +425,10 @@ class conversations {
 	 * @param int $userID The ID of the user inserting the message
 	 * @param int $conversationID The ID of the target conversation
 	 * @param string $message The message to insert
-	 * @param Mixed $image_path Optionnal, the path to an image associated with the message
+	 * @param string $image_path Optionnal, the path to an image associated with the message (empty string by default)
 	 * @return bool True for a success
 	 */
-	private function insertMessage(int $userID, int $conversationID, string $message, $image_path = false) : bool{
+	private function insertMessage(int $userID, int $conversationID, string $message, string $image_path = "") : bool{
 
 		//Prepare values
 		$tableName = $this->conversationsMessagesTable;
@@ -440,7 +440,7 @@ class conversations {
 		);
 
 		//Add image path (if required)
-		if($image_path)
+		if($image_path != "")
 			$values['image_path'] = $image_path;
 
 		//Try to insert new value in database
@@ -547,10 +547,10 @@ class conversations {
 	 * @param int $userID The ID of the user sending the message
 	 * @param int $conversationID The ID of the target conversation
 	 * @param string $message The message
-	 * @param Mixed $image_path Optionnal, define the path to an image associated with the message
+	 * @param string $image_path Optionnal, define the path to an image associated with the message (empty string by default)
 	 * @return bool True for a success
 	 */
-	public function sendMessage(int $userID, int $conversationID, string $message, $image_path = false) : bool{
+	public function sendMessage(int $userID, int $conversationID, string $message, string $image_path = "") : bool{
 
 		//GUIDE LINE : this method act like a "controller" : it doesn't perform any database operation
 		//But it manage all operations (insert message; save image; inform other users; ...)
