@@ -5,12 +5,10 @@
  * @author Pierre HUBERT
  */
 
-class Comment extends BaseUniqueObject {
+class Comment extends BaseUniqueObjectFromUser {
 
 	//Private fields
-	private $userID;
 	private $postID;
-	private $time_sent;
 	private $content;
 	private $img_path;
 	private $img_url;
@@ -23,17 +21,7 @@ class Comment extends BaseUniqueObject {
 	public function __construct(){
 		//Initialize some values
 		$this->postID = 0;
-		$this->userID = 0;
 		$this->likes = -1;
-	}
-
-	//Set and get user ID
-	public function set_userID(int $userID){
-		$this->userID = $userID;
-	}
-
-	public function get_userID() : int {
-		return $this->userID;
 	}
 
 	//Set and get post ID
@@ -47,15 +35,6 @@ class Comment extends BaseUniqueObject {
 
 	public function get_postID() : int {
 		return $this->postID;
-	}
-
-	//Set and get creation time
-	public function set_time_sent(int $time_sent){
-		$this->time_sent = $time_sent;
-	}
-
-	public function get_time_sent() : int {
-		return $this->time_sent;
 	}
 
 	//Set and get content
