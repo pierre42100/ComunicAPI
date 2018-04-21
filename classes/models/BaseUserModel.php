@@ -6,26 +6,11 @@
  * @author Pierre HUBERT
  */
 
-class BaseUserModel {
+//Need the BaseUniqueObject class
+require_once __DIR__."/BaseUniqueObject.php";
 
-	//Private fields
-	private $userID = 0;
+abstract class BaseUserModel extends BaseUniqueObject {
 
-	//Set and get user ID
-	public function set_id(int $id){
-		$this->id = $id;
-	}
+	//Nothing yet
 
-	public function get_id() : int {
-		return $this->id;
-	}
-	
-	/**
-	 * Check wether this object is valid or not
-	 * 
-	 * @return bool TRUE if this object is valid / FALSE else
-	 */
-	public function isValid() : bool {
-		return $this->id > 0;
-	}
 }
