@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-class Survey {
+class SurveyComponent {
 
 	/**
 	 * Survey infos table
@@ -334,4 +334,4 @@ class Survey {
 }
 
 //Register component
-Components::register("survey", new Survey());
+Components::register("survey", new SurveyComponent());
