@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-class commentsController {
+class CommentsController {
 
 	/**
 	 * Create a comment
@@ -181,7 +181,7 @@ class commentsController {
 	 * @param Comment $comment The comment to convert
 	 * @return array Informations about the comment
 	 */
-	private function commentToAPI(Comment $comment) : array {
+	public static function commentToAPI(Comment $comment) : array {
 		$data = array();
 
 		$data["ID"] = $comment->get_id();

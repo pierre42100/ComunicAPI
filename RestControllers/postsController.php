@@ -528,6 +528,14 @@ class postsController {
 		//Update visibility level
 		$infos['visibility_level'] = $this::VISIBILITY_LEVELS_API[$infos['visibility_level']];
 
+		//Parse comments if required
+		if(isset($infos['comments'])){
+			if($infos['comments'] != null){
+				foreach($infos['comments'] as $num=>$src)
+					$infos['comments'][$num] = CommentsController::commentToAPI($src);
+			}
+		}
+
 		//Return the post ready to be shown
 		return $infos;
 	}

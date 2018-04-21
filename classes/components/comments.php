@@ -46,7 +46,7 @@ class Comments {
 	 * @param int $postID The ID of the post
 	 * @param bool $load_comments Specify whether the comments should be
 	 * loaded or not (default to true)
-	 * @return array The list of comments of the post
+	 * @return array The list of comments of the post (as Comment objects)
 	 */
 	public function get(int $postID, bool $load_comments = true) : array {
 
@@ -61,7 +61,7 @@ class Comments {
 		$comments = array();
 
 		foreach($result as $entry){
-			$comments[] = $this->parse_comment($entry, $load_comments);
+			$comments[] = $this->dbToComment($entry, $load_comments);
 		}
 
 		return $comments;
@@ -233,42 +233,6 @@ class Comments {
 			array($commentID, $userID)
 		) > 0;
 	}
-
-	/**
-	 * Parse a comment informations
-	 * 
-	 * @param array $src Informations from the database
-	 * @param bool $load_likes Specify if the likes have to be loaded or not
-	 * @return array Informations about the comments ready to be sent
-	 */
-	private function parse_comment(array $src, bool $load_likes = true): array {
-		$info = array();
-
-		$info["ID"] = $src["ID"];
-		$info["userID"] = $src["ID_personne"];
-		$info["postID"] = $src["ID_texte"];
-		$info["time_sent"] = strtotime($src["date_envoi"]);
-		$info["content"] = $src["commentaire"];
-
-		//Check for image
-		if($src["image_commentaire"] != ""){
-			$info["img_path"] = str_replace("file:", "", $src["image_commentaire"]);
-			$info["img_url"] = path_user_data($info["img_path"], false);
-
-		} else {
-			$info["img_path"] = null;
-			$info["img_url"] = null;
-		}
-
-		if($load_likes){
-			//Get informations about likes
-			$info["likes"] = CS::get()->components->likes->count($info["ID"], Likes::LIKE_COMMENT);
-			$info["userlike"] = user_signed_in() ? CS::get()->components->likes->is_liking(userID, $info["ID"], Likes::LIKE_COMMENT) : false;
-		}
-
-		return $info;
-	}
-
 
 	/**
 	 * Turn a comment database entry into a Comment object
