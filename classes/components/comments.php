@@ -290,7 +290,7 @@ class Comments {
 		//Check for image
 		if($data["image_commentaire"] != ""){
 			$comment->set_img_path(str_replace("file:", "", $data["image_commentaire"]));
-			$info->set_img_url(path_user_data($info->get_img_path(), false));
+			$comment->set_img_url(path_user_data($comment->get_img_path(), false));
 		}
 
 		if($load_likes){
