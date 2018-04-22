@@ -28,7 +28,7 @@ class Movies {
 
 		$movies = array();
 		foreach($results as $row)
-			$movies[] = $this->parse_db_infos($row);
+			$movies[] = $this->dbToMovie($row);
 
 		return $movies;
 	}
@@ -37,9 +37,9 @@ class Movies {
 	 * Get informations about a movie
 	 * 
 	 * @param int $movieID The ID of the target movie
-	 * @return array Informations about the movie (empty in case of failure)
+	 * @return Movie Information about the movie (empty in case of failure)
 	 */
-	public function get_infos(int $movieID) : array {
+	public function get_infos(int $movieID) : Movie {
 
 		//Perform a request in the database
 		$condition = "WHERE ID = ?";
@@ -50,7 +50,7 @@ class Movies {
 		if(count($result) == 0)
 			return array();
 
-		return $this->parse_db_infos($result[0]);
+		return $this->dbToMovie($result[0]);
 
 	}
 
@@ -73,35 +73,35 @@ class Movies {
 	public function get_owner(int $movieID) : int {
 
 		//Get infos about the movie
-		$movieInfos = $this->get_infos($movieID);
+		$movie = $this->get_infos($movieID);
+
+		if(!$movie->isValid())
+			return 0;
 
 		//Return the ID of the owner of the movie
-		return isset($movieInfos["userID"]) ? $movieInfos["userID"] : 0;
+		return $movie->get_userID();;
 
 	}
 
 	/**
-	 * Parse a video informations
+	 * Convert database entry into movie object
 	 * 
-	 * @param array $db_infos Informations about the movie from
-	 * the database
-	 * @return array Parsed informations about the video
+	 * @param array $entry The database entry
+	 * @return Movie Generated object
 	 */
-	private function parse_db_infos(array $db_infos) : array {
+	private function dbToMovie(array $entry) : Movie {
 
-		$infos = array();
+		$movie = new Movie();
 
-		//Get informations
-		$infos["id"] = $db_infos["ID"];
-		$infos["uri"] = $db_infos["URL"];
-		$infos["url"] = path_user_data($infos['uri']);
-		$infos["userID"] = $db_infos["ID_user"];
-		$infos["name"] = $db_infos["nom_video"];
-		$infos["file_type"] = $db_infos["file_type"];
-		$infos["size"] = $db_infos["size"];
+		$movie->set_id($entry["ID"]);
+		$movie->set_uri($entry["URL"]);
+		$movie->set_url(path_user_data($movie->get_uri()));
+		$movie->set_userID($entry["ID_user"]);
+		$movie->set_name($entry["nom_video"]);
+		$movie->set_file_type($entry["file_type"]);
+		$movie->set_size($entry["size"]);
 
-		return $infos;
-
+		return $movie;
 	}
 
 }
