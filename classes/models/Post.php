@@ -16,8 +16,8 @@ class Post extends BaseUniqueObjectFromUser {
 	private $file_type;
 	private $file_path;
 	private $file_path_url;
-	private $video_id = -1;
-	private $video_info;
+	private $movie_id = -1;
+	private $movie;
 	private $time_end = -1;
 	private $link_url;
 	private $link_title;
@@ -139,16 +139,16 @@ class Post extends BaseUniqueObjectFromUser {
 
 
 	//Set and get the ID of the movie
-	public function set_video_id(int $video_id){
-		$this->video_id = $video_id;
+	public function set_movie_id(int $movie_id){
+		$this->movie_id = $movie_id;
 	}
 
-	public function has_video_id() : bool {
-		return $this->video_id > -1;
+	public function has_movie_id() : bool {
+		return $this->movie_id > -1;
 	}
 
-	public function get_video_id() : int {
-		return $this->video_id;
+	public function get_movie_id() : int {
+		return $this->movie_id;
 	}
 
 

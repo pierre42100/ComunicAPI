@@ -95,15 +95,15 @@ class postsController {
 		$postInfos = components()->posts->get_single($postID, false);
 
 		//Check for errors
-		if(count($postInfos) == 0)
+		if(!$postInfos->isValid())
 			Rest_fatal_error(500, "Couldn't retrieve post informations !");
 
 		//Check if we can get the comments of the post
-		if(components()->user->allowComments($postInfos['user_page_id']))
-			$postInfos['comments'] = components()->comments->get($postInfos["ID"]);
+		if(components()->user->allowComments($postInfos->get_user_page_id()))
+			$postInfos->set_comments(components()->comments->get($postInfos->get_id()));
 
 		//Parse post informations
-		$postInfos = $this->parsePostForAPI($postInfos);
+		$postInfos = $this->PostToAPI($postInfos);
 
 		//Return informations about the post
 		return $postInfos;
@@ -546,5 +546,74 @@ class postsController {
 
 		//Return the post ready to be shown
 		return $infos;
+	}
+
+	/**
+	 * Turn a POST object into API entry object
+	 * 
+	 * @param Post $post The post object to convert
+	 * @return array Generated post object
+	 */
+	public static function PostToAPI(Post $post) : array {
+
+		$data = array();
+
+		//Basic information about the post
+		$data["ID"] = $post->get_id();
+		$data["userID"] = $post->get_userID();
+		$data["user_page_id"] = $post->get_user_page_id();
+		$data["post_time"] = $post->get_time_sent();
+		$data["content"] = $post->has_content() ? $post->get_content() : null;
+		$data["visibility_level"] = self::VISIBILITY_LEVELS_API[$post->get_visibility_level()];
+		$data["kind"] = $post->get_kind();
+
+		//File specific
+		$data["file_size"] = $post->has_file_size() ? $post->get_file_size() : null;
+		$data["file_type"] = $post->has_file_type() ? $post->get_file_type() : null;
+		$data["file_path"] = $post->has_file_path() ? $post->get_file_path() : null;
+		$data["file_path_url"] = $post->has_file_path_url() ? $post->get_file_path_url() : null;
+		
+		//Movie specific
+		$data["video_id"] = $post->has_movie_id() ? $post->get_movie_id() : null;
+		$data["video_info"] = $post->has_movie() ? MoviesController::MovieToAPI($post->get_movie()) : null;
+
+		//Countdown timer specific
+		$data["time_end"] = $post->has_time_end() ? $post->get_time_end() : null;
+
+		//Weblink specific
+		$data["link_url"] = $post->has_link_url() ? $post->get_link_url() : null;
+		$data["link_title"] = $post->has_link_title() ? $post->get_link_title() : null;
+		$data["link_description"] = $post->has_link_description() ? $post->get_link_description() : null;
+		$data["link_image"] = $post->has_link_image() ? $post->get_link_image() : null;
+
+		//Survey specific
+		$data["data_survey"] = $post->has_survey() ? SurveysController::SurveyToAPI($post->get_survey()) : null;
+
+		//Other post information
+		$data["likes"] = $post->has_likes() ? $post->get_likes() : null;
+		$data["userlike"] = $post->get_userLike();
+
+		//Comments
+		if($post->has_comments()){
+
+			//Process the list of comments
+			$data["comments"] = array();
+
+			foreach($post->get_comments() as $num=>$comment)
+				$data['comments'][$num] = CommentsController::commentToAPI($comment);
+
+		}
+		else
+			$data["comments"] = null;
+
+
+		//Get access level to the post
+		$post->set_user_access_level(CS::get()->components->posts->access_level_with_infos($post, userID));
+
+		//Save level access in the response
+		$data["user_access"] = self::ACCESS_LEVEL_API[$post->get_user_access_level()];
+
+		return $data;
+
 	}
 }

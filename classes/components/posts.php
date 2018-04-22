@@ -263,33 +263,37 @@ class Posts {
 	 * 
 	 * This function requires the informations about the post
 	 * 
-	 * @param array $post_infos Informations about the post
+	 * @param Post $post_info Informations about the post
 	 * @param int $userID The ID of the user to check
 	 * @return int The access level over the post
 	 */
-	public function access_level_with_infos(array $post_infos, int $userID) : int {
+	public function access_level_with_infos(Post $post_info, int $userID) : int {
+
+		//Check the validity of the Post object
+		if(!$post_info->isValid())
+			return $this::NO_ACCESS;
 
 		//Check if the user is the owner of the post
-		if($post_infos['userID'] == $userID)
+		if($post_info->get_userID() == $userID)
 			return $this::FULL_ACCESS;
 
 		//Check if the post was made on the user page
-		if($post_infos["user_page_id"] == $userID)
+		if($post_info->get_user_page_id() == $userID)
 			return $this::INTERMEDIATE_ACCESS;
 
 		//Check if the post is private
-		if($post_infos["visibility_level"] == $this::VISIBILITY_USER)
+		if($post_info->get_visibility_level() == $this::VISIBILITY_USER)
 			return $this::NO_ACCESS;
 		
 		//Check if the post is for friends only
-		if($post_infos["visibility_level"] == $this::VISIBILITY_FRIENDS){
+		if($post_info->get_visibility_level() == $this::VISIBILITY_FRIENDS){
 
 			//Check if user is signed in
 			if($userID == 0)
 				return $this::NO_ACCESS;
 			
 			//Check if this user and the owner of the page are friends or not
-			else if(!CS::get()->components->friends->are_friend($userID, $post_infos['user_page_id']))
+			else if(!CS::get()->components->friends->are_friend($userID, $post_info->get_user_page_id()))
 				return $this::NO_ACCESS;
 			
 			else
@@ -298,16 +302,16 @@ class Posts {
 		}
 
 		//Check if the post is public
-		if($post_infos['visibility_level'] == $this::VISIBILITY_PUBLIC){
+		if($post_info->get_visibility_level() == $this::VISIBILITY_PUBLIC){
 
 			//Check if the two personns are friend
 			if($userID != 0){
-				if(CS::get()->components->friends->are_friend($userID, $post_infos['user_page_id']))
+				if(CS::get()->components->friends->are_friend($userID, $post_info->get_user_page_id()))
 					return $this::BASIC_ACCESS;
 			}
 
 			//Get user visibility level
-			$visibilityLevel = CS::get()->components->user->getVisibility($post_infos['user_page_id']);
+			$visibilityLevel = CS::get()->components->user->getVisibility($post_info->get_user_page_id());
 
 			//If the page is open, access is free
 			if($visibilityLevel == UserComponent::USER_PAGE_OPEN)
@@ -491,7 +495,7 @@ class Posts {
 		$post_infos = $this->get_single($postID);
 
 		//Check if we didn't get informations about the post
-		if(count($post_infos) == 0)
+		if(!$post_infos->isValid())
 			return false;
 
 		//Delete the likes associated to the post
@@ -503,11 +507,11 @@ class Posts {
 			return false;
 
 		//Delete the associated image or PDF (if any)
-		if($post_infos['kind'] == $this::POST_KIND_IMAGE
-		|| $post_infos['kind'] == $this::POST_KIND_PDF){
+		if($post_infos->get_kind() == $this::POST_KIND_IMAGE
+		|| $post_infos->get_kind() == $this::POST_KIND_PDF){
 
 			//Determine file path
-			$file_path = path_user_data($post_infos["file_path"], true);
+			$file_path = path_user_data($post_infos->get_file_path(), true);
 
 			//Check if the file exists
 			if(file_exists($file_path)){
@@ -519,7 +523,7 @@ class Posts {
 		}
 
 		//Delete the associated survey (if any)
-		if($post_infos['kind'] == $this::POST_KIND_SURVEY){
+		if($post_infos->get_kind() == $this::POST_KIND_SURVEY){
 			
 			//Check the post has an associated survey
 			if(components()->survey->exists($postID)){
@@ -541,10 +545,10 @@ class Posts {
 	 * @param int $postID The ID of the post to get
 	 * @param bool $load_comments Specify if the comments should be loaded or not
 	 * (no by default)
-	 * @return array Informations about the post / empty array
+	 * @return Post Information about the post / invalid Post object
 	 * if the post was not found
 	 */
-	public function get_single(int $postID, bool $load_comments = false) : array {
+	public function get_single(int $postID, bool $load_comments = false) : Post {
 
 		//Perform a request on the database
 		$conditions = "WHERE ID = ?";
@@ -553,10 +557,10 @@ class Posts {
 
 		//Check if we got a response
 		if(count($result) == 0)
-			return array(); //Empty array = error
+			return new Post(); //Empty array = error
 		
 		//Return parsed response
-		return $this->parse_post($result[0], $load_comments);
+		return $this->dbToPost($result[0], $load_comments);
 
 	}
 
@@ -641,6 +645,67 @@ class Posts {
 			$info["comments"] = null;
 
 		return $info;
+
+	}
+
+	/**
+	 * Turn a database entry into a Post object
+	 * 
+	 * @param array $entry The database entry to parse
+	 * @param bool $load_comments Load the comments, if required
+	 * @return Post Generated Post object
+	 */
+	private function dbToPost(array $entry, bool $load_comments) : Post {
+
+		$post = new Post();
+
+		//General information
+		$post->set_id($entry["ID"]);
+		$post->set_userID($entry["ID_amis"] == 0 ? $entry["ID_personne"] : $entry["ID_amis"]);
+		$post->set_user_page_id($entry["ID_personne"]);
+		$post->set_time_sent(strtotime($entry["date_envoi"]));
+		$post->set_content($entry["texte"]);
+		$post->set_visibility_level($entry["niveau_visibilite"]);
+		$post->set_kind($this::POSTS_DB_TYPES[$entry["type"]]);
+		
+		//File specific
+		$post->set_file_size($entry["size"] != null ? $entry["size"] : -1);
+		$post->set_file_type($entry["file_type"] != null ? $entry["file_type"] : "");
+		$post->set_file_path($entry["path"] != null ? $entry["path"] : "");
+		$post->set_file_path_url($post->has_file_path() ? path_user_data($post->get_file_path) : "");
+		
+		//Movie specific
+		$post->set_movie_id($entry["idvideo"] == null ? -1 : $entry["idvideo"]);
+		if($post->has_movie_id())
+			$post->set_movie(components()->movie->get_info($post->get_movie_id()));
+		
+	
+		//Countdown timer - specific
+		if($entry['annee_fin'] != 0)
+			$post->set_time_end(strtotime($entry["annee_fin"]."/".$entry['mois_fin']."/".$entry["jour_fin"]));
+		
+		
+		//Web link
+		$post->set_link_url($entry["url_page"] != null ? $entry["url_page"] : "");
+		$post->set_link_title($entry["titre_page"] != null ? $entry["titre_page"] : "");
+		$post->set_link_description($entry["description_page"] != null ? $entry["description_page"] : "");
+		$post->set_link_image($entry["image_page"] != null ? $entry["image_page"] : "");
+
+
+		//Survey specific
+		if($post->get_kind() == "survey")
+			$post->set_survey(components()->survey->get_infos($post->get_id()));
+		
+		
+		//Get information about likes
+		$post->set_likes(components()->likes->count($post->get_id(), Likes::LIKE_POST));
+		$post->set_userLike(user_signed_in() ? components()->likes->is_liking(userID, $post->get_id(), Likes::LIKE_POST) : false);
+
+		//Load comments, if requested
+		if($load_comments)
+			$post->set_comments(components()->comments->get($post->get_id()));
+
+		return $post;
 
 	}
 }

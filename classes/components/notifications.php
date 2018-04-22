@@ -94,21 +94,25 @@ class notificationComponent {
 		if($notification->get_on_elem_type() == Notification::POST){
 
 			//Fetch post informations
-			$infos_post = components()->posts->get_single($notification->get_on_elem_id());
+			$info_post = components()->posts->get_single($notification->get_on_elem_id());
 
+			//Check for error
+			if(!$info_post->isValid())
+				return false;
+				
 			//Update post informations
 			$notification->set_from_container_type(Notification::USER_PAGE);
-			$notification->set_from_container_id($infos_post['user_page_id']);
+			$notification->set_from_container_id($info_post->get_user_page_id());
 
 			//Check if the notification is private or not
-			if($infos_post['visibility_level'] == Posts::VISIBILITY_USER){
+			if($info_post->get_visibility_level() == Posts::VISIBILITY_USER){
 
 				//Push the notification only to the user, and only if it is not him
-				if($notification->get_from_user_id() == $infos_post['user_page_id'])
+				if($notification->get_from_user_id() == $info_post->get_user_page_id())
 					return false; //Nothing to be done
 
 				//Set the target user
-				$notification->set_dest_user_id($infos_post['user_page_id']);
+				$notification->set_dest_user_id($info_post->get_user_page_id());
 
 				//Push the notification
 				return $this->push_private($notification);
