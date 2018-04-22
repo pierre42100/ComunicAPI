@@ -348,16 +348,14 @@ class Posts {
 	 * @param string $link_title The title of the link associated with the post (if any)
 	 * @param string $link_description The description of the link associated with the post (if any)
 	 * @param string $link_image The link pointing on the image associated with the post (if any)
-	 * @param string $survey_question The question of the survey associated with the post (if any)
-	 * @param array $survey_answers The answers of the survey associated with the post (if any)
+	 * @param Survey $survey Information about a related survey (if any)
 	 * @return int The ID of the created post or -1 in case of failure
 	 */
 	public function create(string $kind_page, int $kind_page_id, int $userID, string $content, 
 							int $visibility, string $kind, int $file_size = 0, 
 							string $file_type = null, string $file_path = null, int $videoID = 0, 
 							int $time_end = 0, string $link_url = null, string $link_title = null,
-							string $link_description = null, string $link_image = null, string $survey_question = null,
-							array $survey_answers = array()) : int {
+							string $link_description = null, string $link_image = null, Survey $survey = null) : int {
 		
 		//Generate new post informations
 		//Get the corresponding kind of post for the database
@@ -424,7 +422,10 @@ class Posts {
 
 		//Create the survey if required
 		if($kind == $this::POST_KIND_SURVEY){
-			CS::get()->components->survey->create($postID, $userID, $survey_question, $survey_answers);
+			//Complete the request
+			$survey->set_postID($postID);
+			$survey->set_userID($userID);
+			components()->survey->create($survey);
 		}
 
 		return $postID;

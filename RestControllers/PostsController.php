@@ -7,7 +7,7 @@
  * @author Pierre HUBERT
  */
 
-class postsController {
+class PostsController {
 
 	/**
 	 * Visibility levels for the API
@@ -296,9 +296,14 @@ class postsController {
 			if(count($answers) < 2)
 				Rest_fatal_error(400, "Please specify at least two valid answers for the survey !");
 
-			//Save informations about the survey
-			$survey_question = removeHTMLnodes($question);
-			$survey_answers = $answers;
+			//Save information about the survey
+			$survey = new Survey();
+			$survey->set_question(removeHTMLnodes($question));
+			foreach($answers as $name){
+				$choice = new SurveyChoice();
+				$choice->set_name($name);
+				$survey->add_choice($choice);
+			}
 		}
 
 		//The content type is not supported
@@ -338,8 +343,7 @@ class postsController {
 			isset($link_image) ? $link_image : null,
 
 			//For survey posts
-			isset($survey_question) ? $survey_question : null,
-			isset($survey_answers) ? $survey_answers : array()
+			isset($survey) ? $survey : null
 		);
 
 		//Check for errors

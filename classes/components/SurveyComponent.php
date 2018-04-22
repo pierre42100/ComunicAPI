@@ -25,24 +25,21 @@ class SurveyComponent {
 	/**
 	 * Create a new survey
 	 * 
-	 * @param int $postID The target post for the survey
-	 * @param int $userID The ID of the user creating the survey
-	 * @param string $question The question for the survey
-	 * @param array $answers The answers for the survey
+	 * @param Survey $survey Information about the survey to create
 	 * @return bool True for a sucess / False for a failure
 	 */
-	public function create(int $postID, int $userID, string $question, array $answers) : bool {
+	public function create(Survey $survey) : bool {
 
 		//Create the main survey informations
-		$main_infos = array(
-			"ID_utilisateurs" => $userID,
-			"ID_texte" => $postID,
+		$main_info = array(
+			"ID_utilisateurs" => $survey->get_userID(),
+			"ID_texte" => $survey->get_postID(),
 			"date_creation" => mysql_date(),
-			"question" => $question
+			"question" => $survey->get_question()
 		);
 
 		//Try to create survey main informations table
-		if(!CS::get()->db->addLine($this::SURVEY_INFOS_TABLE, $main_infos))
+		if(!CS::get()->db->addLine($this::SURVEY_INFOS_TABLE, $main_info))
 			return false;
 		
 		//Get the ID of the survey
@@ -54,11 +51,11 @@ class SurveyComponent {
 		
 		//Process each answer
 		$answers_data = array();
-		foreach($answers as $line){
+		foreach($survey->get_choices() as $choice){
 			$answers_data[] = array(
 				"ID_sondage" => $surveyID,
 				"date_creation" => mysql_date(),
-				"Choix" => $line
+				"Choix" => $choice->get_name()
 			);
 		}
 
@@ -79,7 +76,7 @@ class SurveyComponent {
 	public function get_infos(int $postID) : Survey {
 
 		//Get informations about the survey
-		$survey = $this->get_survey_infos($postID);
+		$survey = $this->get_survey_info($postID);
 
 		//Check for errors
 		if(!$survey->isValid())
@@ -214,7 +211,7 @@ class SurveyComponent {
 	 * @return Survey Information about the survey, or an invalid object in case
 	 * of failure
 	 */
-	private function get_survey_infos(int $postID) : Survey {
+	private function get_survey_info(int $postID) : Survey {
 
 		//Fetch the database
 		$conditions = "WHERE ID_texte = ?";
