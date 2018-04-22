@@ -105,8 +105,8 @@ function reduce_image(string $fileName, string $targetFile, int $maxWidth, int $
 		$src = imagecreatefromjpeg($fileName);
 	elseif($imageInfos['mime'] === "image/gif")
 		$src = imagecreatefromgif($fileName);
-	elseif($imagesInfos['mime'] === "image/x-ms-bmp")
-		$src = imagecreatefrombmp($fileName);
+	//elseif($imageInfos['mime'] === "image/x-ms-bmp")
+	//	$src = imagecreatefrombmp($fileName);
 	else
 		return false; //Unrecognized image type
 	

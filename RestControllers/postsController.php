@@ -504,48 +504,11 @@ class postsController {
 		foreach($list as $num => $infos){
 
 			//Parse post informations
-			$list[$num] = $this->parsePostForAPI($infos);
+			$list[$num] = $this->PostToAPI($infos);
 
 		}
 
 		return $list;
-	}
-
-	/**
-	 * Parse a post to make it ready to be displayed on the API
-	 * 
-	 * @param array $infos Source informations
-	 * @return array Post informations ready to be returned
-	 */
-	private function parsePostForAPI(array $infos) : array {
-
-		//Get access level to the post
-		$access_level = CS::get()->components->posts->access_level_with_infos($infos, userID);
-
-		//Save level access in the response
-		$infos["user_access"] = $this::ACCESS_LEVEL_API[$access_level];
-
-		//Update visibility level
-		$infos['visibility_level'] = $this::VISIBILITY_LEVELS_API[$infos['visibility_level']];
-
-		//Turn movie into API entry (if any)
-		if($infos["video_info"] != null)
-			$infos["video_info"] = MoviesController::MovieToAPI($infos["video_info"]);
-
-		//Turn survey into API entry (if any)
-		if($infos["data_survey"] != null)
-			$infos["data_survey"] = SurveysController::SurveyToAPI($infos["data_survey"]);
-
-		//Parse comments if required
-		if(isset($infos['comments'])){
-			if($infos['comments'] != null){
-				foreach($infos['comments'] as $num=>$src)
-					$infos['comments'][$num] = CommentsController::commentToAPI($src);
-			}
-		}
-
-		//Return the post ready to be shown
-		return $infos;
 	}
 
 	/**

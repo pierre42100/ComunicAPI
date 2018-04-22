@@ -23,10 +23,11 @@ class Post extends BaseUniqueObjectFromUser {
 	private $link_title;
 	private $link_description;
 	private $link_image;
-	private $data_survey;
+	private $survey;
 	private $likes = -1;
 	private $userLike;
 	private $comments;
+	private $has_comments = false;
 	private $user_access;
 
 	
@@ -277,10 +278,11 @@ class Post extends BaseUniqueObjectFromUser {
 	//Set and get the list of associated comments
 	public function set_comments(array $comments){
 		$this->comments = $comments;
+		$this->has_comments = true;
 	}
 
 	public function has_comments() : bool {
-		return $this->comments != null;
+		return $this->has_comments;
 	}
 
 	public function get_comments() : array {

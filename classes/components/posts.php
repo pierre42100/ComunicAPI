@@ -155,7 +155,7 @@ class Posts {
 		//Parse posts
 		$posts = array();
 		foreach($list as $post){
-			$posts[] = $this->parse_post($post, $getComments);
+			$posts[] = $this->dbToPost($post, $getComments);
 		}
 
 		return $posts;
@@ -223,7 +223,7 @@ class Posts {
 			$allow_comments = CS::get()->components->user->allowComments($row["ID_personne"]);
 
 			//Parse post informations
-			$posts[] = $this->parse_post($row, $allow_comments);
+			$posts[] = $this->dbToPost($row, $allow_comments);
 		}
 
 		//Return the list of posts
@@ -492,10 +492,10 @@ class Posts {
 	public function delete(int $postID) : bool {
 
 		//Get informations about the post
-		$post_infos = $this->get_single($postID);
+		$post_info = $this->get_single($postID);
 
 		//Check if we didn't get informations about the post
-		if(!$post_infos->isValid())
+		if(!$post_info->isValid())
 			return false;
 
 		//Delete the likes associated to the post
@@ -507,11 +507,11 @@ class Posts {
 			return false;
 
 		//Delete the associated image or PDF (if any)
-		if($post_infos->get_kind() == $this::POST_KIND_IMAGE
-		|| $post_infos->get_kind() == $this::POST_KIND_PDF){
+		if($post_info->get_kind() == $this::POST_KIND_IMAGE
+		|| $post_info->get_kind() == $this::POST_KIND_PDF){
 
 			//Determine file path
-			$file_path = path_user_data($post_infos->get_file_path(), true);
+			$file_path = path_user_data($post_info->get_file_path(), true);
 
 			//Check if the file exists
 			if(file_exists($file_path)){
@@ -523,7 +523,7 @@ class Posts {
 		}
 
 		//Delete the associated survey (if any)
-		if($post_infos->get_kind() == $this::POST_KIND_SURVEY){
+		if($post_info->get_kind() == $this::POST_KIND_SURVEY){
 			
 			//Check the post has an associated survey
 			if(components()->survey->exists($postID)){
@@ -565,90 +565,6 @@ class Posts {
 	}
 
 	/**
-	 * Parse a user post from the database into
-	 * the standardized version of post structure
-	 * 
-	 * @param array $src Informations about the post from the database
-	 * @param bool $load_comments Get comments, if required
-	 * @return array Parsed informations about the post
-	 */
-	private function parse_post(array $src, bool $load_comments) : array {
-		
-		$info = array();
-
-		//Specify post ID
-		$info["ID"] = $src["ID"];
-
-		//Determine user ID
-		$info["userID"] = $src["ID_amis"] == 0 ? $src["ID_personne"] : $src["ID_amis"];
-
-		//Determine user page ID
-		$info["user_page_id"] = $src["ID_personne"];
-
-		//Time when the message was sent
-		$info["post_time"] = strtotime($src["date_envoi"]);
-
-		//Content of the message
-		$info["content"] = $src["texte"];
-
-		//Visibility level
-		$info["visibility_level"] = $src["niveau_visibilite"];
-
-		//Determine the kind of post
-		$info["kind"] = $this::POSTS_DB_TYPES[$src["type"]];
-
-		//Document info
-		$info["file_size"] = $src["size"];
-		$info["file_type"] = $src["file_type"];
-		$info["file_path"] = $src["path"];
-		$info["file_path_url"] = $src["path"] == null ? null : path_user_data($src["path"], false);
-
-		//Video specific
-		$info["video_id"] = $src["idvideo"];
-
-		//Get informations about the video
-		if(!is_null($info['video_id'])){
-			$info['video_info'] = CS::get()->components->movies->get_info($info['video_id']);
-		}
-		else {
-			$info['video_info'] = null;
-		}
-
-		//Countdown timer specific
-		if($src['annee_fin'] != 0)
-			$info["time_end"] = strtotime($src["annee_fin"]."/".$src['mois_fin']."/".$src["jour_fin"]);
-		else
-			$info["time_end"] = null;
-		
-		//Weblink specific
-		$info["link_url"] = $src["url_page"];
-		$info["link_title"] = $src["titre_page"];
-		$info["link_description"] = $src["description_page"];
-		$info["link_image"] = $src["image_page"];
-
-		//Survey specific
-		if($info['kind'] == "survey"){
-			$info["data_survey"] = CS::get()->components->survey->get_infos($info['ID']);
-		}
-		else {
-			$info["data_survey"] = null;
-		}
-
-		//Get informations about likes
-		$info["likes"] = CS::get()->components->likes->count($info["ID"], Likes::LIKE_POST);
-		$info["userlike"] = user_signed_in() ? CS::get()->components->likes->is_liking(userID, $info["ID"], Likes::LIKE_POST) : false;
-
-		//Load comments, if required
-		if($load_comments)
-			$info["comments"] = CS::get()->components->comments->get($info["ID"]);
-		else
-			$info["comments"] = null;
-
-		return $info;
-
-	}
-
-	/**
 	 * Turn a database entry into a Post object
 	 * 
 	 * @param array $entry The database entry to parse
@@ -672,12 +588,12 @@ class Posts {
 		$post->set_file_size($entry["size"] != null ? $entry["size"] : -1);
 		$post->set_file_type($entry["file_type"] != null ? $entry["file_type"] : "");
 		$post->set_file_path($entry["path"] != null ? $entry["path"] : "");
-		$post->set_file_path_url($post->has_file_path() ? path_user_data($post->get_file_path) : "");
+		$post->set_file_path_url($post->has_file_path() ? path_user_data($post->get_file_path()) : "");
 		
 		//Movie specific
 		$post->set_movie_id($entry["idvideo"] == null ? -1 : $entry["idvideo"]);
 		if($post->has_movie_id())
-			$post->set_movie(components()->movie->get_info($post->get_movie_id()));
+			$post->set_movie(components()->movies->get_info($post->get_movie_id()));
 		
 	
 		//Countdown timer - specific
