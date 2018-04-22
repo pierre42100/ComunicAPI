@@ -252,7 +252,7 @@ class SurveyComponent {
 	 * Get survey choices
 	 * 
 	 * @param int $surveyID The ID of the target survey
-	 * @return array Informations about the choices of the survey
+	 * @return array Informations about the choices of the survey (as Survey objects)
 	 */
 	private function get_survey_choices(int $surveyID) : array {
 
@@ -266,8 +266,8 @@ class SurveyComponent {
 		//Parse results
 		$choices = array();
 		foreach($result as $row){
-			$choice_infos = $this->parse_survey_choices($row);
-			$choices[$choice_infos["choiceID"]] = $choice_infos;
+			$choice_infos = $this->dbToChoice($row);
+			$choices[$choice_infos->get_id()] = $choice_infos;
 		}
 
 		return $choices;
@@ -278,15 +278,15 @@ class SurveyComponent {
 	 * Parse survey choices from database
 	 * 
 	 * @param array $db_infos Informations about the choice
-	 * @return array Usable informations about the surveay
+	 * @return SurveyChoice Usable informations about the survey
 	 */
-	private function parse_survey_choices(array $db_infos) : array {
+	private function dbToChoice(array $db_infos) : SurveyChoice {
 		
-		$infos = array();
+		$infos = new SurveyChoice();
 
-		$infos['choiceID'] = $db_infos['ID'];
-		$infos['name'] = $db_infos['Choix'];
-		$infos['responses'] = $this->count_choices_responses($infos['choiceID']);
+		$infos->set_id($db_infos['ID']);
+		$infos->set_name($db_infos['Choix']);
+		$infos->set_responses($this->count_choices_responses($infos->get_id()));
 
 		return $infos;
 

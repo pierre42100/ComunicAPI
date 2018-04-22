@@ -103,9 +103,32 @@ class SurveysController {
 		$data["creation_time"] = $survey->get_time_sent();
 		$data["question"] = $survey->get_question();
 		$data["user_choice"] = $survey->get_user_choice();
-		$data["choices"] = $survey->get_choices();
+		
+		//Process survey choices
+		$data["choices"] = array();
+		
+		foreach($survey->get_choices() as $choice)
+			$data["choices"][$choice->get_id()] = self::SurveyChoiceToAPI($choice);
 
 		return $data;
+	}
+
+	/**
+	 * Turn a SurveyChoice object into an API array
+	 * 
+	 * @param SurveyChoice $choice The choice to convert
+	 * @return array Generated array
+	 */
+	public static function SurveyChoiceToAPI(SurveyChoice $choice) : array {
+
+		$data = array();
+
+		$data["choiceID"] = $choice->get_id();
+		$data["name"] = $choice->get_name();
+		$data["responses"] = $choice->get_responses();
+
+		return $data;
+
 	}
 
 }

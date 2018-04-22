@@ -67,7 +67,7 @@ class Survey extends BaseUniqueObjectFromUser {
 		$this->choices = $choices;
 	}
 
-	public function add_choice(array $choice){
+	public function add_choice(SurveyChoice $choice){
 		$this->choices[] = $choice;
 	}
 
