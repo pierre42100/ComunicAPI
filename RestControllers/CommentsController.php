@@ -33,13 +33,15 @@ class CommentsController {
 		else
 			$content = $this->get_comment_content("content", true);
 
+		//Create comment object with new information
+		$comment = new Comment();
+		$comment->set_postID($postID);
+		$comment->set_userID(userID);
+		$comment->set_content($content);
+		$comment->set_img_path(isset($image_path) ? $image_path : "");
+
 		//Try to create the comment
-		$commentID = components()->comments->create(
-			$postID, 
-			userID, 
-			$content, 
-			isset($image_path) ? $image_path : ""
-		);
+		$commentID = components()->comments->create($comment);
 
 		//Check for errors
 		if($commentID < 1)

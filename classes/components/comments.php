@@ -15,21 +15,18 @@ class Comments {
 	/**
 	 * Create a comment
 	 * 
-	 * @param int $postID The ID of the associated post
-	 * @param int $userID The ID of the associated user
-	 * @param string $content The content of the comment
-	 * @param string $image The path of an associated image (if any)
+	 * @param Comment $comment Information about the comment to create
 	 * @return int The ID of the created comment or 0 in case of failure
 	 */
-	public function create(int $postID, int $userID, string $content, string $image = "") : int {
+	public function create(Comment $comment) : int {
 
 		//Generate data set
 		$data = array(
-			"ID_texte" => $postID,
-			"ID_personne" => $userID,
+			"ID_texte" => $comment->get_postID(),
+			"ID_personne" => $comment->get_userID(),
 			"date_envoi" => mysql_date(),
-			"commentaire" => $content,
-			"image_commentaire" => $image == "" ? "" : "file:".$image
+			"commentaire" => $comment->has_content() ? $comment->get_content() : "",
+			"image_commentaire" => $comment->has_img_path() ? "file:".$comment->get_img_path() : ""
 		);
 
 		//Insert it in the database
