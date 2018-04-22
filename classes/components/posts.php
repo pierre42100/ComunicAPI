@@ -604,10 +604,10 @@ class Posts {
 
 		//Get informations about the video
 		if(!is_null($info['video_id'])){
-			$info['video_infos'] = CS::get()->components->movies->get_infos($info['video_id']);
+			$info['video_info'] = CS::get()->components->movies->get_info($info['video_id']);
 		}
 		else {
-			$info['video_infos'] = null;
+			$info['video_info'] = null;
 		}
 
 		//Countdown timer specific

@@ -529,8 +529,8 @@ class postsController {
 		$infos['visibility_level'] = $this::VISIBILITY_LEVELS_API[$infos['visibility_level']];
 
 		//Turn movie into API entry (if any)
-		if($infos["video_infos"] != null)
-			$infos["video_infos"] = MoviesController::MovieToAPI($infos["video_infos"]);
+		if($infos["video_info"] != null)
+			$infos["video_info"] = MoviesController::MovieToAPI($infos["video_info"]);
 
 		//Turn survey into API entry (if any)
 		if($infos["data_survey"] != null)

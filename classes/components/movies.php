@@ -34,12 +34,12 @@ class Movies {
 	}
 
 	/**
-	 * Get informations about a movie
+	 * Get information about a movie
 	 * 
 	 * @param int $movieID The ID of the target movie
 	 * @return Movie Information about the movie (empty in case of failure)
 	 */
-	public function get_infos(int $movieID) : Movie {
+	public function get_info(int $movieID) : Movie {
 
 		//Perform a request in the database
 		$condition = "WHERE ID = ?";
@@ -73,7 +73,7 @@ class Movies {
 	public function get_owner(int $movieID) : int {
 
 		//Get infos about the movie
-		$movie = $this->get_infos($movieID);
+		$movie = $this->get_info($movieID);
 
 		if(!$movie->isValid())
 			return 0;
