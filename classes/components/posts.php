@@ -105,6 +105,7 @@ class Posts {
 	 * @param int $targetID The ID of the target user
 	 * @param int $startPoint The startpoint for the request (0 stands for none)
 	 * @param int $limit The maximum number of messages to fetch
+	 * @return array The list of posts of the user
 	 */
 	public function getUserPosts(int $userID, int $targetID, int $startPoint = 0, int $limit = 10) : array {
 
@@ -333,37 +334,18 @@ class Posts {
 	/**
 	 * Create a new post
 	 * 
-	 * @param string $kind_page The kind of target page
-	 * @param int $kind_page_id The ID of the target page
-	 * @param int $userID The ID of the user creating the post
-	 * @param string $content The content of the post
-	 * @param int $visibility The visibility of the post
-	 * @param string $kind The kind of post
-	 * @param int $file_size The size of the associated file (0 by default - no file)
-	 * @param string $file_type The mime type of the associated file
-	 * @param string $file_path The path in user data pointing on the file
-	 * @param int $videoID The ID of the associated personnal user video (0 for no video)
-	 * @param int $time_end The end of the countdown timer (if any)
-	 * @param string $link_url The URL of the link associated with the post (if any)
-	 * @param string $link_title The title of the link associated with the post (if any)
-	 * @param string $link_description The description of the link associated with the post (if any)
-	 * @param string $link_image The link pointing on the image associated with the post (if any)
-	 * @param Survey $survey Information about a related survey (if any)
+	 * @param Post $post Information about the post to create
 	 * @return int The ID of the created post or -1 in case of failure
 	 */
-	public function create(string $kind_page, int $kind_page_id, int $userID, string $content, 
-							int $visibility, string $kind, int $file_size = 0, 
-							string $file_type = null, string $file_path = null, int $videoID = 0, 
-							int $time_end = 0, string $link_url = null, string $link_title = null,
-							string $link_description = null, string $link_image = null, Survey $survey = null) : int {
+	public function create(Post $post) : int {
 		
 		//Generate new post informations
 		//Get the corresponding kind of post for the database
-		$post_kind_db = array_flip($this::POSTS_DB_TYPES)[$kind];
+		$post_kind_db = array_flip($this::POSTS_DB_TYPES)[$post->get_kind()];
 
 		//Generate valid date form for time_end value
-		if($time_end != 0){
-			$date_end = date("d/m/Y", $time_end);
+		if($post->get_time_end() != 0){
+			$date_end = date("d/m/Y", $post->get_time_end());
 			$array_date_end = explode("/", $date_end);
 
 			//Save the values
@@ -373,15 +355,15 @@ class Posts {
 		}
 		
 		//Process user page posts
-		if($kind_page == $this::PAGE_KIND_USER){
+		if($post->get_kind_page() == $this::PAGE_KIND_USER){
 			
 			//Determine who is creating the post
-			$post_user_id = $kind_page_id;
-			$post_friend_id = $kind_page_id == $userID ? 0 : $userID;
+			$post_user_id = $post->get_kind_page_id();
+			$post_friend_id = $post->get_kind_page_id() == $post->get_userID() ? 0 : $post->get_userID();
 
 		}
 		else {
-			throw new Exception("Unsupported kind of page : ".$kind_page." !");
+			throw new Exception("Unsupported kind of page : ".$post->get_kind_page()." !");
 		}
 
 		//Generate database entry
@@ -389,17 +371,17 @@ class Posts {
 			"ID_personne" => $post_user_id,
 			"ID_amis" => $post_friend_id,
 			"date_envoi" => mysql_date(),
-			"texte" => $content,
-			"niveau_visibilite" => $visibility,
+			"texte" => $post->has_content() ? $post->get_content() : "",
+			"niveau_visibilite" => $post->get_visibility_level(),
 			"type" => $post_kind_db,
 			
 			//Generic files informations
-			"size" => $file_size != 0 ? $file_size : null,
-			"file_type" => $file_type,
-			"path" => $file_path,
+			"size" => $post->has_file_size() ? $post->get_file_size() : null,
+			"file_type" => $post->has_file_type() ? $post->get_file_type() : null,
+			"path" => $post->has_file_path() ? $post->get_file_path() : null,
 
 			//Movie posts
-			"idvideo" => $videoID != 0 ? $videoID : null,
+			"idvideo" => $post->has_movie_id() ? $post->get_movie_id() : null,
 
 			//Countdown timer
 			"jour_fin" => isset($day_end) ? $day_end : null,
@@ -407,10 +389,10 @@ class Posts {
 			"annee_fin" => isset($year_end) ? $year_end : null,
 
 			//Weblink page
-			"url_page" => $link_url,
-			"titre_page" => $link_title,
-			"description_page" => $link_description,
-			"image_page" => $link_image
+			"url_page" => $post->has_link_url() ? $post->get_link_url() : null,
+			"titre_page" => $post->has_link_title() ? $post->get_link_title() : null,
+			"description_page" => $post->has_link_description() ? $post->get_link_description() : null,
+			"image_page" => $post->has_link_image() ? $post->get_link_image() : null
 		);
 
 		//Insert the post
@@ -421,10 +403,11 @@ class Posts {
 		$postID = CS::get()->db->getLastInsertedID();
 
 		//Create the survey if required
-		if($kind == $this::POST_KIND_SURVEY){
+		if($post->get_kind() == $this::POST_KIND_SURVEY){
 			//Complete the request
+			$survey = $post->get_survey();
 			$survey->set_postID($postID);
-			$survey->set_userID($userID);
+			$survey->set_userID($post->get_userID());
 			components()->survey->create($survey);
 		}
 

@@ -119,6 +119,9 @@ class PostsController {
 
 		user_login_required(); //Need login
 
+		//Initialize post object
+		$post = new Post();
+
 		//Get the kind of page
 		if(!isset($_POST['kind-page']) || !isset($_POST['kind-id']))
 			Rest_fatal_error(400, "Please specify the kind of target page and its ID !");
@@ -143,17 +146,23 @@ class PostsController {
 			default:
 				Rest_fatal_error(500, "Unsupported kind of page !");
 		}
+		
+		$post->set_kind_page($kind_page);
+		$post->set_kind_page_id($kind_page_id);
 
 		//Get the kind of post
 		if(!isset($_POST['kind']))
 			Rest_fatal_error(400, "Please specify the kind of post !");
 		$kind = $_POST['kind'];
+		$post->set_kind($kind);
 
 		//Get the content of the post
 		$content = getPostContent("content");
+		$post->set_content($content);
 
 		//Get the visibility of the post
 		$visibility = $this->getPostVisibilityLevel("visibility");
+		$post->set_visibility_level($visibility);
 
 		//Act differently depending of the post content
 		//For text post
@@ -179,6 +188,10 @@ class PostsController {
 			$file_sys_path = path_user_data($file_path, true);
 			$file_type = mime_content_type($file_sys_path);
 			$file_size = filesize($file_sys_path);
+
+			$post->set_file_path($file_path);
+			$post->set_file_type($file_type);
+			$post->set_file_size($file_size);
 		}
 
 		//For YouTube posts
@@ -195,6 +208,7 @@ class PostsController {
 			
 			//Save video informations
 			$file_path = $youtube_id;
+			$post->set_file_path($file_path);
 		}
 
 
@@ -209,7 +223,7 @@ class PostsController {
 				Rest_fatal_error(400, "You are not allowed to use this movie in your posts !");
 			
 			//Save movie informations
-			$video_id = $movieID;
+			$post->set_movie_id($movieID);
 		}
 
 		//For weblinks
@@ -228,6 +242,12 @@ class PostsController {
 			$link_title = isset($page_infos["title"]) ? $page_infos["title"] : null;
 			$link_description = isset($page_infos["description"]) ? $page_infos["description"] : null;
 			$link_image = isset($page_infos["image"]) ? $page_infos["image"] : null;
+
+			$post->set_link_url($link_url);
+			$post->set_link_title($link_title);
+			$post->set_link_description($link_description);
+			$post->set_link_image($link_image);
+
 		}
 
 		//For PDFs
@@ -254,6 +274,10 @@ class PostsController {
 			$file_type = "application/pdf";
 			$file_size = filesize($target_file_sys_path);
 			$file_path = $target_file_path;
+
+			$post->set_file_path($file_path);
+			$post->set_file_type($file_type);
+			$post->set_file_size($file_size);
 		}
 
 		//For countdown timer
@@ -261,6 +285,8 @@ class PostsController {
 
 			//Get end timestamp
 			$time_end = getPostTimeStamp("time-end");
+
+			$post->set_time_end($time_end);
 
 		}
 
@@ -304,6 +330,8 @@ class PostsController {
 				$choice->set_name($name);
 				$survey->add_choice($choice);
 			}
+
+			$post->set_survey($survey);
 		}
 
 		//The content type is not supported
@@ -311,40 +339,11 @@ class PostsController {
 			Rest_fatal_error(500, "This kind of post is not supported !");
 		}
 
+		//Complete post information
+		$post->set_userID(userID);
+
 		//Create the post
-		$postID = CS::get()->components->posts->create(
-			
-			//Informations about the kind of page
-			$kind_page,
-			$kind_page_id,
-
-			//Generic informations about the post
-			userID,
-			$content,
-			$visibility,
-			$kind,
-
-			//Specific informations about the post
-			//Posts with files
-			isset($file_size) ? $file_size : 0,
-			isset($file_type) ? $file_type : null,
-			isset($file_path) ? $file_path : null,
-
-			//For video post
-			isset($video_id) ? $video_id : 0,
-
-			//For countdown post
-			isset($time_end) ? $time_end : 0,
-
-			//For weblink posts
-			isset($link_url) ? $link_url : null,
-			isset($link_title) ? $link_title : null,
-			isset($link_description) ? $link_description : null,
-			isset($link_image) ? $link_image : null,
-
-			//For survey posts
-			isset($survey) ? $survey : null
-		);
+		$postID = CS::get()->components->posts->create($post);
 
 		//Check for errors
 		if($postID < 0)

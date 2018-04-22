@@ -8,7 +8,8 @@
 class Post extends BaseUniqueObjectFromUser {
 
 	//Private fields
-	private $user_page_id = -1;
+	private $kind_page;
+	private $kind_page_id = -1;
 	private $content;
 	private $visibility_level;
 	private $kind;
@@ -30,18 +31,48 @@ class Post extends BaseUniqueObjectFromUser {
 	private $has_comments = false;
 	private $user_access;
 
+
+	//Set and get the kind of page
+	public function set_kind_page(string $kind_page){
+		$this->kind_page = $kind_page == "" ? null : $kind_page;
+	}
+
+	public function has_kind_page() : bool {
+		return $this->kind_page != null;
+	}
+
+	public function get_kind_page() : string {
+		return $this->kind_page != null ? $this->kind_page : "null";
+	}
+
+
+	//Set and get the ID of the kind of page the posts belongs to
+	public function set_kind_page_id(int $kind_page_id){
+		$this->kind_page_id = $kind_page_id;
+	}
+
+	public function has_kind_page_id() : bool {
+		return $this->kind_page_id > -1;
+	}
+
+	public function get_kind_page_id() : int {
+		return $this->kind_page_id;
+	}
+
 	
 	//Set and get the target page ID
 	public function set_user_page_id(int $user_page_id){
-		$this->user_page_id = $user_page_id;
+		if($user_page_id > 0)
+			$this->set_kind_page(Posts::PAGE_KIND_USER);
+		$this->kind_page_id = $user_page_id;
 	}
 
 	public function has_user_page_id() : bool {
-		return $this->user_page_id > -1;
+		return $this->kind_page_id > 0 && $this->kind_page == Posts::PAGE_KIND_USER;
 	}
 
 	public function get_user_page_id() : int {
-		return $this->user_page_id;
+		return $this->kind_page == Posts::PAGE_KIND_USER ? $this->kind_page_id : 0;
 	}
 
 
