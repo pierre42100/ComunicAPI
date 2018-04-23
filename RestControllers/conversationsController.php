@@ -22,6 +22,10 @@ class conversationsController{
 		if($conversationsList === false)
 			Rest_fatal_error(500, "Couldn't get conversations list !");
 		
+		//Process the list of conversation
+		foreach($conversationsList as $num => $conv)
+			$conversationsList[$num] = self::ConvInfoToAPI($conv);
+		
 		//Return results
 		return $conversationsList;
 	}
@@ -30,8 +34,9 @@ class conversationsController{
 	 * Get informationsd about one conversation
 	 *
 	 * @url POST /conversations/getInfosOne
+	 * @url POST /conversations/getInfoOne
 	 */
-	public function getOneInformations(){
+	public function getOneInformation(){
 		user_login_required();
 
 		//Get conversation ID
@@ -50,7 +55,7 @@ class conversationsController{
 			" or the conversation doesn't exists !");
 
 		//Return conversation informations
-		return $conversationsList[0];
+		return self::ConvInfoToAPI($conversationsList[0]);
 	}
 
 	/**
@@ -426,5 +431,27 @@ class conversationsController{
 
 		//The operation is a success
 		return array("success" => "The conversation has been deleted");
+	}
+
+	/**
+	 * Turn a ConversationInfo object into a valid API entry
+	 * 
+	 * @param ConversationInfo $conv Information about the conversation
+	 * @return array Generated conversation object
+	 */
+	private static function ConvInfoToAPI(ConversationInfo $conv) : array {
+
+		$data = array();
+
+		$data["ID"] = $conv->get_id();
+		$data["ID_owner"] = $conv->get_id_owner();
+		$data["last_active"] = $conv->get_last_active();
+		$data["name"] = $conv->has_name() ? $conv->get_name() : false;
+		$data["following"] = $conv->is_following() ? 1 : 0;
+		$data["saw_last_message"] = $conv->is_saw_last_message() ? 1 : 0;
+		$data["members"] = $conv->get_members();
+
+		return $data;
+
 	}
 }

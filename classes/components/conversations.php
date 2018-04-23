@@ -83,18 +83,8 @@ class conversations {
 
 		//Process results
 		$conversationsList = array();
-		foreach($results as $processConversation){
-			$conversationsList[] = array(
-				"ID" => $processConversation["ID"],
-				"ID_owner" => $processConversation["ID_owner"],
-				"last_active" => $processConversation["last_active"],
-				"name" => ($processConversation["name"] == "" ? false : $processConversation["name"]),
-				"following" => $processConversation["following"],
-				"saw_last_message" => $processConversation["saw_last_message"],
-
-				//Get and add conversation members
-				"members" => $this->getConversationMembers($processConversation["ID"]),
-			);
+		foreach($results as $entry){
+			$conversationsList[] = $this->dbToConvInfo($entry);
 		}
 
 		//Return results
@@ -859,6 +849,29 @@ class conversations {
 
 		//Return result
 		return $messages;
+	}
+
+	/**
+	 * Turn a conversation database entry into a ConversationInfo object
+	 * 
+	 * @param array $entry Conversation entry in the database
+	 * @return ConversationInfo Generated conversation information object
+	 */
+	private function dbToConvInfo(array $entry) : ConversationInfo {
+
+		$conv = new ConversationInfo();
+
+		$conv->set_id($entry["ID"]);
+		$conv->set_id_owner($entry["ID_owner"]);
+		$conv->set_last_active($entry["last_active"]);
+		if($entry["name"] != null)
+			$conv->set_name($entry["name"]);
+		$conv->set_following($entry["following"] == 1);
+		$conv->set_saw_last_message($entry["saw_last_message"] == 1);
+		$conv->set_members($this->getConversationMembers($entry["ID"]));
+
+		return $conv;
+
 	}
 
 }
