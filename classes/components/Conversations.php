@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-class conversations {
+class Conversations {
 
 	/**
 	 * @var String $conversationsListTable Name of the conversation list table 
@@ -874,4 +874,4 @@ class conversations {
 }
 
 //Register component
-Components::register("conversations", new conversations());
+Components::register("conversations", new Conversations());

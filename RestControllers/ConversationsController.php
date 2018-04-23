@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-class conversationsController{
+class ConversationsController{
 
 	/**
 	 * Get the conversations list
@@ -456,6 +456,26 @@ class conversationsController{
 		$data["following"] = $conv->is_following() ? 1 : 0;
 		$data["saw_last_message"] = $conv->is_saw_last_message() ? 1 : 0;
 		$data["members"] = $conv->get_members();
+
+		return $data;
+
+	}
+
+	/**
+	 * Turn ConversationMessage object into API entry
+	 * 
+	 * @param ConversationMessage $message The message to convert
+	 * @return array Valid dataset for the api
+	 */
+	private static function ConvMessageToAPI(ConversationMessage $message) : array {
+
+		$data = array();
+
+		$data["ID"] = $message->get_id();
+		$data["ID_user"] = $message->get_userID();
+		$data["time_insert"] = $message->get_time_sent();
+		$data["message"] = $message->has_message() ? $message->get_message() : "";
+		$data["image_path"] = $message->has_image_path() ? $message->get_image_path() : null;
 
 		return $data;
 
