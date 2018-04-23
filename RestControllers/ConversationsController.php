@@ -327,6 +327,14 @@ class ConversationsController{
 			}
 		}
 
+		//Process results
+		foreach($conversationsMessages as $name=>$values){
+
+			foreach($conversationsMessages[$name] as $num => $message)
+				$conversationsMessages[$name][$num] = ConversationsController::ConvMessageToAPI($message);
+
+		}
+
 		//Return result
 		return $conversationsMessages;
 	}
@@ -366,6 +374,10 @@ class ConversationsController{
 
 		//Specify that user has seen last messages
 		CS::get()->components->conversations->markUserAsRead(userID, $conversationID);
+
+		//Process the list of messages
+		foreach($messages as $num => $val)
+			$messages[$num] = ConversationsController::ConvMessageToAPI($val);
 
 		//Return the messges
 		return $messages;
@@ -475,7 +487,7 @@ class ConversationsController{
 		$data["ID_user"] = $message->get_userID();
 		$data["time_insert"] = $message->get_time_sent();
 		$data["message"] = $message->has_message() ? $message->get_message() : "";
-		$data["image_path"] = $message->has_image_path() ? $message->get_image_path() : null;
+		$data["image_path"] = $message->has_image_path() ? $message->get_image_url() : null;
 
 		return $data;
 

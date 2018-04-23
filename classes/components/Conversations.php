@@ -540,7 +540,7 @@ class Conversations {
 	public function sendMessage(int $userID, int $conversationID, string $message, string $image_path = "") : bool{
 
 		//GUIDE LINE : this method act like a "controller" : it doesn't perform any database operation
-		//But it manage all operations (insert message; save image; inform other users; ...)
+		//But it manages all operations (insert message; save image; inform other users; ...)
 
 		//First, try to insert the message
 		if(!$this->insertMessage($userID, $conversationID, $message, $image_path))
@@ -636,7 +636,7 @@ class Conversations {
 
 		//Delete each message
 		foreach($messages as $message){
-			if(!$this->delete_message($message['ID'], $convID))
+			if(!$this->delete_message($message))
 				return false;
 		}
 
@@ -672,7 +672,7 @@ class Conversations {
 
 		//Delete each message
 		foreach($messages as $message){
-			if(!$this->delete_message($message['ID'], $convID))
+			if(!$this->delete_message($message))
 				return false;
 		}
 
@@ -688,28 +688,16 @@ class Conversations {
 	/**
 	 * Delete a single message of a conversation
 	 * 
-	 * @param int $messageID The ID of the message to delete
-	 * @param int $convID The target conversation
-	 * @param array $informations Optionnal, informations about the message
+	 * @param ConversationMessage $message The message to delete
 	 * @return bool True in case of success / false else
 	 */
-	private function delete_message(int $messageID, int $convID, array $informations = null) : bool {
-
-		//Check if we have to fetch informations about the message
-		if(is_null($informations)){
-			$messages = $this->getMessages("WHERE ID_".$this->conversationsListTable." = ? AND ID = ?", array($convID, $messageID), false);
-
-			if(count($messages) == 0)
-				return false;
-			
-			$informations = $messages[0];
-		}
+	private function delete_message(ConversationMessage $message) : bool {
 
 		//Check if we have to delete an image
-		if(!is_null($informations["image_path"]) AND $informations["image_path"] !== ""){
+		if($message->has_image_path()){
 
 			//Get system path of the image
-			$img_sys_path = path_user_data($informations["image_path"], true);
+			$img_sys_path = path_user_data($message->get_image_path(), true);
 
 			if(file_exists($img_sys_path)){
 				unlink($img_sys_path);
@@ -719,7 +707,7 @@ class Conversations {
 
 		//Delete message from the database
 		$conditions = "ID = ?";
-		$condValues = array($messageID);
+		$condValues = array($message->get_id());
 		return CS::get()->db->deleteEntry($this->conversationsMessagesTable, $conditions, $condValues);
 
 	}
@@ -811,11 +799,10 @@ class Conversations {
 	 * Get a list of conversation messages based on specified conditions
 	 *
 	 * @param string $conditions The conditions of the request
-	 * @param Array $conditionsValues The values of the conditions (Optionnal)
-	 * @param bool $transformPath Transform the path of the files into URLS (true by default)
-	 * @return Array The list of messages
+	 * @param array $conditionsValues The values of the conditions (Optionnal)
+	 * @return array The list of messages as ConversationMessage objects
 	 */
-	private function getMessages(string $conditions, array $conditionsValues = array(), bool $transformPath = true) : array{
+	private function getMessages(string $conditions, array $conditionsValues = array()) : array{
 
 		//Prepare database request
 		$tableName = $this->conversationsMessagesTable;
@@ -833,16 +820,8 @@ class Conversations {
 		$messages = CS::get()->db->select($tableName, $conditions, $conditionsValues, $requiredFields);
 
 		//Process each message
-		if($transformPath){
-			array_walk($messages, function(&$item){
-
-				//Check if the image of the message is not null
-				if($item["image_path"] !== null && $item["image_path"] != ""){
-					//Replace image name with full URL
-					$item["image_path"] = path_user_data($item["image_path"]);
-				}
-			});
-		}
+		foreach($messages as $num=>$message)
+			$messages[$num] = self::dbToConvMessage($message);
 
 		//Return result
 		return $messages;
@@ -868,6 +847,28 @@ class Conversations {
 		$conv->set_members($this->getConversationMembers($entry["ID"]));
 
 		return $conv;
+
+	}
+
+	/**
+	 * Turn a conversation message into ConversationMessage object
+	 * 
+	 * @param array $entry Conversation entry in the database
+	 * @return ConversationMessage Generated ConversationMessage object
+	 */
+	private function dbToConvMessage(array $entry) : ConversationMessage {
+
+		$message = new ConversationMessage();
+
+		$message->set_id($entry["ID"]);
+		$message->set_userID($entry["ID_user"]);
+		$message->set_time_sent($entry["time_insert"]);
+		if($entry["image_path"] != null)
+			$message->set_image_path($entry["image_path"]);
+		if($entry["message"] != null)
+			$message->set_message($entry["message"]);
+
+		return $message;
 
 	}
 

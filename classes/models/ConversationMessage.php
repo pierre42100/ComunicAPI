@@ -24,6 +24,10 @@ class ConversationMessage extends BaseUniqueObjectFromUser {
 		return $this->image_path != null ? $this->image_path : "null";
 	}
 
+	public function get_image_url() : string {
+		return path_user_data($this->get_image_path());
+	}
+
 
 	//Set and get message
 	public function set_message(string $message){
