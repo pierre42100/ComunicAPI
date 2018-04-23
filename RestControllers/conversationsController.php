@@ -71,20 +71,26 @@ class conversationsController{
 			Rest_fatal_error(400, "Please check parametres passed with the request !");
 		
 		//Extract parametres
-		$conversationName = ($_POST["name"] == "false" ? false : $_POST['name']);
-		$followConversation = ($_POST['follow'] == "true" ? true : false);
-		$usersList = numbers_list_to_array($_POST['users']);
+		$conv = new ConversationInfo();
+		$conv->set_id_owner(userID);
+		$conv->set_name($_POST["name"] == "false" ? false : removeHTMLnodes($_POST['name']));
+		$conv->set_following($_POST['follow'] == "true" ? true : false);
+
+		//Process the list of users
+		$membersList = numbers_list_to_array($_POST['users']);
 
 		//Add current user (if not present)
-		if(!isset($usersList[userID]))
-			$usersList[userID] = userID;
+		if(!isset($membersList[userID]))
+			$membersList[userID] = userID;
 
 		//Check users
-		if(count($usersList) < 1)
+		if(count($membersList) < 1)
 			Rest_fatal_error(501, "Please select at least one user !");
 		
+		$conv->set_members($membersList);
+		
 		//Try to create the conversation
-		$conversationID = CS::get()->components->conversations->create(userID, $followConversation, $usersList, $conversationName);
+		$conversationID = CS::get()->components->conversations->create($conv);
 		
 		//Check for errors
 		if($conversationID == 0)

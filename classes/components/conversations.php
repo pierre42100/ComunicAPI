@@ -125,17 +125,14 @@ class conversations {
 	/**
 	 * Create a new conversation
 	 *
-	 * @param int $userID The ID of the user creating the conversation
-	 * @param bool $follow Defines if the user creating the conversation will follow it 
-	 * @param array $usersList The list of users following the conversation
-	 * @param Mixed $name Optionnal, the name of the conversation
+	 * @param ConversationInfo $conv Information about the conversation to create
 	 * @return int 0 for a fail else the ID of the newly created conversation
 	 */
-	public function create(int $userID, bool $follow, array $usersList, $name = "") : int{
+	public function create(ConversationInfo $conv) : int{
 		
 		$mainInformations = array(
-			"ID_utilisateurs" => $userID*1,
-			"name" => ($name ? $name : ""),
+			"ID_utilisateurs" => $conv->get_id_owner(),
+			"name" => ($conv->has_name() ? $conv->get_name() : ""),
 			"last_active" => time(),
 			"creation_time" => time()
 		);
@@ -152,12 +149,12 @@ class conversations {
 			return 0;
 		
 		//Insert users registrattions
-		foreach($usersList as $processUser){
+		foreach($conv->get_members() as $processUser){
 
 			//Make user follow the conversation if required
-			$processUserFollowing = false;
-			if($userID == $processUser)
-				$processUserFollowing = $follow;
+			$processUserFollowing = true;
+			if($conv->get_id_owner() == $processUser)
+				$processUserFollowing = $conv->is_following();
 
 			//Try to insert user in conversation
 			if(!$this->addMember($conversationID, $processUser, $processUserFollowing))
