@@ -409,26 +409,23 @@ class Conversations {
 	/**
 	 * Insert a new message in the database
 	 *
-	 * @param int $userID The ID of the user inserting the message
-	 * @param int $conversationID The ID of the target conversation
-	 * @param string $message The message to insert
-	 * @param string $image_path Optionnal, the path to an image associated with the message (empty string by default)
+	 * @param NewConversationMessage $message The message to send
 	 * @return bool True for a success
 	 */
-	private function insertMessage(int $userID, int $conversationID, string $message, string $image_path = "") : bool{
+	private function insertMessage(NewConversationMessage $message) : bool {
 
 		//Prepare values
 		$tableName = $this->conversationsMessagesTable;
 		$values = array(
-			"ID_".$this->conversationsListTable => $conversationID,
-			"ID_utilisateurs" => $userID,
+			"ID_".$this->conversationsListTable => $message->get_conversationID(),
+			"ID_utilisateurs" => $message->get_userID(),
 			"time_insert" => time(),
-			"message" => $message
+			"message" => $message->has_message() ? $message->get_message() : ""
 		);
 
 		//Add image path (if required)
-		if($image_path != "")
-			$values['image_path'] = $image_path;
+		if($message->has_image_path())
+			$values['image_path'] = $message->get_image_path();
 
 		//Try to insert new value in database
 		if(!CS::get()->db->addLine($tableName, $values))
@@ -531,27 +528,24 @@ class Conversations {
 	/**
 	 * Send a new message
 	 *
-	 * @param int $userID The ID of the user sending the message
-	 * @param int $conversationID The ID of the target conversation
-	 * @param string $message The message
-	 * @param string $image_path Optionnal, define the path to an image associated with the message (empty string by default)
+	 * @param NewConversationMessage $message The message to send
 	 * @return bool True for a success
 	 */
-	public function sendMessage(int $userID, int $conversationID, string $message, string $image_path = "") : bool{
+	public function sendMessage(NewConversationMessage $message) : bool{
 
 		//GUIDE LINE : this method act like a "controller" : it doesn't perform any database operation
 		//But it manages all operations (insert message; save image; inform other users; ...)
 
 		//First, try to insert the message
-		if(!$this->insertMessage($userID, $conversationID, $message, $image_path))
+		if(!$this->insertMessage($message))
 			return false; //An error occured
 		
 		//Then, update the last activity of the conversation
-		if(!$this->updateLastActive($conversationID, time()))
+		if(!$this->updateLastActive($message->get_conversationID(), time()))
 			return false; //An error occured (2)
 		
 		//Then, set all the users of the conversation as unread
-		if(!$this->allUsersAsUnread($conversationID, array($userID)))
+		if(!$this->allUsersAsUnread($message->get_conversationID(), array($message->get_userID())))
 			return false; //An error occured (3)
 
 		 //Success

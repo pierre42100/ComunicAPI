@@ -236,7 +236,7 @@ class ConversationsController{
 			Rest_fatal_error(401, "New conversation messages must contain a message (can be empty if there is an image) !");
 		
 		//Else extract informations
-		$message = (string) (isset($_POST['message']) ? $_POST['message'] : "");
+		$content = (string) (isset($_POST['message']) ? $_POST['message'] : "");
 
 		//Check for image
 		$image = "";
@@ -248,11 +248,16 @@ class ConversationsController{
 		}
 
 		//Check message validity
-		if(!check_string_before_insert($message) && $image == "")
+		if(!check_string_before_insert($content) && $image == "")
 			Rest_fatal_error(401, "Invalid message creation request !");
 
 		//Insert the new message
-		if(!CS::get()->components->conversations->sendMessage(userID, $conversationID, $message, $image))
+		$newMessage = new NewConversationMessage();
+		$newMessage->set_userID(userID);
+		$newMessage->set_conversationID($conversationID);
+		$newMessage->set_message($content);
+		$newMessage->set_image_path($image);
+		if(!CS::get()->components->conversations->sendMessage($newMessage))
 			Rest_fatal_error(500, "Couldn't send the message !");
 		
 		//Success
