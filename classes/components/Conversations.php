@@ -775,13 +775,7 @@ class Conversations {
 		foreach($results as $result){
 
 			//Generate the entry
-			$entry = array(
-				"id" => $result['ID_comunic_conversations_list'],
-				"conv_name" => $result["name"],
-				"last_active" => $result['last_active'],
-				"userID" => $result["ID_utilisateurs"],
-				"message" => $result["message"]
-			);
+			$entry = $this->dbToUnreadConversation($result);
 
 			$list[] = $entry;
 		}
@@ -863,6 +857,28 @@ class Conversations {
 			$message->set_message($entry["message"]);
 
 		return $message;
+
+	}
+
+	/**
+	 * Turn a database entry into a UnreadConversation object
+	 * 
+	 * @param array $entry Conversation entry in the database
+	 * @return UnreadConversation Generated object
+	 */
+	private function dbToUnreadConversation(array $entry) : UnreadConversation {
+		
+		$conversation = new UnreadConversation();
+
+		$conversation->set_id($entry["ID_comunic_conversations_list"]);
+		if($entry["name"] != null)
+			$conversation->set_conv_name($entry["name"]);
+		$conversation->set_last_active($entry["last_active"]);
+		$conversation->set_userID($entry["ID_utilisateurs"]);
+		if($entry["message"] != null)
+			$conversation->set_message($entry["message"]);
+
+		return $conversation;
 
 	}
 

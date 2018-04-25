@@ -417,6 +417,10 @@ class ConversationsController{
 		//Get the list of unread conversations of the user
 		$list_unread_conversations = components()->conversations->get_list_unread(userID);
 
+		//Process the results
+		foreach($list_unread_conversations as $num => $conv)
+			$list_unread_conversations[$num] = self::UnreadConversationToAPI($conv);
+
 		//Return result
 		return $list_unread_conversations;
 	}
@@ -496,5 +500,24 @@ class ConversationsController{
 
 		return $data;
 
+	}
+
+	/**
+	 * Turn UnreadConversation object into API entry
+	 * 
+	 * @param UnreadConversation $conversation The conversation to convert
+	 * @return array Generated entry
+	 */
+	private static function UnreadConversationToAPI(UnreadConversation $conversation) : array {
+
+		$data = array();
+
+		$data["id"] = $conversation->get_id();
+		$data["conv_name"] = $conversation->has_conv_name() ? $conversation->get_conv_name() : "";
+		$data["last_active"] = $conversation->get_last_active();
+		$data["userID"] = $conversation->get_userID();
+		$data["message"] = $conversation->has_message() ? $conversation->get_message() : "";
+
+		return $data;
 	}
 }
