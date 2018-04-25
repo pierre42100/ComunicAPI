@@ -40,7 +40,7 @@ class ConversationsController{
 		user_login_required();
 
 		//Get conversation ID
-		$conversationID = getPostConversationID("conversationID");
+		$conversationID = $this->getSafePostConversationID("conversationID");
 		
 		//Try to get informations about the conversation
 		$conversationsList = CS::get()->components->conversations->getList(userID, $conversationID);
@@ -111,14 +111,8 @@ class ConversationsController{
 	public function updateSettings(){
 		user_login_required();
 
-		//Check conversation ID was specified
-		if(!isset($_POST["conversationID"]))
-			Rest_fatal_error(400, "Please specify a conversation ID !");
-		$conversationID = toInt($_POST["conversationID"]);
-
-		//Check if the user belongs to the conversation
-		if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
-			Rest_fatal_error("401", "Specified user doesn't belongs to the conversation !");
+		//Get conversationID
+		$conversationID = $this->getSafePostConversationID("conversationID");
 
 		//Check if user want to update its follow state
 		if(isset($_POST['following'])){
@@ -353,17 +347,13 @@ class ConversationsController{
 		user_login_required();
 
 		//Get the ID of the conversation to refresh
-		$conversationID = getPostConversationID("conversationID");
+		$conversationID = $this->getSafePostConversationID("conversationID");
 		
 		//Get the last message ID downloaded by the client
 		if(!isset($_POST['last_message_id']))
 			Rest_fatal_error(400, "Please specify the ID of the last message you've got!");
 
 		$last_message_id = toInt($_POST['last_message_id']);
-
-		//Check if the current user can access the conversation
-		if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
-			Rest_fatal_error(401, "Specified user doesn't belongs to the conversation number ".$conversationID." !");
 
 		//Check if user has already some of the messages of the conversations, or
 		//If we have to return the list of the last ten messages
