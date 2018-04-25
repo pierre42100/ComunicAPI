@@ -359,7 +359,6 @@ class ConversationsController{
 		if(!isset($_POST['last_message_id']))
 			Rest_fatal_error(400, "Please specify the ID of the last message you've got!");
 
-		$conversationID = toInt($_POST['conversationID']);
 		$last_message_id = toInt($_POST['last_message_id']);
 
 		//Check if the current user can access the conversation
