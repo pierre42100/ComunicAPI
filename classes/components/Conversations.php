@@ -601,6 +601,34 @@ class Conversations {
 	}
 
 	/**
+	 * Get the older messages of a conversation
+	 * 
+	 * @param int $conversationID The ID of the target conversation
+	 * @param int $startID The ID from which the research should start
+	 * @param int $limit The maximum number of message to get (positive number)
+	 * @return array The list of messages found
+	 */
+	public function getOlderMessages(int $conversationID, int $startID, int $limit) : array {
+
+		//Define conditions
+		$conditions = "WHERE ID_".$this->conversationsListTable." = ? AND ID < ? ORDER BY ID DESC LIMIT ".($limit);
+		$condVals = array(
+			$conversationID,
+			$startID + 1
+		);
+
+		//Perform request
+		$messages = $this->getMessages($conditions, $condVals);
+
+		//Revert messages order
+		$messages = array_reverse($messages);
+
+		//Return messages
+		return $messages;
+
+	}
+
+	/**
 	 * Check whether a conversation exists or not
 	 * 
 	 * @param int $convID The ID of the conversation to check

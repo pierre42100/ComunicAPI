@@ -82,7 +82,7 @@ function postString(string $name, int $minLength = 1) : string {
 
 /**
  * Get a boolean given in a $_POST request safely.
- * This function make a REST_Error if an error occur while
+ * This function makes a REST_Error if an error occurr while
  * processing the value
  * 
  * @param string $name The name of the $_POST field
@@ -95,6 +95,22 @@ function postBool(string $name) : bool {
 		Rest_fatal_error(400, "Please add a POST boolean named '".$name."' in the request !");
 
 	return $_POST[$name] == "true";
+}
+
+/**
+ * Get an integer given in a $_POST request safely
+ * This function makes a REST_Error in case of error
+ * 
+ * @param string $name The name of the $_POST field
+ * @return int The integer
+ */
+function postInt(string $name) : int {
+	
+	//Check the variable
+	if(!isset($_POST[$name]))
+		Rest_fatal_error(400, "Please add a POST integer named '".$name."' in the request !");
+
+	return (int)$_POST[$name];
 }
 
 /**

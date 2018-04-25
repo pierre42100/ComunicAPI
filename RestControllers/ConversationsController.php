@@ -389,6 +389,40 @@ class ConversationsController{
 	}
 
 	/**
+	 * Get older messages of a conversation
+	 * 
+	 * @url POST /conversations/get_older_messages
+	 */
+	public function getOlderMessages(){
+
+		user_login_required();
+
+		//Get the ID of the conversation to refresh
+		$conversationID = $this->getSafePostConversationID("conversationID");
+
+		//Get the ID of the oldest message ID
+		$maxID = postInt("oldest_message_id") - 1;
+
+		//Get the limit
+		$limit = postInt("limit");
+
+		//Security
+		if($limit < 1)
+			$limit = 1;
+		if($limit > 30)
+			$limit = 30;
+		
+		//Retrieve the list of messages in the database
+		$messages = components()->conversations->getOlderMessages($conversationID, $maxID, $limit);
+
+		//Process the list of messages
+		foreach($messages as $num => $process)
+			$messages[$num] = self::ConvMessageToAPI($process);
+		
+		return $messages;
+	}
+
+	/**
 	 * Get the number of unread conversations of the user
 	 * 
 	 * @url POST conversations/get_number_unread
@@ -457,6 +491,29 @@ class ConversationsController{
 
 		//The operation is a success
 		return array("success" => "The conversation has been deleted");
+	}
+
+	/**
+	 * Get and return safely a conversation ID specified in a $_POST Request
+	 * 
+	 * This methods check the existence of the conversation, but also check if the
+	 * user is a member or not of the conversation
+	 * 
+	 * @param string $name The name of the $_POST field containing the conversation ID
+	 * @return int The ID of the conversation
+	 */
+	private function getSafePostConversationID(string $name) : int {
+
+		user_login_required();
+
+		//Get the ID of the conversation
+		$conversationID = getPostConversationID("conversationID");
+
+		//Check if the user belongs to the conversation
+		if(!components()->conversations->userBelongsTo(userID, $conversationID))
+			Rest_fatal_error(401, "Specified user doesn't belongs to the conversation number ".$conversationID." !");
+
+		return $conversationID;
 	}
 
 	/**
