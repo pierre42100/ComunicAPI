@@ -176,7 +176,7 @@ class Post extends BaseUniqueObjectFromUser {
 	}
 
 	public function has_movie_id() : bool {
-		return $this->movie_id > -1;
+		return $this->movie_id > 0;
 	}
 
 	public function get_movie_id() : int {
