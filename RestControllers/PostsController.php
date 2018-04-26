@@ -239,9 +239,9 @@ class PostsController {
 
 			//Save URL informations
 			$link_url = $url;
-			$link_title = isset($page_infos["title"]) ? $page_infos["title"] : null;
-			$link_description = isset($page_infos["description"]) ? $page_infos["description"] : null;
-			$link_image = isset($page_infos["image"]) ? $page_infos["image"] : null;
+			$link_title = isset($page_infos["title"]) ? $page_infos["title"] : "";
+			$link_description = isset($page_infos["description"]) ? $page_infos["description"] : "";
+			$link_image = isset($page_infos["image"]) ? $page_infos["image"] : "";
 
 			$post->set_link_url($link_url);
 			$post->set_link_title($link_title);
