@@ -29,13 +29,13 @@ class AccountImage {
 	 * @return string The URL pointing on the account image
 	 */
 	public function getFile(int $userID) : string {
-		
+
 		//First, check if the account image exists
 		$accountImageFileName = $this->getFileAccountImage($userID);
 		if($accountImageFileName != ""){
 
 			//Get account image visibility level
-			$visibilityLevel = $this->visibilityLevel($userID);
+			$visibilityLevel = $this->getVisibilityLevel($userID);
 
 			//If account image is open or if the user signed in is the user making the request
 			if($visibilityLevel == AccountImageSettings::VISIBILITY_OPEN || userID == $userID)
@@ -65,13 +65,33 @@ class AccountImage {
 	}
 
 	/**
+	 * Returns the path to an account image
+	 * 
+	 * @param int $userID Target user ID
+	 * @return string $url The URL of the account image
+	 */
+	public function getPath(int $userID) : string {
+		return cs()->config->get(self::accountImageDirConfItem).$this->getFile($userID);
+	}
+
+	/**
 	 * Returns the URL to an account image
 	 * 
 	 * @param int $userID Target user ID
 	 * @return string $url The URL of the account image
 	 */
 	public function getURL(int $userID) : string {
-		return path_user_data(cs()->config->get(self::accountImageDirConfItem).$this->getFile($userID));
+		return path_user_data($this->getPath($userID));
+	}
+
+	/**
+	 * Check whether a user has an account image or not
+	 * 
+	 * @param int $userID Target user ID
+	 * @return bool TRUE if the user has an account image / FALSE else
+	 */
+	public function has(int $userID) : bool {
+		return $this->getFileAccountImage($userID) != "";
 	}
 
 	/**
@@ -84,7 +104,7 @@ class AccountImage {
 	 * @param int $userID The ID of the user on which we perform researchs
 	 * @return int The visibility level of the account image
 	 */
-	private function visibilityLevel(int $userID) : int {
+	public function getVisibilityLevel(int $userID) : int {
 		$filePath = path_user_data(cs()->config->get(self::accountImageDirConfItem)."adresse_avatars/limit_view_".$userID.".txt", TRUE);
 		
 		//Check restriction file
@@ -96,6 +116,26 @@ class AccountImage {
 
 			//Return visibility level
 			return $fileContent;
+	}
+
+	/**
+	 * Get AccountImageSettings for an account
+	 * 
+	 * @param int $userID ID of the target user
+	 * @return AccountImageSettings Generated account settings object
+	 */
+	public function getSettings(int $userID) : AccountImageSettings {
+
+		//Create and fill UserAccountImage object
+		$settings = new AccountImageSettings();
+		
+		//Add user account image (if any)
+		if($this->has(userID)){
+			$settings->set_image_path($this->getPath(userID));
+		}
+		$settings->set_visibility_level($this->getVisibilityLevel(userID));
+
+		return $settings;
 	}
 
 	/**

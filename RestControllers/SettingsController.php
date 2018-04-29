@@ -8,6 +8,15 @@
 class SettingsController {
 
 	/**
+	 * Account image visibility levels for the API
+	 */
+	const AccountImageVisibilityLevels = array(
+		AccountImageSettings::VISIBILITY_OPEN => "open",
+		AccountImageSettings::VISIBILITY_PUBLIC => "public",
+		AccountImageSettings::VISIBILITY_FRIENDS => "friends"
+	);
+
+	/**
 	 * Get general account settings
 	 * 
 	 * @url POST /settings/get_general
@@ -188,6 +197,23 @@ class SettingsController {
 	}
 
 	/**
+	 * Get account image information
+	 * 
+	 * @url POST /settings/get_account_image
+	 */
+	public function getAccountImageSettings(){
+
+		//User login required
+		user_login_required();
+
+		//Get the settings of the user
+		$settings = components()->accountImage->getSettings(userID);
+
+		//Return parsed settings object
+		return $this->AccountImageSettingsToAPI($settings);
+	}
+
+	/**
 	 * Turn a GeneralSettings object into a valid API object
 	 * 
 	 * @param GeneralSettings $settings The object to convert
@@ -230,6 +256,24 @@ class SettingsController {
 		$data["security_answer_2"] = $settings->has_security_answer_2() ? $settings->get_security_answer_2() : "";
 
 		return $data;
+	}
+
+	/**
+	 * Turn a AccountImageSettings object into API object
+	 * 
+	 * @param AccountImageSettings $settings The settings object to convert
+	 * @return array Generated API object
+	 */
+	private function AccountImageSettingsToAPI(AccountImageSettings $settings) : array {
+
+		$data = array();
+
+		$data["has_image"] = $settings->has_image_path();
+		$data["image_url"] = $settings->has_image_path() ? path_user_data($settings->get_image_path()) : null;
+		$data["visibility"] = self::AccountImageVisibilityLevels[$settings->get_visibility_level()];
+
+		return $data;
+
 	}
 
 }
