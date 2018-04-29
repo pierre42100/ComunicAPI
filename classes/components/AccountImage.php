@@ -4,7 +4,7 @@
  *
  * @author Pierre HUBERT
  */
-class accountImage{
+class AccountImage{
 
 	/**
 	 * @var String $accountImageURL URL path pointing on image accounts
@@ -109,4 +109,4 @@ class accountImage{
 }
 
 //Register class
-Components::register("accountImage", new accountImage());
+Components::register("accountImage", new AccountImage());
