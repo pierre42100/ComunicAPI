@@ -192,7 +192,13 @@ class ConversationsController{
 			$conversationMembers = array(userID, $otherUser);
 
 			//Try to create the conversation
-			$conversationID = CS::get()->components->conversations->create($ID_owner, $follow, $conversationMembers);
+			$conv = new ConversationInfo();
+			$conv->set_id_owner(userID);
+			$conv->set_name(false);
+			$conv->set_following(true);
+			$conv->add_member(userID);
+			$conv->add_member($otherUser);
+			$conversationID = CS::get()->components->conversations->create($conv);
 			
 			//Check for errors
 			if($conversationID == 0)
