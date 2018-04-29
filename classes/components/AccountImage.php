@@ -4,80 +4,74 @@
  *
  * @author Pierre HUBERT
  */
-class AccountImage{
+class AccountImage {
 
 	/**
-	 * @var String $accountImageURL URL path pointing on image accounts
+	 * @var string accountImageDirConfItem The name of the configuration item that contains the path
+	 * to the images
 	 */
-	private $accountImageURL;
+	const accountImageDirConfItem = "imageAccountPath";
 
 	/**
-	 * @var String $accountImagePath URL path pointing on image accounts
+	 * @var string defaultAccountImage name of the default account image
 	 */
-	private $accountImagePath;
+	const defaultAccountImage = "0Reverse.png";
 
 	/**
-	 * @var String $defaultAccountImage name of the default account image
+	 * @var string defaultAccountImage name of the error account image
 	 */
-	private $defaultAccountImage = "0Reverse.png";
+	const errorAccountImage = "0Red.png";
 
 	/**
-	 * @var String $defaultAccountImage name of the error account image
-	 */
-	private $errorAccountImage = "0Red.png";
-
-	/**
-	 * Public constructor
-	 */
-	public function __construct(){
-		//Set values
-		$this->accountImageURL = path_user_data(CS::get()->config->get("imageAccountPath"), false);
-		$this->accountImagePath = path_user_data(CS::get()->config->get("imageAccountPath"), true);
-	}
-
-	/**
-	 * Returns the path of an account image
+	 * Returns the file of an account image
 	 *
-	 * @param Integer $userID The ID of the user on which we perform research
-	 * @return String The URL pointing on the account image
+	 * @param int $userID The ID of the user on which we perform research
+	 * @return string The URL pointing on the account image
 	 */
-	public function getPath($userID){
+	public function getFile(int $userID) : string {
+		
 		//First, check if the account image exists
-		$accountImageFileName = $this->accountImagePath."adresse_avatars/".$userID.".txt";
-		if(file_exists($accountImageFileName)){
-
-			//Get account image path
-			$accountImageFile = $this->accountImageURL.file_get_contents($accountImageFileName);
+		$accountImageFileName = $this->getFileAccountImage($userID);
+		if($accountImageFileName != ""){
 
 			//Get account image visibility level
 			$visibilityLevel = $this->visibilityLevel($userID);
 
 			//If account image is open or if the user signed in is the user making the request
-			if($visibilityLevel == 3 || userID == $userID)
+			if($visibilityLevel == AccountImageSettings::VISIBILITY_OPEN || userID == $userID)
 				//Account image is OPEN
-				return $accountImageFile;
+				return $accountImageFileName;
 			
 			//If the user just requires user to be in
-			if($visibilityLevel == 2){
+			if($visibilityLevel == AccountImageSettings::VISIBILITY_PUBLIC){
 				if(userID != 0)
-					return $accountImageFile;
+					return $accountImageFileName;
 				else
-					return $this->accountImageURL.$this->errorAccountImage;
+					return self::errorAccountImage;
 			}
 
 			//Else users must be friends
-			if($visibilityLevel == 1){
-				//Check the two persons are friend or not
-				if(CS::get()->components->friends->are_friend($userID, userID))
-					//User is allowed to access the image
-					return $accountImageFile;
-				else
-					return $this->accountImageURL.$this->errorAccountImage;
-			}
+			//Check the two persons are friend or not
+			if(CS::get()->components->friends->are_friend($userID, userID))
+				//User is allowed to access the image
+				return $accountImageFileName;
+			else
+				return self::errorAccountImage;
+
 		}
 		else
 			//Return default account image
-			return $this->accountImageURL.$this->defaultAccountImage;
+			return self::defaultAccountImage;
+	}
+
+	/**
+	 * Returns the URL to an account image
+	 * 
+	 * @param int $userID Target user ID
+	 * @return string $url The URL of the account image
+	 */
+	public function getURL(int $userID) : string {
+		return path_user_data(cs()->config->get(self::accountImageDirConfItem).$this->getFile($userID));
 	}
 
 	/**
@@ -87,24 +81,36 @@ class AccountImage{
 	 * 2. User, friends, and logged in users
 	 * 3. Everybody
 	 *
-	 * @param Integer $userID The ID of the user on which we perform researchs
-	 * @return Integer The visibility level of the account image
+	 * @param int $userID The ID of the user on which we perform researchs
+	 * @return int The visibility level of the account image
 	 */
-	private function visibilityLevel($userID){
-		$filePath = $this->accountImagePath."adresse_avatars/limit_view_".$userID.".txt";
+	private function visibilityLevel(int $userID) : int {
+		$filePath = path_user_data(cs()->config->get(self::accountImageDirConfItem)."adresse_avatars/limit_view_".$userID.".txt", TRUE);
 		
 		//Check restriction file
 		if(!file_exists($filePath))
-			return 3; //Everybody by default
+			return AccountImageSettings::VISIBILITY_OPEN; //Everybody by default
 		
 		//Check for personnalized level
 		$fileContent = file_get_contents($filePath);
-		if($fileContent == 1 || $fileContent == 2){
-			//Return new visibility level
-			return $fileContent*1;
-		}
+
+			//Return visibility level
+			return $fileContent;
+	}
+
+	/**
+	 * Get the file to the user account image, if the user has any
+	 * 
+	 * @param int $userID Target user ID
+	 * @return string The path to the user account image, empty string else
+	 */
+	private function getFileAccountImage(int $userID) : string {
+		$fileName = path_user_data(cs()->config->get(self::accountImageDirConfItem)."adresse_avatars/".$userID.".txt", TRUE);
+
+		if(file_exists($fileName))
+			return file_get_contents($fileName);
 		else
-			return 3; //Everybody by default
+			return "";
 	}
 }
 

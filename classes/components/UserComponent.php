@@ -403,7 +403,7 @@ class UserComponent {
 		$user->set_openPage($entry['pageouverte'] == 1);
 		$user->set_virtualDirectory($entry['sous_repertoire'] == null ? "" : $entry['sous_repertoire']);
 		$user->set_accountImageURL(
-			CS::get()->components->accountImage->getPath($user->get_id()));
+			CS::get()->components->accountImage->getURL($user->get_id()));
 		
 		//Return generated user
 		return $user;
