@@ -17,8 +17,11 @@ function prepareFileCreation(int $userID, string $componentName) : string {
 	//Get user data folder name
 	$user_data_folder = path_user_data("", true);
 
-	//Determine subfolder name
-	$subfolder = $componentName."/".$userID."/";
+	//Determine subfolder name (if any)
+	if($userID != 0)
+		$subfolder = $componentName."/".$userID."/";
+	else
+		$subfolder = $componentName."/";
 
 	//Check if folders exists or not
 	if(!file_exists($user_data_folder.$subfolder)){

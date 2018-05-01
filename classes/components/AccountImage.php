@@ -23,7 +23,7 @@ class AccountImage {
 	const errorAccountImage = "0Red.png";
 
 	/**
-	 * Returns the file of an account image
+	 * Returns the file name of an account image
 	 *
 	 * @param int $userID The ID of the user on which we perform research
 	 * @return string The URL pointing on the account image
@@ -139,18 +139,73 @@ class AccountImage {
 	}
 
 	/**
+	 * Update the account image of a user
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @param string $fileName The name of the new account image
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function update(int $userID, string $fileName) : bool {
+
+		//First, we must delete previous account image (if any)
+		if($this->has($userID)){
+			if(!$this->delete($userID))
+				return FALSE;
+		}
+
+		//Save image file name into metadata file
+		return (bool) file_put_contents($this->getPathMetadataFile($userID), $fileName);
+	}
+
+	/**
+	 * Delete user account image
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function delete(int $userID) : bool {
+
+		$path = $this->getFileAccountImage($userID);
+
+		if($path != ""){
+			$syspath = path_user_data($this->getPath($userID), TRUE);
+
+			if(file_exists($syspath))
+				unlink($syspath);
+			
+			//Delete metadata file
+			unlink($this->getPathMetadataFile($userID));
+		}
+
+		//Success by default
+		return TRUE;
+	}
+
+	/**
 	 * Get the file to the user account image, if the user has any
 	 * 
 	 * @param int $userID Target user ID
 	 * @return string The path to the user account image, empty string else
 	 */
 	private function getFileAccountImage(int $userID) : string {
-		$fileName = path_user_data(cs()->config->get(self::accountImageDirConfItem)."adresse_avatars/".$userID.".txt", TRUE);
+		$fileName = $this->getPathMetadataFile($userID);
 
 		if(file_exists($fileName))
 			return file_get_contents($fileName);
 		else
 			return "";
+	}
+
+	/**
+	 * Get the system path of the file that contains the name of the account
+	 * image file
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return string The sys path pointing of the file that contains user account
+	 * image
+	 */
+	private function getPathMetadataFile(int $userID) : string {
+		return path_user_data(cs()->config->get(self::accountImageDirConfItem)."adresse_avatars/".$userID.".txt", TRUE);
 	}
 }
 

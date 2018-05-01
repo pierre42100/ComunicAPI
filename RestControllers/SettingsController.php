@@ -214,6 +214,31 @@ class SettingsController {
 	}
 
 	/**
+	 * Set a new account image for the user
+	 * 
+	 * @url POST /settings/upload_account_image
+	 */
+	public function upload_account_image(){
+
+		//Login required
+		user_login_required();
+
+		//Check if it is a valid file
+		if(!check_post_file("picture"))
+			Rest_fatal_error(400, "An error occured while receiving image !");
+
+		//Try to save image
+		$file_uri = save_post_image("picture", 0, "avatars", 800, 800);
+		
+		//Update account image information
+		if(!components()->accountImage->update(userID, substr(strrchr($file_uri, "/"), 1)))
+			Rest_fatal_error(500, "An error occured while trying to apply new account image !");
+
+		//Success
+		return array("success" => "The new account image has been successfully saved!");
+	}
+
+	/**
 	 * Turn a GeneralSettings object into a valid API object
 	 * 
 	 * @param GeneralSettings $settings The object to convert
