@@ -30,7 +30,7 @@ class AccountImageSettings {
 
 	//Private fields
 	private $visibility = self::VISIBILITY_OPEN;
-	private $path;
+	private $image_path;
 
 	//Set and get visibility level
 	public function set_visibility_level(int $visibility_level){
