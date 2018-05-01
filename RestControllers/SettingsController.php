@@ -258,6 +258,32 @@ class SettingsController {
 	}
 
 	/**
+	 * Update the visibility of user account image
+	 * 
+	 * @url POST /settings/set_account_image_visibility
+	 */
+	public function set_account_image_visibility(){
+
+		//Login required
+		user_login_required();
+
+		//Get the list of API visibility levels
+		$levels = array_flip(self::AccountImageVisibilityLevels);
+		$post_visibility = postString("visibility");
+
+		//Get visibility level
+		if(!isset($levels[$post_visibility])){
+			Rest_fatal_error(401, "Unrecognized visibility level !");
+		}
+
+		//Save visibility level
+		components()->accountImage->setVisibilityLevel(userID, $levels[$post_visibility]);
+
+		//Success
+		return array("success" => "The visibility level of the account image has been updated!");
+	}
+
+	/**
 	 * Turn a GeneralSettings object into a valid API object
 	 * 
 	 * @param GeneralSettings $settings The object to convert

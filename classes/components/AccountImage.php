@@ -105,7 +105,7 @@ class AccountImage {
 	 * @return int The visibility level of the account image
 	 */
 	public function getVisibilityLevel(int $userID) : int {
-		$filePath = path_user_data(cs()->config->get(self::accountImageDirConfItem)."adresse_avatars/limit_view_".$userID.".txt", TRUE);
+		$filePath = $this->getPathVisibilityFile($userID);
 		
 		//Check restriction file
 		if(!file_exists($filePath))
@@ -116,6 +116,31 @@ class AccountImage {
 
 			//Return visibility level
 			return $fileContent;
+	}
+
+	/**
+	 * Set (update) the visibility level of a an account image
+	 * 
+	 * @param int $userID Target user ID
+	 * @param int $level New visibility level
+	 */
+	public function setVisibilityLevel(int $userID, int $level){
+
+		//Get the name of the file that contains visibility levels
+		$file = $this->getPathVisibilityFile($userID);
+
+		//Check if the account image is publicy visible
+		if($level == AccountImageSettings::VISIBILITY_OPEN){
+
+			//We do not need visibility file
+			if(file_exists($file))
+				unlink($file);
+
+		}
+
+		//Else append the new value to the file
+		file_put_contents($file, $level);
+
 	}
 
 	/**
@@ -206,6 +231,17 @@ class AccountImage {
 	 */
 	private function getPathMetadataFile(int $userID) : string {
 		return path_user_data(cs()->config->get(self::accountImageDirConfItem)."adresse_avatars/".$userID.".txt", TRUE);
+	}
+
+	/**
+	 * Get the system path of the file that contains visibility level restrictions
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return string The sys path pointing on the file
+	 */
+	private function getPathVisibilityFile(int $userID) : string {
+		return path_user_data(cs()->config->get(
+			self::accountImageDirConfItem)."adresse_avatars/limit_view_".$userID.".txt", TRUE);
 	}
 }
 
