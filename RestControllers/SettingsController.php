@@ -239,6 +239,25 @@ class SettingsController {
 	}
 
 	/**
+	 * Delete current user account image
+	 * 
+	 * @url POST /settings/delete_account_image
+	 */
+	public function delete_account_image(){
+
+		//Login required
+		user_login_required();
+
+		//Try to delete user account image
+		if(!components()->accountImage->delete(userID)){
+			Rest_fatal_error(500, "Could not delete user account image!");
+		}
+
+		//Success
+		return array("success" => "The account image has been deleted!");
+	}
+
+	/**
 	 * Turn a GeneralSettings object into a valid API object
 	 * 
 	 * @param GeneralSettings $settings The object to convert
