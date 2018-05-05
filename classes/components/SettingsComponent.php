@@ -164,6 +164,7 @@ class SettingsComponents {
 		$obj->set_friendsListPublic($entry['liste_amis_publique']);
 		$obj->set_virtualDirectory($entry['sous_repertoire'] == null ? "" : $entry['sous_repertoire']);
 		$obj->set_personnalWebsite($entry['site_web'] == null ? "" : $entry['site_web']);
+		$obj->set_publicNote($entry['public_note'] == null ? "" : $entry['public_note']);
 
 		return $obj;
 
@@ -189,7 +190,8 @@ class SettingsComponents {
 		$data["liste_amis_publique"] = $settings->is_friendsListPublic() ? 1 : 0;
 		$data["sous_repertoire"] = $settings->has_virtualDirectory() ? $settings->get_virtualDirectory() : "";
 		$data["site_web"] = $settings->has_personnalWebsite() ? $settings->get_personnalWebsite() : "";
-
+		$data["public_note"] = $settings->has_publicNote() ? $settings->get_publicNote() : "";
+		
 		return $data;
 	}
 

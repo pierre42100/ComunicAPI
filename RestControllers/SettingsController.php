@@ -77,6 +77,7 @@ class SettingsController {
 		$settings->set_personnalWebsite(postString("personnalWebsite", 0));
 		$settings->set_virtualDirectory($virtualDirectory);
 		$settings->set_allowComunicMails(postBool("allow_comunic_mails"));
+		$settings->set_publicNote(removeHTMLnodes(postString("publicNote", 0)));
 
 		//Check personnal webiste
 		if($settings->has_personnalWebsite()){
@@ -305,6 +306,7 @@ class SettingsController {
 		$data["public_friends_list"] = $settings->is_friendsListPublic();
 		$data["virtual_directory"] = $settings->get_virtualDirectory();
 		$data["personnal_website"] = $settings->get_personnalWebsite();
+		$data["publicNote"] = $settings->get_publicNote();
 
 		return $data;
 	}

@@ -19,6 +19,7 @@ class GeneralSettings extends BaseUserModel {
 	private $friendsListPublic;
 	private $virtualDirectory;
 	private $personnalWebsite;
+	private $publicNote;
 
 	//Set and get the email address of the user
 	public function set_email(string $email){
@@ -139,5 +140,18 @@ class GeneralSettings extends BaseUserModel {
 
 	public function get_personnalWebsite() : string {
 		return $this->personnalWebsite != null ? $this->personnalWebsite : "null";
+	}
+
+	//Set and get public acccount note
+	public function set_publicNote(string $publicNote){
+		$this->publicNote = $publicNote == "" ? null : $publicNote;
+	}
+
+	public function has_publicNote() : bool {
+		return $this->publicNote != null;
+	}
+
+	public function get_publicNote() : string {
+		return $this->publicNote != null ? $this->publicNote : "null";
 	}
 }
