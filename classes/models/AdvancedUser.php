@@ -13,6 +13,7 @@ class AdvancedUser extends User {
 	//Private fields
 	private $friendListPublic;
 	private $personnalWebsite;
+	private $publicNote;
 	private $disallowComments;
 	private $allowPostFromFriends;
 	private $creation_time;
@@ -40,6 +41,19 @@ class AdvancedUser extends User {
 
 	public function get_personnalWebsite() : string {
 		return $this->personnalWebsite != null ? $this->personnalWebsite : "null";
+	}
+
+	//Get and set the account public note
+	public function set_publicNote(string $publicNote){
+		$this->publicNote = $publicNote == "" ? null : $publicNote;
+	}
+
+	public function has_publicNote() : bool {
+		return $this->publicNote != null;
+	}
+
+	public function get_publicNote() : string {
+		return $this->publicNote != null ? $this->publicNote : "null";
 	}
 
 	//Get and set comment status on user page

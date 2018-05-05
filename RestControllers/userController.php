@@ -196,6 +196,7 @@ class userController
 
 		$data['friend_list_public'] = $user->is_friendListPublic();
 		$data['personnalWebsite'] = $user->has_personnalWebsite() ? $user->get_personnalWebsite() : "";
+		$data['publicNote'] = $user->has_publicNote() ? $user->get_publicNote() : "";
 		$data['noCommentOnHisPage'] = $user->is_disallowComments();
 		$data['allowPostFromFriendOnHisPage'] = $user->is_allowPostFromFriends();
 		$data['account_creation_time'] = $user->get_creation_time();

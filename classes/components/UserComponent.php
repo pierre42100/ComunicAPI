@@ -422,6 +422,7 @@ class UserComponent {
 
 		$user->set_friendListPublic($entry['liste_amis_publique'] == 1);
 		$user->set_personnalWebsite($entry['site_web']);
+		$user->set_publicNote($entry['public_note']);
 		$user->set_disallowComments($entry['bloquecommentaire'] == 1);
 		$user->set_allowPostFromFriends($entry['autoriser_post_amis'] == 1);
 		$user->set_creation_time(strtotime($entry['date_creation']));
