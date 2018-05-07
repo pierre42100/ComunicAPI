@@ -11,9 +11,19 @@ require_once __DIR__."/BaseUniqueObject.php";
 class APIClient extends BaseUniqueObject {
 
 	//Private fields
+	private $time_insert;
 	private $name;
 	private $token;
-	private $url;
+	private $client_domain;
+
+	//Set and get creation time
+	public function set_time_insert(int $time_insert){
+		$this->time_insert = $time_insert;
+	}
+
+	public function get_time_insert() : int {
+		return $this->time_insert;
+	}
 
 	//Get and set client name
 	public function set_name(string $name){
@@ -43,17 +53,17 @@ class APIClient extends BaseUniqueObject {
 	}
 
 
-	//Get and set client URL
-	public function set_url(string $url){
-		$this->url = $url == "" ? null : $url;
+	//Get and set client domain
+	public function set_client_domain(string $client_domain){
+		$this->client_domain = $client_domain == "" ? null : $client_domain;
 	}
 
-	public function has_url() : bool {
-		return $this->url != null;
+	public function has_client_domain() : bool {
+		return $this->client_domain != null;
 	}
 
-	public function get_url() : string {
-		return $this->url != null ? $this->url : "null";
+	public function get_client_domain() : string {
+		return $this->client_domain != null ? $this->client_domain : "null";
 	}
 
 }

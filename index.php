@@ -28,7 +28,7 @@ if(!isset($_GET["format"]))
 header("Technology: Official Comunic API Server");
 
 //Check client tokens
-if(!$cs->tokens->checkClientRequestTokens())
+if(!$cs->clients->checkClientRequestTokens())
 	Rest_fatal_error(401, "Please check your client tokens!");
 
 //Check for remote requests limit

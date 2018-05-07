@@ -68,4 +68,40 @@ class APIClients {
 
 	}
 
+	/**
+	 * Create new API client
+	 * 
+	 * @param APIClient $client The client to create
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function create(APIClient $client) : bool {
+
+		//Get database entry
+		$entry = self::APIClientsToDb($client);
+
+		//Insert the entry in the database
+		$tableName = CS::get()->config->get("dbprefix")."API_ServicesToken";
+		return CS::get()->db->addLine($tableName, $entry);
+	}
+
+	/**
+	 * Turn a APIClient object into database entry
+	 * 
+	 * @param APIClientsToDb $client
+	 * @return array Generated database entry
+	 */
+	private static function APIClientsToDb(APIClient $client) : array {
+
+		$data = array();
+
+		$data["time_insert"] = $client->get_time_insert();
+		$data["serviceName"] = $client->get_name();
+		$data["token"] = $client->get_token();
+		if($client->has_client_domain())
+			$data["client_domain"] = $client->get_client_domain();
+
+		return $data;
+
+	}
+
 }

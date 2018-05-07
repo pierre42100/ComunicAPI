@@ -47,9 +47,9 @@ define("DBprefix", $cs->config->get("dbprefix"));
 unset($db);
 
 //Add token object
-$tokens = new APIClients();
-$cs->register("tokens", $tokens);
-unset($tokens);
+$clients = new APIClients();
+$cs->register("clients", $clients);
+unset($clients);
 
 //Include models
 foreach(glob(PROJECT_PATH."classes/models/*.php") as $classFile){

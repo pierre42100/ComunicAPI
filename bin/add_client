@@ -1,0 +1,46 @@
+#!/usr/bin/env php
+
+###########################
+# ComunicAPI clients add  #
+#                         #
+# @author Pierre HUBERT   #
+###########################
+
+<?php
+
+/**
+ * Display a message
+ */
+function msg(string $message){
+	echo $message."\n";
+}
+
+/**
+ * Display help
+ */
+function help(){
+	msg("Usage: ./add_client [name] [token]");
+}
+
+//Check for arguments
+if(count($_SERVER['argv']) < 3){
+	exit(help());
+}
+
+//Initialize page
+require __DIR__."/../init.php";
+
+//Extract the arguments
+$client = new APIClient();
+$client->set_time_insert(time());
+$client->set_name($_SERVER['argv'][1]);
+$client->set_token($_SERVER['argv'][2]);
+
+//Try to create the client
+if(!cs()->clients->create($client)){
+	msg("Err! Could not create client tokens!");
+	exit(10);
+}
+
+//Success
+msg("The client has been created!");
