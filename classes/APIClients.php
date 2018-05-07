@@ -1,18 +1,18 @@
 <?php
 /**
- * Tokens checker class
+ * API Clients checker class
  *
  * @author Pierre HUBERT
  */
 
-class Tokens{
+class APIClients {
 	
 	/**
 	 * Check request client tokens
 	 *
 	 * @return bool Depends of the validity of the tokens
 	 */
-	public function checkClientRequestTokens() : bool{
+	public function checkClientRequestTokens() : bool {
 		if(!isset($_POST['serviceName']) OR !isset($_POST['serviceToken']))
 			return false; //No token specified
 		
