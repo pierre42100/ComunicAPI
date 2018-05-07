@@ -34,6 +34,9 @@ $cs->register("config", $config);
 foreach(glob(PROJECT_PATH."config/*.php") as $confFile){
 	require $confFile;
 }
+//Reload overwrite config if any
+if(file_exists(PROJECT_PATH."config/overwrite.php"))
+    require PROJECT_PATH."config/overwrite.php";
 unset($config);
 
 //Connexion to the database
