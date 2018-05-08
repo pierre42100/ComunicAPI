@@ -3,8 +3,6 @@
 SET NAMES utf8;
 SET time_zone = '+00:00';
 
-CREATE DATABASE `comunic` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `comunic`;
 
 DROP TABLE IF EXISTS `aide`;
 CREATE TABLE `aide` (
@@ -93,10 +91,6 @@ CREATE TABLE `comunic_API_userLoginToken` (
   `token1` varchar(255) NOT NULL,
   `token2` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`),
-  KEY `ID_utilisateurs` (`ID_utilisateurs`),
-  KEY `comunic_API_userLoginToken_ibfk_4` (`ID_comunic_API_ServicesToken`),
-  CONSTRAINT `comunic_API_userLoginToken_ibfk_2` FOREIGN KEY (`ID_utilisateurs`) REFERENCES `utilisateurs` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `comunic_API_userLoginToken_ibfk_4` FOREIGN KEY (`ID_comunic_API_ServicesToken`) REFERENCES `comunic_API_ServicesToken` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -388,10 +382,6 @@ CREATE TABLE `sondage` (
   `date_creation` datetime NOT NULL,
   `question` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`),
-  KEY `ID_utilisateurs` (`ID_utilisateurs`),
-  KEY `ID_texte` (`ID_texte`),
-  CONSTRAINT `sondage_ibfk_3` FOREIGN KEY (`ID_utilisateurs`) REFERENCES `utilisateurs` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `sondage_ibfk_4` FOREIGN KEY (`ID_texte`) REFERENCES `texte` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -402,8 +392,6 @@ CREATE TABLE `sondage_choix` (
   `date_creation` datetime NOT NULL,
   `Choix` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`),
-  KEY `ID_sondage` (`ID_sondage`),
-  CONSTRAINT `sondage_choix_ibfk_2` FOREIGN KEY (`ID_sondage`) REFERENCES `sondage` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -415,12 +403,6 @@ CREATE TABLE `sondage_reponse` (
   `ID_sondage_choix` int(11) NOT NULL,
   `date_envoi` datetime NOT NULL,
   PRIMARY KEY (`ID`),
-  KEY `ID_sondage` (`ID_sondage`),
-  KEY `ID_utilisateurs` (`ID_utilisateurs`),
-  KEY `ID_sondage_choix` (`ID_sondage_choix`),
-  CONSTRAINT `sondage_reponse_ibfk_5` FOREIGN KEY (`ID_sondage`) REFERENCES `sondage` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `sondage_reponse_ibfk_6` FOREIGN KEY (`ID_utilisateurs`) REFERENCES `utilisateurs` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `sondage_reponse_ibfk_7` FOREIGN KEY (`ID_sondage_choix`) REFERENCES `sondage_choix` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
