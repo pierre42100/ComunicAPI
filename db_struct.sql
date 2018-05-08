@@ -12,7 +12,7 @@ CREATE TABLE `aide` (
   `aide` longtext NOT NULL,
   `lang` varchar(255) NOT NULL DEFAULT 'fr',
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `aime`;
@@ -23,7 +23,7 @@ CREATE TABLE `aime` (
   `Date_envoi` datetime NOT NULL,
   `type` varchar(255) NOT NULL DEFAULT 'texte',
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `amis`;
@@ -35,7 +35,7 @@ CREATE TABLE `amis` (
   `abonnement` int(11) NOT NULL DEFAULT '0',
   `autoriser_post_page` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `chat`;
@@ -45,7 +45,7 @@ CREATE TABLE `chat` (
   `date_envoi` datetime NOT NULL,
   `message` text NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `chatprive`;
@@ -57,7 +57,7 @@ CREATE TABLE `chatprive` (
   `contenu` varchar(255) NOT NULL,
   `vu` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `commentaires`;
@@ -69,7 +69,7 @@ CREATE TABLE `commentaires` (
   `commentaire` varchar(255) NOT NULL,
   `image_commentaire` longtext NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `comunic_API_ServicesToken`;
@@ -80,7 +80,7 @@ CREATE TABLE `comunic_API_ServicesToken` (
   `token` varchar(255) NOT NULL,
   `client_domain` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `comunic_API_userLoginToken`;
@@ -91,7 +91,7 @@ CREATE TABLE `comunic_API_userLoginToken` (
   `token1` varchar(255) NOT NULL,
   `token2` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `comunic_conversations_list`;
@@ -102,7 +102,7 @@ CREATE TABLE `comunic_conversations_list` (
   `last_active` int(11) DEFAULT NULL,
   `creation_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `comunic_conversations_messages`;
@@ -114,7 +114,7 @@ CREATE TABLE `comunic_conversations_messages` (
   `message` varchar(200) DEFAULT NULL,
   `image_path` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `comunic_conversations_users`;
@@ -126,7 +126,7 @@ CREATE TABLE `comunic_conversations_users` (
   `following` int(1) DEFAULT '0',
   `saw_last_message` int(1) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `comunic_notifications`;
@@ -143,7 +143,7 @@ CREATE TABLE `comunic_notifications` (
   `from_container_id` int(11) DEFAULT NULL,
   `from_container_type` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `contact`;
@@ -157,7 +157,7 @@ CREATE TABLE `contact` (
   `mail_personne` varchar(255) NOT NULL,
   `IP_personne` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `forum_reponse`;
@@ -168,7 +168,7 @@ CREATE TABLE `forum_reponse` (
   `date_envoi` datetime NOT NULL,
   `reponse` longtext NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `forum_sujet`;
@@ -179,7 +179,7 @@ CREATE TABLE `forum_sujet` (
   `date_envoi` datetime NOT NULL,
   `sujet` longtext NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `galerie_video`;
@@ -191,7 +191,7 @@ CREATE TABLE `galerie_video` (
   `file_type` varchar(255) NOT NULL,
   `size` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `groupe_personnes`;
@@ -202,7 +202,7 @@ CREATE TABLE `groupe_personnes` (
   `date_ajout` datetime NOT NULL,
   `nom` varchar(255) NOT NULL DEFAULT 'Groupe sans nom',
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `log_admin`;
@@ -213,7 +213,7 @@ CREATE TABLE `log_admin` (
   `adresse` varchar(255) NOT NULL,
   `nom_admin` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `messagerie`;
@@ -226,7 +226,7 @@ CREATE TABLE `messagerie` (
   `date_envoi` datetime NOT NULL,
   `lu` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `minifyURL`;
@@ -235,7 +235,7 @@ CREATE TABLE `minifyURL` (
   `url` varchar(255) NOT NULL,
   `date_ajout` datetime NOT NULL,
   `auto_redirect` int(11) NOT NULL DEFAULT '0'
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `multi_login`;
@@ -247,7 +247,7 @@ CREATE TABLE `multi_login` (
   `date_ajout` datetime NOT NULL,
   `IP_ajout` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `notification`;
@@ -262,7 +262,7 @@ CREATE TABLE `notification` (
   `type` varchar(255) DEFAULT NULL,
   `id_type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `pages`;
@@ -271,7 +271,7 @@ CREATE TABLE `pages` (
   `ID_personne` int(11) NOT NULL,
   `nom_page` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `scout_abonnement`;
@@ -283,7 +283,7 @@ CREATE TABLE `scout_abonnement` (
   `niveau_abonnement` int(11) NOT NULL,
   `date_ajout` datetime NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `scout_commentaires`;
@@ -297,7 +297,7 @@ CREATE TABLE `scout_commentaires` (
   `url_pdf` varchar(255) NOT NULL,
   `url_img` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `scout_droit_groupe`;
@@ -309,7 +309,7 @@ CREATE TABLE `scout_droit_groupe` (
   `date_creation` datetime NOT NULL,
   `valide` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `scout_evenements`;
@@ -331,7 +331,7 @@ CREATE TABLE `scout_evenements` (
   `minute_fin` int(11) NOT NULL,
   `details` longtext NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `scout_groupes`;
@@ -346,7 +346,7 @@ CREATE TABLE `scout_groupes` (
   `groupe_verifie` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `ID` (`ID`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `scout_patrouilles`;
@@ -360,7 +360,7 @@ CREATE TABLE `scout_patrouilles` (
   `date_creation` datetime NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `ID` (`ID`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `scout_type_patrouille`;
@@ -371,7 +371,7 @@ CREATE TABLE `scout_type_patrouille` (
   `nom_personnes` varchar(255) NOT NULL,
   `sexe` varchar(255) NOT NULL DEFAULT 'h',
   PRIMARY KEY (`ID`)
-);
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `sondage`;
@@ -382,7 +382,7 @@ CREATE TABLE `sondage` (
   `date_creation` datetime NOT NULL,
   `question` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `sondage_choix`;
@@ -392,7 +392,7 @@ CREATE TABLE `sondage_choix` (
   `date_creation` datetime NOT NULL,
   `Choix` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `sondage_reponse`;
@@ -403,7 +403,7 @@ CREATE TABLE `sondage_reponse` (
   `ID_sondage_choix` int(11) NOT NULL,
   `date_envoi` datetime NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `sujet_contact`;
@@ -412,7 +412,7 @@ CREATE TABLE `sujet_contact` (
   `nom_fr` varchar(255) NOT NULL,
   `nom_en` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `texte`;
@@ -436,7 +436,7 @@ CREATE TABLE `texte` (
   `description_page` longtext,
   `image_page` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 DROP TABLE IF EXISTS `utilisateurs`;
@@ -482,4 +482,4 @@ CREATE TABLE `utilisateurs` (
   `allow_piwik` int(11) NOT NULL DEFAULT '1',
   `public_note` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
