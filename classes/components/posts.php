@@ -255,6 +255,37 @@ class Posts {
 	}
 
 	/**
+	 * Get the entire list of posts that uses a movie
+	 * 
+	 * This function does not take care of visibility level, and does not admit
+	 * any kind of limit
+	 * 
+	 * @param int $movieID The ID of the target movie
+	 * @return array The list of posts
+	 */
+	public function getPostsForMovie(int $movieID) : array {
+
+		//Security feature
+		if($movieID < 1)
+			return array();
+
+		//Prepare database request
+		$conditions = "WHERE idvideo = ?";
+		$dataConds = array($movieID);
+
+		//Perform the request
+		$list = CS::get()->db->select(
+			$this::TABLE_NAME,
+			$conditions,
+			$dataConds
+		);
+
+		//Parse and return posts (do not load comments)
+		return $this->processGetMultiple($list, FALSE);
+		
+	}
+
+	/**
 	 * Check whether a post exists or not
 	 * 
 	 * @param int $postID The ID of the post to check
@@ -581,6 +612,30 @@ class Posts {
 
 		//Get the list of posts of the user
 		$posts = $this->getUserEntirePostsList($userID);
+
+		//Delete the list of posts
+		foreach($posts as $post){
+
+			//Delete the posts
+			if(!$this->delete($post->get_id()))
+				return FALSE;
+
+		}
+
+		//Success
+		return TRUE;
+	}
+
+	/**
+	 * Delete all the posts using a specified movie
+	 * 
+	 * @param int $movieID The ID of the target movie
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteAllWithMovie(int $movieID) : bool {
+
+		//Get the list of posts of the user
+		$posts = $this->getPostsForMovie($movieID);
 
 		//Delete the list of posts
 		foreach($posts as $post){
