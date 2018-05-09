@@ -26,11 +26,8 @@ class Movies {
 		
 		$results = CS::get()->db->select($this::MOVIES_TABLE, $conditions, $values);
 
-		$movies = array();
-		foreach($results as $row)
-			$movies[] = $this->dbToMovie($row);
-
-		return $movies;
+		//Process the list of movies
+		return $this->processMultipleDBentry($results);
 	}
 
 	/**
@@ -81,6 +78,70 @@ class Movies {
 		//Return the ID of the owner of the movie
 		return $movie->get_userID();;
 
+	}
+
+	/**
+	 * Delete a movie
+	 * 
+	 * @param Movie $movie The movie to delete
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	private function delete(Movie $movie) : bool {
+
+		//Delete related posts
+		if(!components()->posts->deleteAllWithMovie($movie->get_id()))
+			return FALSE;
+
+		//Delete file (if possible)
+		if(!$movie->has_uri())
+			return FAlSE;
+		$file_path = path_user_data($movie->get_uri(), TRUE);
+
+		if(file_exists($file_path)){
+			if(!unlink($file_path))
+				return FALSE;
+		}
+
+		//Remove database entry
+		return CS::get()->db->deleteEntry(
+			$this::MOVIES_TABLE, 
+			"ID = ?", 
+			array($movie->get_id()));
+	}
+
+	/**
+	 * Delete (remove) all the movies of a user
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return bool TRUE for success / FALSE else
+	 */
+	public function deleteAllUser(int $userID) : bool {
+
+		//Get the list of movies of the user
+		$list = $this->get_list($userID);
+
+		//Process the list of movies
+		foreach($list as $movie){
+			if(!$this->delete($movie))
+				return FALSE;
+		}
+
+		//Success
+		return TRUE;
+	}
+
+	/**
+	 * Process a list of database entries into Movie entries
+	 * 
+	 * @param array $entries The entries to parse
+	 * @return array Generated list of entries
+	 */
+	private function processMultipleDBentry(array $entries) : array {
+		$movies = array();
+		foreach($entries as $row)
+			$movies[] = $this->dbToMovie($row);
+
+		return $movies;
 	}
 
 	/**
