@@ -470,19 +470,10 @@ class ConversationsController{
 		if(!CS::get()->components->conversations->userBelongsTo(userID, $conversationID))
 			Rest_fatal_error(401, "Specified user doesn't belongs to the conversation number ".$conversationID." !");
 		
-		//Check if user is the owner of the conversation or not
-		$owner = CS::get()->components->conversations->userIsModerator(userID, $conversationID);
-
-		if($owner){
-			//Delete the conversation
-			if(!CS::get()->components->conversations->delete_conversation($conversationID))
-				Rest_fatal_error(500, "Couldn't delete the conversation from the server !");
-		}
-		else {
-			//Delete the membership to the conversation
-			if(!CS::get()->components->conversations->delete_member($conversationID, userID))
-				Rest_fatal_error(500, "Couldn't delete conversation membership !");
-		}
+		//Try to remove the user from the conversation (delete the conversation if the user
+		// is its owner)
+		if(!components()->conversations->removeUserFromConversation(userID, $conversationID))
+			Rest_fatal_error(500, "An error occured while trying to delete the conversation!");
 
 
 		//The operation is a success
