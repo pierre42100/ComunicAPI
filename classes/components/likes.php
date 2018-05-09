@@ -129,6 +129,23 @@ class Likes {
 
 	}
 
+	/**
+	 * Delete all the likes of a user
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function delete_all_user(int $userID) : bool {
+
+		//Delete on the database
+		return CS::get()->db->deleteEntry(
+			$this::LIKES_TABLE,
+			"ID_personne = ?",
+			array($userID)
+		);
+		
+	}
+
 }
 
 //Register class
