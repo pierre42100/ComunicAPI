@@ -176,6 +176,20 @@ class SurveyComponent {
 	}
 
 	/**
+	 * Cancel all the responses of a user
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function cancel_all_user_responses(int $userID) : bool {
+		//Perform a request on the database
+		return CS::get()->db->deleteEntry(
+			$this::SURVEY_RESPONSE_TABLE, 
+			"ID_utilisateurs = ?", 
+			array($userID));
+	}
+
+	/**
 	 * Delete the survey associated to a post
 	 * 
 	 * @param int $postID The ID of the post associated with the survey
