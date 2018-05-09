@@ -153,13 +153,8 @@ class Posts {
 		//Check if the user allow comments on his page or not
 		$getComments = CS::get()->components->user->allowComments($targetID);
 
-		//Parse posts
-		$posts = array();
-		foreach($list as $post){
-			$posts[] = $this->dbToPost($post, $getComments);
-		}
-
-		return $posts;
+		//Parse and return posts
+		return $this->processGetMultiple($list, $getComments);
 
 	}
 
@@ -229,6 +224,34 @@ class Posts {
 
 		//Return the list of posts
 		return $posts;
+	}
+
+	/**
+	 * Get the entire list of posts of a user, including posts made by the
+	 * user on other page plus the posts of his friend on his page
+	 * 
+	 * This function does not take care of visibility level, and does not admit
+	 * any kind of limit
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return array The list of posts
+	 */
+	public function getUserEntirePostsList(int $userID) : array {
+
+		//Prepare database request
+		$conditions = "WHERE ID_personne = ? OR ID_amis = ?";
+		$dataConds = array($userID, $userID);
+
+		//Perform the request
+		$list = CS::get()->db->select(
+			$this::TABLE_NAME,
+			$conditions,
+			$dataConds
+		);
+
+		//Parse and return posts (do not load comments)
+		return $this->processGetMultiple($list, FALSE);
+		
 	}
 
 	/**
@@ -546,6 +569,49 @@ class Posts {
 		//Return parsed response
 		return $this->dbToPost($result[0], $load_comments);
 
+	}
+
+	/**
+	 * Delete all the posts of a user
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteAllUser(int $userID) : bool {
+
+		//Get the list of posts of the user
+		$posts = $this->getUserEntirePostsList($userID);
+
+		//Delete the list of posts
+		foreach($posts as $post){
+
+			//Delete the posts
+			if(!$this->delete($post->get_id()))
+				return FALSE;
+
+		}
+
+		//Success
+		return TRUE;
+	}
+
+	/**
+	 * Process processing of multiples posts entries in database
+	 * 
+	 * @param array $entries Entries in the database
+	 * @param bool $load_comments Specify whether the comments should
+	 * be loaded or not
+	 * @return array The list of parsed posts
+	 */
+	private function processGetMultiple(array $entries, bool $load_comments) : array {
+
+		//Parse posts
+		$posts = array();
+		foreach($entries as $post){
+			$posts[] = $this->dbToPost($post, $load_comments);
+		}
+
+		return $posts;
 	}
 
 	/**
