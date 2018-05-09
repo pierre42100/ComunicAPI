@@ -812,6 +812,46 @@ class Conversations {
 	}
 
 	/**
+	 * Get all the messages of a user
+	 * 
+	 * @param int $userID Target user ID
+	 * @return array The list of message as an array
+	 */
+	public function getAllUserMessages(int $userID) : array {
+
+		//Define conditions
+		$conditions = "WHERE ID_utilisateurs = ? ";
+		$condVals = array(
+			$userID
+		);
+
+		//Perform request
+		return $this->getMessages($conditions, $condVals);
+
+	}
+
+	/**
+	 * Delete all the messages of a user
+	 * 
+	 * @param int $userID The target user ID
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteAllUserMessages(int $userID) : bool {
+
+		//Get all the messages of the user
+		$list = $this->getAllUserMessages($userID);
+
+		//Delete each message
+		foreach($list as $message){
+			if(!$this->delete_message($message))
+				return FALSE;
+		}
+
+		//Success
+		return TRUE;
+	}
+
+	/**
 	 * Get a list of conversation messages based on specified conditions
 	 *
 	 * @param string $conditions The conditions of the request
