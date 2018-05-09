@@ -644,6 +644,29 @@ class Conversations {
 	}
 
 	/**
+	 * Remove a user from a conversation
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @param int $conversationID The ID of the target conversation
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function removeUserFromConversation(int $userID, int $conversationID) : bool {
+
+		//Check if user is the owner of the conversation or not
+		$owner = $this->userIsModerator($userID, $conversationID);
+
+		if($owner){
+			//Delete the conversation
+			return $this->delete_conversation($conversationID);
+		}
+		else {
+			//Delete the membership to the conversation
+			return $this->delete_member($conversationID, $userID);
+		}
+
+	}
+
+	/**
 	 * Delete a conversation
 	 * 
 	 * Delete all the messages, membership and informations about a conversation
@@ -845,6 +868,30 @@ class Conversations {
 		foreach($list as $message){
 			if(!$this->delete_message($message))
 				return FALSE;
+		}
+
+		//Success
+		return TRUE;
+	}
+
+	/**
+	 * Delete all the conversations of a user
+	 * 
+	 * @param int $userID The target user ID
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteAllUserConversations(int $userID) : bool {
+
+		//Get the entire list of conversations of the user
+		$list = $this->getList($userID);
+
+		//Process the list of conversations
+		foreach($list as $conversation){
+
+			//Remove the user from the conversation
+			if(!$this->removeUserFromConversation($userID, $conversation->get_id()))
+				return FALSE;
+
 		}
 
 		//Success
