@@ -252,6 +252,47 @@ class AccountComponent {
 	public function cryptPassword(string $userPassword) : string {
 		return crypt(sha1($userPassword), sha1($userPassword));
 	}
+
+	/**
+	 * Delete user account
+	 * 
+	 * @param int $userID The ID of the account to delete
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function delete(int $userID) : bool {
+
+		//Delete user comments
+		if(!components()->comments->deleteAllUser($userID))
+			return false;
+
+		//Delete user posts
+		if(!components()->posts->deleteAllUser($userID))
+			return false;
+
+		//Delete user participation in surveys
+		if(!components()->survey->cancel_all_user_responses($userID))
+			return false;
+
+		//Delete all the likes created by the user
+		if(!components()->likes->delete_all_user($userID))
+			return false;
+
+		//Delete user movies
+
+		//Delete conversation messages
+
+		//Remove users from all its conversations
+
+		//Delete all the notifications related with the user
+
+		//Delete all user friends, including friendship requests
+
+		//Delete user account image
+
+		//Delete connections to all the services
+
+		//Delete user from the database
+	}
 }
 
 //Register class

@@ -110,4 +110,24 @@ class accountController {
 			"success" => "The account has been created !"
 		);
 	}
+
+	/**
+	 * Delete an account
+	 * 
+	 * @url POST /account/delete
+	 */
+	public function deleteAccount(){
+
+		//Login & valid password required
+		user_login_required();
+		check_post_password(userID, "password");
+
+		//Try to delet the account
+		if(!components()->account->delete(userID))
+			Rest_fatal_error(500, "An error occurred while trying to delete your account!");
+		
+		//Success
+		return array("success" => "The user account has been successfully deleted!");
+
+	}
 }
