@@ -41,11 +41,11 @@ class Comments {
 	 * Fetch the comments of a post
 	 * 
 	 * @param int $postID The ID of the post
-	 * @param bool $load_comments Specify whether the comments should be
+	 * @param bool $load_likes Specify whether the likes should be
 	 * loaded or not (default to true)
 	 * @return array The list of comments of the post (as Comment objects)
 	 */
-	public function get(int $postID, bool $load_comments = true) : array {
+	public function get(int $postID, bool $load_likes = true) : array {
 
 		//Perform a request on the database
 		$conditions = "WHERE ID_texte = ? ORDER BY ID";
@@ -55,14 +55,27 @@ class Comments {
 		$result = CS::get()->db->select($this::COMMENTS_TABLE, $conditions, $condValues);
 		
 		//Process comments list
-		$comments = array();
+		return $this->processMultipleResults($result, $load_likes);
 
-		foreach($result as $entry){
-			$comments[] = $this->dbToComment($entry, $load_comments);
-		}
+	}
 
-		return $comments;
+	/**
+	 * Fetch the list of comments of a user
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return array The list of comments of the user, as comment object
+	 */
+	public function getAllUser(int $userID) : array {
 
+		//Perform a request over the database
+		$conditions = "WHERE ID_personne = ? ORDER BY ID";
+		$condValues = array($userID);
+
+		//Fetch the messages on the database
+		$result = CS::get()->db->select($this::COMMENTS_TABLE, $conditions, $condValues);
+
+		//Process comments list
+		return $this->processMultipleResults($result, FALSE);
 	}
 
 	/**
@@ -229,6 +242,45 @@ class Comments {
 			"WHERE ID = ? AND ID_personne = ?", 
 			array($commentID, $userID)
 		) > 0;
+	}
+
+	/**
+	 * Delete all the comments of a user
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteAllUser(int $userID) : bool {
+
+		//Get all the comments of the user
+		$comments = $this->getAllUser($userID);
+
+		//Process the list of comments
+		$success = true;
+		foreach($comments as $comment)
+			$success = $this->process_delete($comment) ? $success : false;
+
+		//Return result
+		return $success;
+	}
+
+	/**
+	 * Turn multiple database entries into Comment objects
+	 * 
+	 * @param array $entries The database entries to process
+	 * @param bool $load_likes Specify whether likes should be loaded
+	 * or not
+	 * @return array The list of generated Comment objects
+	 */
+	private function processMultipleResults(array $entries, bool $load_likes) : array {
+
+		$comments = array();
+
+		foreach($entries as $entry){
+			$comments[] = $this->dbToComment($entry, $load_likes);
+		}
+
+		return $comments;
 	}
 
 	/**
