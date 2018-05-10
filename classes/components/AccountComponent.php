@@ -102,7 +102,7 @@ class AccountComponent {
 	}
 
 	/**
-	 * Delete token from given informations
+	 * Delete login token from given information of a single service
 	 *
 	 * @param int $userID The ID of the user to delete
 	 * @param string $serviceID The service ID
@@ -123,6 +123,30 @@ class AccountComponent {
 		
 		//Everything is ok
 		return true;
+	}
+
+	/**
+	 * Delete all the logins tokens of a user - disconnect him from 
+	 * all the services he is connected to
+	 * 
+	 * @param int $userID Target user ID
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteAllUserLoginTokens(int $userID) : bool {
+
+		//Prepare database request
+		$condition = "ID_utilisateurs = ?";
+		$values = array(
+			$userID
+		);
+
+		//Try to perform request
+		if(!CS::get()->db->deleteEntry($this->userLoginAPItable, $condition, $values))
+			return false; //Something went wrong during the request
+		
+		//Everything is ok
+		return true;
+
 	}
 
 	/**
@@ -287,19 +311,29 @@ class AccountComponent {
 
 		//Remove users from all its conversations
 		if(!components()->conversations->deleteAllUserConversations($userID))
-			return FALSE;*/
+			return FALSE;
 
 		//Delete all the notifications related with the user
 		if(!components()->notifications->deleteAllRelatedWithUser($userID))
 			return FALSE;
 
 		//Delete all user friends, including friendship requests
+		if(!components()->friends->deleteAllUserFriends($userID))
+			return FALSE;
 
 		//Delete user account image
+		if(!components()->accountImage->delete($userID))
+			return FALSE;
 
 		//Delete connections to all the services
+		if(!$this->deleteAllUserLoginTokens($userID))
+			return FALSE;*/
 
 		//Delete user from the database
+		//WILL BE IMPLEMENTED WHEN LEGACY VERSION WILL BE REMOVED
+
+		//Success
+		return FALSE;
 	}
 }
 
