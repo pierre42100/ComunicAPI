@@ -262,7 +262,7 @@ class AccountComponent {
 	public function delete(int $userID) : bool {
 
 		//Delete user comments
-		if(!components()->comments->deleteAllUser($userID))
+		/*if(!components()->comments->deleteAllUser($userID))
 			return false;
 
 		//Delete user posts
@@ -278,12 +278,20 @@ class AccountComponent {
 			return false;
 
 		//Delete user movies
+		if(!components()->movies->deleteAllUser($userID))
+			return FALSE;
 
 		//Delete conversation messages
+		if(!components()->conversations->deleteAllUserMessages($userID))
+			return FALSE;
 
 		//Remove users from all its conversations
+		if(!components()->conversations->deleteAllUserConversations($userID))
+			return FALSE;*/
 
 		//Delete all the notifications related with the user
+		if(!components()->notifications->deleteAllRelatedWithUser($userID))
+			return FALSE;
 
 		//Delete all user friends, including friendship requests
 

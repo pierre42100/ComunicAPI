@@ -307,6 +307,25 @@ class notificationComponent {
 
 
 	/**
+	 * Delete all the notifications related with a user
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteAllRelatedWithUser(int $userID) : bool {
+
+		//Delete all the notifications targeting the user
+		if(!$this->delete_all_user($userID))
+			return FALSE;
+		
+		//Delete all the notifications created by the user
+		$notif = new Notification();
+		$notif->set_from_user_id($userID);
+		return $this->delete($notif);
+
+	}
+
+	/**
 	 * Convert a notification object into database array
 	 * 
 	 * @param Notification $notification The notification to convert
