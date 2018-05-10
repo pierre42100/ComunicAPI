@@ -384,6 +384,26 @@ class friends {
 	}
 
 	/**
+	 * Delete all the friends of a user, including friendship requests
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteAllUserFriends(int $userID) : bool {
+
+		//Delete the friend from the database
+		$tableName = $this->friendsTable;
+		$conditions = "ID_personne = ? OR ID_amis = ?";
+		$condValues = array($userID, $userID);
+
+		//Try to perform the request
+		$success = CS::get()->db->deleteEntry($tableName, $conditions, $condValues);
+
+		return $success;
+
+	}
+
+	/**
 	 * Parse friend informations from the database
 	 * 
 	 * @param array $data Informations about the friend from the database
