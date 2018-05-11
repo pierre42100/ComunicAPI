@@ -29,9 +29,10 @@ class friends {
 	 *
 	 * @param int $userID The ID of the user
 	 * @param int $friendID The ID of a specific friend (default -1)
+	 * @param bool $only_accepted Specify if only the accepted friends must be selected (default: FALSE)
 	 * @return array The list of the friends of the user (Friend objects)
 	 */
-	public function getList(int $userID, int $friendID = -1) : array {
+	public function getList(int $userID, int $friendID = -1, bool $only_accepted = FALSE) : array {
 		
 		//Prepare the request on the database
 		$tableName = $this->friendsTable.", utilisateurs";
@@ -40,8 +41,13 @@ class friends {
 
 		//Check if the request is targeting a specific friend
 		if($friendID != -1){
-			$condition .= " AND ID_amis = ?";
+			$condition .= " AND ID_amis = ? ";
 			$condValues[] = $friendID;
+		}
+
+		//Check if only accepted friendship must be selected
+		if($only_accepted){
+			$condition .= " AND actif = 1 ";
 		}
 
 		//Complete conditions

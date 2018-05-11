@@ -177,7 +177,7 @@ class Posts {
 		$visibilityLevel = self::VISIBILITY_FRIENDS;
 
 		//Get the list of friends of the user
-		$friendsList = components()->friends->getList($userID);
+		$friendsList = components()->friends->getList($userID, -1, TRUE);
 
 
 		//Prepare the request on the database
