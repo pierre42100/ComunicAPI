@@ -509,7 +509,7 @@ class ConversationsController {
 	 * @param ConversationInfo $conv Information about the conversation
 	 * @return array Generated conversation object
 	 */
-	private static function ConvInfoToAPI(ConversationInfo $conv) : array {
+	public static function ConvInfoToAPI(ConversationInfo $conv) : array {
 
 		$data = array();
 
