@@ -66,6 +66,7 @@ CREATE TABLE `commentaires` (
   `ID_personne` int(11) NOT NULL,
   `ID_texte` int(11) NOT NULL,
   `date_envoi` datetime NOT NULL,
+  `time_insert` int(11) DEFAULT NULL,
   `commentaire` varchar(255) NOT NULL,
   `image_commentaire` longtext NOT NULL,
   PRIMARY KEY (`ID`)

@@ -25,6 +25,7 @@ class Comments {
 			"ID_texte" => $comment->get_postID(),
 			"ID_personne" => $comment->get_userID(),
 			"date_envoi" => mysql_date(),
+			"time_insert" => time(),
 			"commentaire" => $comment->has_content() ? $comment->get_content() : "",
 			"image_commentaire" => $comment->has_img_path() ? "file:".$comment->get_img_path() : ""
 		);
@@ -297,7 +298,7 @@ class Comments {
 		$comment->set_id($data["ID"]);
 		$comment->set_userID($data["ID_personne"]);
 		$comment->set_postID($data["ID_texte"]);
-		$comment->set_time_sent(strtotime($data["date_envoi"]));
+		$comment->set_time_sent($data["time_insert"] == null ? strtotime($data["date_envoi"]) : $data["time_insert"]);
 		$comment->set_content($data["commentaire"]);
 		
 		//Check for image
