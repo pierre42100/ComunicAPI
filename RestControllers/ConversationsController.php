@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-class ConversationsController{
+class ConversationsController {
 
 	/**
 	 * Get the conversations list
@@ -531,7 +531,7 @@ class ConversationsController{
 	 * @param ConversationMessage $message The message to convert
 	 * @return array Valid dataset for the api
 	 */
-	private static function ConvMessageToAPI(ConversationMessage $message) : array {
+	public static function ConvMessageToAPI(ConversationMessage $message) : array {
 
 		$data = array();
 
