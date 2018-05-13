@@ -234,9 +234,11 @@ class Posts {
 	 * any kind of limit
 	 * 
 	 * @param int $userID The ID of the target user
+	 * @param bool $load_comments Specify whether the comments should be also loaded
+	 * or not (default: FALSE)
 	 * @return array The list of posts
 	 */
-	public function getUserEntirePostsList(int $userID) : array {
+	public function getUserEntirePostsList(int $userID, bool $load_comments = FALSE) : array {
 
 		//Prepare database request
 		$conditions = "WHERE ID_personne = ? OR ID_amis = ?";
@@ -250,7 +252,7 @@ class Posts {
 		);
 
 		//Parse and return posts (do not load comments)
-		return $this->processGetMultiple($list, FALSE);
+		return $this->processGetMultiple($list, $load_comments);
 		
 	}
 
