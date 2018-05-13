@@ -112,6 +112,29 @@ class Likes {
 	}
 
 	/**
+	 * Get all the likes of a user, as UserLike objects
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return array The list of likes
+	 */
+	public function get_all_user(int $userID) : array {
+
+		//Query the database
+		$table = self::LIKES_TABLE;
+		$condition = "WHERE ID_personne = ?";
+		$condValues = array($userID);
+
+		$entries = cs()->db->select($table, $condition, $condValues);
+		$likes = array();
+
+		//Process the list of likes
+		foreach($entries as $entry)
+			$likes[] = $this->dbToUserLike($entry);
+
+		return $likes;
+	}
+
+	/**
 	 * Delete all the likes associated to an element
 	 * 
 	 * @param int $id The ID of element to update
@@ -146,6 +169,25 @@ class Likes {
 		
 	}
 
+
+	/**
+	 * Turn database entry into UserLike object
+	 * 
+	 * @param array $entry The database entry
+	 * @return UserLike Generated user like object
+	 */
+	private static function dbToUserLike(array $entry) : UserLike {
+		$like = new UserLike();
+
+		$like->set_id($entry["ID"]);
+		$like->set_userID($entry["ID_personne"]);
+		$like->set_time_sent(strtotime($entry["Date_envoi"]));
+		$like->set_elem_id($entry["ID_type"]);
+		$like->set_elem_type($entry["type"]);
+
+
+		return $like;
+	}
 }
 
 //Register class

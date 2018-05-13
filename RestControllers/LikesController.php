@@ -5,7 +5,7 @@
  * @author Pierre HUBERT
  */
 
-class likesController {
+class LikesController {
 
 	/**
 	 * Update a specific component like
@@ -80,4 +80,23 @@ class likesController {
 		return array("success" => "Like status updated.");
 	}
 
+
+	/**
+	 * Turn a UserLike object into valid API entry
+	 * 
+	 * @param UserLike $object The object to convert
+	 * @return array Valid API database entry
+	 */
+	public static function UserLikeToAPI(UserLike $object) : array {
+
+		$data = array();
+
+		$data["id"] = $object->get_id();
+		$data["userID"] = $object->get_userID();
+		$data["time_sent"] = $object->get_time_sent();
+		$data["elem_type"] = $object->get_elem_type();
+		$data["elem_id"] = $object->get_elem_id();
+
+		return $data;
+	}
 }
