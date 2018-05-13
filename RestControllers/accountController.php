@@ -112,6 +112,60 @@ class accountController {
 	}
 
 	/**
+	 * Export all account data
+	 * 
+	 * @url POST /account/export_data
+	 */
+	public function exportData(){
+
+		//Login & valid password required
+		user_login_required();
+		check_post_password(userID, "password");
+
+		//Generate and get data set
+		$data = components()->account->export(userID);
+
+		//Process data set
+		//Advanced user information
+		$data["advanced_info"] = userController::advancedUserToAPI($data["advanced_info"]);
+
+		//Posts
+		foreach($data["posts"] as $num => $post)
+			$data["posts"][$num] = PostsController::PostToAPI($post);
+		
+		//Comments
+		foreach($data["comments"] as $num => $comment)
+			$data["comments"][$num] = CommentsController::commentToAPI($comment);
+
+		//Likes
+		foreach($data["likes"] as $num => $like)
+			$data["likes"][$num] = LikesController::UserLikeToAPI($like);
+		
+		//Survey responses
+		foreach($data["survey_responses"] as $num => $response)
+			$data["survey_responses"][$num] = SurveysController::SurveyResponseToAPI($response);
+		
+		//Movies
+		foreach($data["movies"] as $num => $movie)
+			$data["movies"][$num] = MoviesController::MovieToAPI($movie);
+
+		//Conversations messages
+		foreach($data["conversation_messages"] as $num => $message)
+			$data["conversation_messages"][$num] = ConversationsController::ConvMessageToAPI($message);
+
+		//Conversations list
+		foreach($data["conversations_list"] as $num => $conversation)
+			$data["conversations_list"][$num] = ConversationsController::ConvInfoToAPI($conversation);
+		
+		//Friends list
+		foreach($data["friends_list"] as $num => $friend)
+			$data["friends_list"][$num] = friendsController::parseFriendAPI($friend);
+
+		return $data;
+	
+	}
+
+	/**
 	 * Delete an account
 	 * 
 	 * @url POST /account/delete

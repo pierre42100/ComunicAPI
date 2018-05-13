@@ -278,6 +278,46 @@ class AccountComponent {
 	}
 
 	/**
+	 * Get user account data (full export)
+	 * 
+	 * @param int $userID Target user ID
+	 * @return array Information about the user
+	 */
+	public function export(int $userID) : array {
+
+		$data = array();
+
+		//General account information
+		$data["advanced_info"] = components()->user->getUserAdvancedInfo($userID);
+
+		//Posts list (with comments)
+		$data["posts"] = components()->posts->getUserEntirePostsList($userID, TRUE);
+
+		//Comments list
+		$data["comments"] = components()->comments->getAllUser($userID);
+
+		//Likes
+		$data["likes"] = components()->likes->get_all_user($userID);
+
+		//Survey responses
+		$data["survey_responses"] = components()->survey->get_all_responses($userID);
+
+		//User movies
+		$data["movies"] = components()->movies->get_list($userID);
+
+		//Conversation messages
+		$data["conversation_messages"] = components()->conversations->getAllUserMessages($userID);
+
+		//Conversations list
+		$data["conversations_list"] = components()->conversations->getList($userID);
+
+		//Friend list
+		$data["friends_list"] = components()->friends->getList($userID);
+
+		return $data;
+	}
+
+	/**
 	 * Delete user account
 	 * 
 	 * @param int $userID The ID of the account to delete
