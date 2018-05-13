@@ -421,6 +421,7 @@ CREATE TABLE `texte` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `ID_personne` int(11) NOT NULL,
   `date_envoi` datetime NOT NULL,
+  `time_insert` int(11) DEFAULT NULL,
   `texte` text NOT NULL,
   `ID_amis` int(11) NOT NULL DEFAULT '0',
   `niveau_visibilite` varchar(255) NOT NULL DEFAULT '1',

@@ -425,6 +425,7 @@ class Posts {
 			"ID_personne" => $post_user_id,
 			"ID_amis" => $post_friend_id,
 			"date_envoi" => mysql_date(),
+			"time_insert" => time(),
 			"texte" => $post->has_content() ? $post->get_content() : "",
 			"niveau_visibilite" => $post->get_visibility_level(),
 			"type" => $post_kind_db,
@@ -684,7 +685,7 @@ class Posts {
 		$post->set_id($entry["ID"]);
 		$post->set_userID($entry["ID_amis"] == 0 ? $entry["ID_personne"] : $entry["ID_amis"]);
 		$post->set_user_page_id($entry["ID_personne"]);
-		$post->set_time_sent(strtotime($entry["date_envoi"]));
+		$post->set_time_sent($entry["time_insert"] == null ? strtotime($entry["date_envoi"]) : $entry["time_insert"]);
 		$post->set_content($entry["texte"]);
 		$post->set_visibility_level($entry["niveau_visibilite"]);
 		$post->set_kind($this::POSTS_DB_TYPES[$entry["type"]]);
