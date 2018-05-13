@@ -190,6 +190,28 @@ class SurveyComponent {
 	}
 
 	/**
+	 * Get all the responses of the user, as SurveyResponse objects
+	 * 
+	 * @param int $userID Target user ID
+	 * @return array The list of responses
+	 */
+	public function get_all_responses(int $userID) : array {
+
+		//Perform the query over the database
+		$tableName = self::SURVEY_RESPONSE_TABLE;
+		$conditions = "WHERE ID_utilisateurs = ?";
+		$values = array($userID);
+
+		$entries = cs()->db->select($tableName, $conditions, $values);
+
+		//Process each entry
+		$responses = array();
+		foreach($entries as $entry)
+			$responses[] = $this::dbToSurveyResponse($entry);
+		return $responses;
+	}
+
+	/**
 	 * Delete the survey associated to a post
 	 * 
 	 * @param int $postID The ID of the post associated with the survey
@@ -338,6 +360,26 @@ class SurveyComponent {
 
 		return $result[0]["ID_sondage_choix"];
 
+	}
+
+	/**
+	 * Turn a database entry into SurveyResponse object
+	 * 
+	 * @param array $entry The entry in the database
+	 * @return SurveyResponse Generated object
+	 */
+	private static function dbToSurveyResponse(array $entry) : SurveyResponse {
+		
+		$response = new SurveyResponse();
+
+		$response->set_id($entry["ID"]);
+		$response->set_time_sent(strtotime($entry["date_envoi"]));
+		$response->set_userID($entry["ID_utilisateurs"]);
+		$response->set_surveyID($entry["ID_sondage"]);
+		$response->set_choiceID($entry["ID_sondage_choix"]);
+		
+
+		return $response;
 	}
 }
 

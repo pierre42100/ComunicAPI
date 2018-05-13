@@ -131,4 +131,24 @@ class SurveysController {
 
 	}
 
+	/**
+	 * Turn a SurveyResponse object into API array
+	 * 
+	 * @param SurveyResponse $response The response to convert
+	 * @return array Generated API entry
+	 */
+	public static function SurveyResponseToAPI(SurveyResponse $response) : array {
+
+		$data = array();
+
+		$data["id"] = $response->get_id();
+		$data["time_sent"] = $response->get_time_sent();
+		$data["userID"] = $response->get_userID();
+		$data["surveyID"] = $response->get_surveyID();
+		$data["choiceID"] = $response->get_choiceID();
+
+		return $data;
+
+	}
+
 }
