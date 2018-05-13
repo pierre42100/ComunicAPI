@@ -340,7 +340,7 @@ class friendsController{
 	 * friendship should be returned or not
 	 * @return array Informations about the friend readable by the api
 	 */
-	private function parseFriendAPI(Friend $friend, bool $all_infos = FALSE) : array {
+	public static function parseFriendAPI(Friend $friend, bool $all_infos = FALSE) : array {
 
 		//Parse informations about the friend
 		$data = array(

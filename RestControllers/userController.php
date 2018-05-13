@@ -169,7 +169,7 @@ class userController
 	 * @param User $user Information about the user
 	 * @return array Information about the user compatible with the API
 	 */
-	public function userToAPI(User $user) : array {
+	public static function userToAPI(User $user) : array {
 
 		$data = array();
 
@@ -190,9 +190,9 @@ class userController
 	 * @param AdvancedUser $user Information about the user
 	 * @return array Data compatible with the API
 	 */
-	private function advancedUserToAPI(AdvancedUser $user) : array {
+	public static function advancedUserToAPI(AdvancedUser $user) : array {
 
-		$data = $this->userToAPI($user);
+		$data = self::userToAPI($user);
 
 		$data['friend_list_public'] = $user->is_friendListPublic();
 		$data['personnalWebsite'] = $user->has_personnalWebsite() ? $user->get_personnalWebsite() : "";
