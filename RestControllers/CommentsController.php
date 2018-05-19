@@ -190,7 +190,7 @@ class CommentsController {
 		$data["userID"] = $comment->get_userID();
 		$data["postID"] = $comment->get_postID();
 		$data["time_sent"] = $comment->get_time_sent();
-		$data["content"] = $comment->has_content() ? utf8_encode($comment->get_content()) : "";
+		$data["content"] = $comment->has_content() ? $comment->get_content() : "";
 
 		$data["img_path"] = $comment->has_img_path() ? $comment->get_img_path() : null;
 		$data["img_url"] = $comment->has_img_url() ? $comment->get_img_url() : null;
