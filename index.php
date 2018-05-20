@@ -35,7 +35,7 @@ if(!$cs->clients->checkClientRequestTokens())
 if(defined("APIServiceDomain")){
 
 	//First, limit requests
-	header("Access-Control-Allow-Origin: http://".APIServiceDomain.", https://".APIServiceDomain);
+	header("Access-Control-Allow-Origin: https://".APIServiceDomain);
 
 	//Then check for referer
 	if(!isset($_SERVER["HTTP_REFERER"]))
