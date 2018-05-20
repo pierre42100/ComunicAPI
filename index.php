@@ -59,7 +59,7 @@ if(isset($_POST['userToken1']) AND isset($_POST['userToken2'])){
 	));
 
 	if($userID < 1){
-		Rest_fatal_error(401, "Please check your login tokens!");
+		Rest_fatal_error(412, "Please check your login tokens!");
 	}
 
 	//Else save userID
