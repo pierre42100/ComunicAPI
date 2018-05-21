@@ -81,6 +81,23 @@ class accountController {
 	}
 
 	/**
+	 * Check if an account associated with an email address has set up 
+	 * security question or not
+	 * 
+	 * @url POST /account/has_security_questions
+	 */
+	public function hasSecurityQuestion(){
+
+		//Get account ID
+		$userID = $this->getUserIDFromPostEmail("email");
+
+		//Check if the specified account has defined security questions or not
+		return array(
+			"defined" => components()->settings->has_security_questions($userID)
+		);
+	}
+
+	/**
 	 * Create an account
 	 * 
 	 * @url POST /account/create
