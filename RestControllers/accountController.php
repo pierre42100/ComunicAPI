@@ -70,9 +70,7 @@ class accountController {
 	public function existsMail(){
 
 		//Check the given email address
-		$email = postString("email", 5);
-		if(!filter_var($email, FILTER_VALIDATE_EMAIL))
-			Rest_fatal_error(400, "Specified email address is invalid !");
+		$email = postEmail("email", 5);
 		
 		//Check if the email address is already associated with an account
 		$email_exists = components()->account->exists_email($email);
@@ -202,6 +200,50 @@ class accountController {
 		
 		//Success
 		return array("success" => "The user account has been successfully deleted!");
+
+	}
+
+	/**
+	 * Get and return the email address associated with an account
+	 * from a $_POST request
+	 * 
+	 * @param string $name The name of the POST field containing the
+	 * email address
+	 * @return string The email address
+	 */
+	private function getPostAccountEmail(string $name) : string {
+
+		//Get the email address
+		$email = postEmail($name);
+
+		//Check if the email is associated with an account
+		if(!components()->account->exists_email($email))
+			Rest_fatal_error(404, "Specified email address in '".$name."' not found!");
+		
+		return $email;
+
+	}
+
+	/**
+	 * Get email address from $_POST request and return associated
+	 * account ID
+	 * 
+	 * @param string $name The name of post field containing email
+	 * @return int Associated account ID
+	 */
+	private function getUserIDFromPostEmail(string $name) : int {
+
+		//Get account email
+		$email = $this->getPostAccountEmail($name);
+
+		//Get the ID of the assocated account
+		$userID = components()->account->getIDfromEmail($email);
+
+		//Check user ID
+		if($userID < 1)
+			Rest_fatal_error(500, "Could link the email address to an account!");
+		
+		return $userID;
 
 	}
 }
