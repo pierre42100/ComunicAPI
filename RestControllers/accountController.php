@@ -63,6 +63,26 @@ class accountController {
 	}
 
 	/**
+	 * Check if an email is already associated with an account or not
+	 * 
+	 * @url POST /account/exists_email
+	 */
+	public function existsMail(){
+
+		//Check the given email address
+		$email = postString("email", 5);
+		if(!filter_var($email, FILTER_VALIDATE_EMAIL))
+			Rest_fatal_error(400, "Specified email address is invalid !");
+		
+		//Check if the email address is already associated with an account
+		$email_exists = components()->account->exists_email($email);
+		
+		return array(
+			"exists" => $email_exists
+		);
+	}
+
+	/**
 	 * Create an account
 	 * 
 	 * @url POST /account/create
