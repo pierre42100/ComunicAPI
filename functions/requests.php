@@ -114,6 +114,25 @@ function postInt(string $name) : int {
 }
 
 /**
+ * Get an email address specified in a $_POST request
+ * 
+ * @param string $name The name of the post field containing the
+ * email address
+ * @return string The email address
+ */
+function postEmail(string $name) : string {
+
+	//Get the email as a string
+	$email = postString($name, 5);
+	
+	//Check the email
+	if(!filter_var($email, FILTER_VALIDATE_EMAIL))
+		Rest_fatal_error(400, "Specified email address is invalid !");
+
+	return $email;
+}
+
+/**
  * Securely transform user given number (mixed) to integer (int)
  *
  * @param Mixed $input The input variable (mixed)
