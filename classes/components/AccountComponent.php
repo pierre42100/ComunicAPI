@@ -199,6 +199,30 @@ class AccountComponent {
 	}
 
 	/**
+	 * Get the ID of the account associated with an email address
+	 * 
+	 * @param string $email The email address
+	 * @return int The ID of the account / -1 in case of failure
+	 */
+	public function getIDfromEmail(string $email): int {
+
+		//Perform an API request
+		$tableName = self::USER_TABLE;
+		$conditions = "WHERE mail = ?";
+		$values = array($email);
+
+		//Peform the request
+		$values = cs()->db->select($tableName, $conditions, $values);
+
+		if(count($values) == 0)
+			return -1; //No result found
+		
+		//Return first value
+		return $values[0]["ID"];
+
+	}
+
+	/**
 	 * Intend to create an account
 	 * 
 	 * @param NewAccount $account The new account to create
