@@ -85,6 +85,28 @@ class SettingsComponents {
 	}
 
 	/**
+	 * Check whether the user has defined security questions or not
+	 * 
+	 * @param int $userID Target user ID
+	 * @return bool TRUE if the user has defined security questions / FALSE else
+	 */
+	public function has_security_questions(int $userID) : bool {
+
+		//Get security settings
+		$security = $this->get_security($userID);
+
+		//Check for errors
+		if(!$security->isValid())
+			return FALSE;
+		
+		return $security->has_security_question_1() &&
+			$security->has_security_answer_1() &&
+			$security->has_security_question_2() &&
+			$security->has_security_answer_2();
+
+	}
+
+	/**
 	 * Save new version of the security settings of a user
 	 * 
 	 * @param SecuritySettings $settings The settings to save in the database
