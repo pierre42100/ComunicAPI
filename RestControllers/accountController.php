@@ -98,6 +98,36 @@ class accountController {
 	}
 
 	/**
+	 * Get the security questions of a user using its email address
+	 * 
+	 * @url POST /account/get_security_questions
+	 */
+	public function getSecurityQuestions(){
+
+		//Get account ID
+		$userID = $this->getUserIDFromPostEmail("email");
+
+		//Check if user has defined security questions
+		if(!components()->settings->has_security_questions($userID))
+			Rest_fatal_error(401, "Specified user has not set up security questions!");
+
+		//Get the security settings of the user
+		$settings = components()->settings->get_security($userID);
+
+		//Check for errors
+		if(!$settings->isValid())
+			Rest_fatal_error(500, "An error occurred while retrieving security settings of the user!");
+		
+		//Return the questions of the user
+		return array(
+			"questions" => array(
+				$settings->get_security_question_1(),
+				$settings->get_security_question_2()
+			)
+		);
+	}
+
+	/**
 	 * Create an account
 	 * 
 	 * @url POST /account/create
