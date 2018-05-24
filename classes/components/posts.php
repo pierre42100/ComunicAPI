@@ -408,6 +408,7 @@ class Posts {
 			$day_end = $array_date_end[0];
 			$month_end = $array_date_end[1];
 			$year_end = $array_date_end[2];
+			$time_end = $post->get_time_end();
 		}
 		
 		//Process user page posts
@@ -444,6 +445,7 @@ class Posts {
 			"jour_fin" => isset($day_end) ? $day_end : null,
 			"mois_fin" => isset($month_end) ? $month_end : null,
 			"annee_fin" => isset($year_end) ? $year_end : null,
+			"time_end" => isset($time_end) ? $time_end : null,
 
 			//Weblink page
 			"url_page" => $post->has_link_url() ? $post->get_link_url() : null,
@@ -707,7 +709,8 @@ class Posts {
 		//Countdown timer - specific
 		if($entry['annee_fin'] != 0)
 			$post->set_time_end(strtotime($entry["annee_fin"]."/".$entry['mois_fin']."/".$entry["jour_fin"]));
-		
+		if($entry["time_end"] != 0)
+			$post->set_time_end($entry["time_end"]);	
 		
 		//Web link
 		$post->set_link_url($entry["url_page"] != null ? $entry["url_page"] : "");

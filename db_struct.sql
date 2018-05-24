@@ -433,6 +433,7 @@ CREATE TABLE `texte` (
   `annee_fin` varchar(255) DEFAULT NULL,
   `mois_fin` varchar(255) DEFAULT NULL,
   `jour_fin` varchar(255) DEFAULT NULL,
+  `time_end` int(11) DEFAULT NULL,
   `url_page` varchar(255) DEFAULT NULL,
   `titre_page` varchar(255) DEFAULT NULL,
   `description_page` longtext,
