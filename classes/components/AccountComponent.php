@@ -433,6 +433,9 @@ class AccountComponent {
 		//Delete user account image
 		if(!components()->accountImage->delete($userID))
 			return FALSE;
+		
+		if(!components()->backgroundImage->delete($userID))
+			return FALSE;
 
 		//Delete connections to all the services
 		if(!$this->deleteAllUserLoginTokens($userID))
@@ -440,6 +443,8 @@ class AccountComponent {
 
 		//Delete user from the database
 		//WILL BE IMPLEMENTED WHEN LEGACY VERSION WILL BE REMOVED
+
+		exit("Notice: Account deletion should be available soon...");
 
 		//Success
 		return FALSE;

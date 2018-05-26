@@ -33,12 +33,12 @@ class BackgroundImage {
 	/**
 	 * Returns the path of a background image
 	 *
-	 * @param Integer $userID The ID of the user on which we perform research
-	 * @return String The URL pointing on the background image
+	 * @param int $userID The ID of the user on which we perform research
+	 * @return string The URL pointing on the background image
 	 */
 	public function getPath(int $userID) : string {
 		//First, check if the background image exists
-		$backgroundImageRefFile = $this->files_path."adresse_imgfond/".$userID.".txt";
+		$backgroundImageRefFile = $this->getPathMetadata($userID);
 		if(file_exists($backgroundImageRefFile)){
 
 			//Get background image path and return it
@@ -51,6 +51,48 @@ class BackgroundImage {
 		}
 	}
 
+	/**
+	 * Delete the account image of a user (if any)
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function delete(int $userID) : bool {
+
+		//Get the path to the background image
+		$refFile = $this->getPathMetadata($userID);
+
+		//Check if ref file exists or not
+		if(file_exists($refFile)){
+
+			$file_target = $this->files_path.file_get_contents($refFile);
+
+			//Delete file
+			if(file_exists($file_target)){
+				if(!unlink($file_target))
+					return FALSE;
+			}
+			
+			//Unlink reference file
+			return unlink($refFile);
+
+		}
+
+		//Nothing to be done
+		else
+			return TRUE;
+
+	}
+
+	/**
+	 * Get the path to the file containing the path to the background image
+	 * 
+	 * @param int $userID Target user ID
+	 * @return string The path to the file
+	 */
+	private function getPathMetadata(int $userID) : string {
+		return $this->files_path."adresse_imgfond/".$userID.".txt";
+	}
 }
 
 //Register class
