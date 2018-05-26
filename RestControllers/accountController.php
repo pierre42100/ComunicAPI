@@ -176,6 +176,27 @@ class accountController {
 	}
 
 	/**
+	 * Check the validity of a reset account token
+	 * 
+	 * @url POST /account/check_password_reset_token
+	 */
+	public function checkResetAccountToken(){
+
+		//Get the token
+		$token = postString("token", 10);
+		
+		//Validate the tokens
+		$userID = components()->account->getUserIDfromResetToken($token);
+
+		//Check if the user ID is valid
+		if($userID < 1)
+			Rest_fatal_error(401, "Invalid token!");
+		
+		//The token is valid
+		return array("success" => "The token is valid.");
+	}
+
+	/**
 	 * Create an account
 	 * 
 	 * @url POST /account/create

@@ -311,6 +311,32 @@ class AccountComponent {
 	}
 
 	/**
+	 * Associate password reset token with user ID
+	 * 
+	 * @param string $token The token to associate
+	 * @return int The ID of the user / -1 in case of failure
+	 */
+	public function getUserIDfromResetToken(string $token) : int {
+
+		//Prepare database query
+		$conditions = "WHERE password_reset_token = ? AND password_reset_token_time_create > ?";
+		$values = array(
+			$token,
+			time()-60*60*24 //Maximum validity : 24 hours
+		);
+
+		//Query the database
+		$results = cs()->db->select(self::USER_TABLE, $conditions, $values);
+
+		//Check if there is not any result
+		if(count($results) == 0)
+			return -1;
+		
+		//Return first result user ID
+		return $results[0]["ID"];
+	}
+
+	/**
 	 * Crypt user password
 	 *
 	 * @param string $userPassword The password to crypt
