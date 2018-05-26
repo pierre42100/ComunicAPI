@@ -182,18 +182,30 @@ class accountController {
 	 */
 	public function checkResetAccountToken(){
 
-		//Get the token
-		$token = postString("token", 10);
-		
-		//Validate the tokens
-		$userID = components()->account->getUserIDfromResetToken($token);
-
-		//Check if the user ID is valid
-		if($userID < 1)
-			Rest_fatal_error(401, "Invalid token!");
+		//Get user ID
+		$userID = $this->getUserIDFromPasswordResetToken("token");
 		
 		//The token is valid
 		return array("success" => "The token is valid.");
+	}
+
+	/**
+	 * Reset user password using reset token
+	 * 
+	 * @url POST /account/reset_user_passwd 
+	 */
+	public function resetPasswordUsingToken(){
+
+		//Get user ID
+		$userID = $this->getUserIDFromPasswordResetToken("token");
+
+		//Save new password
+		$newPassword = postString("password");
+		if(!components()->account->set_new_user_password($userID, $newPassword))
+			Rest_fatal_error(500, "Could not update user password!");
+
+		//Success
+		return array("success" => "Your password has been updated!");
 	}
 
 	/**
@@ -359,6 +371,28 @@ class accountController {
 		if($userID < 1)
 			Rest_fatal_error(500, "Could link the email address to an account!");
 		
+		return $userID;
+
+	}
+
+	/**
+	 * Get the ID of a user from a password reset token
+	 * 
+	 * @param string $name The name of the post field containing token
+	 * @return int Associated user ID
+	 */
+	private function getUserIDFromPasswordResetToken(string $name) : int {
+
+		//Get the token
+		$token = postString($name, 10);
+		
+		//Validate the tokens
+		$userID = components()->account->getUserIDfromResetToken($token);
+
+		//Check if the user ID is valid
+		if($userID < 1)
+			Rest_fatal_error(401, "Invalid token!");
+
 		return $userID;
 
 	}
