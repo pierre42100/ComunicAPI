@@ -484,7 +484,7 @@ CREATE TABLE `utilisateurs` (
   `allow_multilogin` int(11) NOT NULL DEFAULT '0',
   `allow_piwik` int(11) NOT NULL DEFAULT '1',
   `public_note` varchar(255) DEFAULT NULL,
-  `pasword_reset_token` varchar(255) DEFAULT NULL,
+  `password_reset_token` varchar(255) DEFAULT NULL,
   `password_reset_token_time_create` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

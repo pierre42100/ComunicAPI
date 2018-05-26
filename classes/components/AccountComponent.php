@@ -302,7 +302,7 @@ class AccountComponent {
 		
 		//Prepare database update
 		$modifs = array(
-			"pasword_reset_token" => $token,
+			"password_reset_token" => $token,
 			"password_reset_token_time_create" => time()
 		);
 
