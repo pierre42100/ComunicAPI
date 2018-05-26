@@ -292,6 +292,25 @@ class AccountComponent {
 	}
 
 	/**
+	 * Set new password reset token for an account
+	 * 
+	 * @param int $userID Target user ID
+	 * @param string $token The new token to apply
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function set_new_password_reset_token(int $userID, string $token) : bool {
+		
+		//Prepare database update
+		$modifs = array(
+			"pasword_reset_token" => $token,
+			"password_reset_token_time_create" => time()
+		);
+
+		//Apply update
+		return cs()->db->updateDB(self::USER_TABLE, "ID = ?", $modifs, array($userID));
+	}
+
+	/**
 	 * Crypt user password
 	 *
 	 * @param string $userPassword The password to crypt

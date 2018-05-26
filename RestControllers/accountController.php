@@ -128,6 +128,54 @@ class accountController {
 	}
 
 	/**
+	 * Check the security answers given by a user in order to reset its 
+	 * password
+	 * 
+	 * @url POST /account/check_security_answers
+	 */
+	public function checkSecurityAnswers(){
+
+		//Get account ID
+		$userID = $this->getUserIDFromPostEmail("email");
+
+		//Check if user has defined security questions
+		if(!components()->settings->has_security_questions($userID))
+			Rest_fatal_error(401, "Specified user has not set up security questions!");
+
+		//Get the security settings of the user
+		$settings = components()->settings->get_security($userID);
+
+		//Check for errors
+		if(!$settings->isValid())
+			Rest_fatal_error(500, "An error occurred while retrieving security settings of the user!");
+
+		//Get the list of security answers
+		$answersString = postString("answers", 3);
+
+		//Get answers
+		$answers = explode("&", $answersString);
+
+		//Check the number of given answers
+		if(count($answers) != 2)
+			Rest_fatal_error(401, "Please specify 2 security answers!");
+			
+		//Check the security answers
+		if(strtolower(urldecode($answers[0])) != strtolower($settings->get_security_answer_1()) || 
+			strtolower(urldecode($answers[1])) != strtolower($settings->get_security_answer_2()))
+			Rest_fatal_error(401, "Specified security answers are invalid!");
+		
+		//If we get there, security anwsers are valid
+		$token = random_str(255);
+		if(!components()->account->set_new_password_reset_token($userID, $token))
+			Rest_fatal_error(500, "Could not set a password reset token for the account!");
+		
+		//Return result
+		return array(
+			"reset_token" => $token
+		);
+	}
+
+	/**
 	 * Create an account
 	 * 
 	 * @url POST /account/create
