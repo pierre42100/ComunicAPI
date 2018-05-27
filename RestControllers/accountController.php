@@ -275,6 +275,53 @@ class accountController {
 		$data = components()->account->export(userID);
 
 		//Process data set
+
+
+		//Find the users to fetch information about too
+		$users = array();
+		$add_user_id = function(int $userID, array &$list){
+			if(!in_array($userID, $list))
+				$list[] = $userID;
+		};
+		
+		//Friends
+		foreach($data["friends_list"] as $friend)
+			$add_user_id($friend->getFriendID(), $users);
+		
+		//Posts
+		foreach($data["posts"] as $num => $post){
+			$add_user_id($post->get_userID(), $users);
+
+			//Process post comments
+			if($post->has_comments()){
+				foreach($post->get_comments() as $comment)
+					$add_user_id($comment->get_userID(), $users);
+			}
+		}
+			
+		//Comments
+		foreach($data["comments"] as $num => $comment)
+			$add_user_id($comment->get_userID(), $users);
+		
+		//Conversation members
+		foreach($data["conversations_list"] as $num => $conversation){
+			foreach($conversation->get_members() as $member)
+				$add_user_id($member, $users);
+		}
+
+		//Conversation messages
+		foreach($data["conversations_messages"] as $num => $conversation){
+			foreach($conversation as $message)
+				$add_user_id($message->get_userID(), $users);
+		}
+
+		//Fetch information about related users
+		$data["users_info"] = components()->user->getMultipleUserInfos($users);
+
+
+
+
+		//Prepare API return
 		//Advanced user information
 		$data["advanced_info"] = userController::advancedUserToAPI($data["advanced_info"]);
 
@@ -316,6 +363,10 @@ class accountController {
 		foreach($data["friends_list"] as $num => $friend)
 			$data["friends_list"][$num] = friendsController::parseFriendAPI($friend);
 
+		//Users information
+		foreach($data["users_info"] as $num => $user)
+			$data["users_info"][$num] = userController::userToAPI($user);
+		
 		return $data;
 	
 	}
