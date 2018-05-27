@@ -204,6 +204,9 @@ class accountController {
 		if(!components()->account->set_new_user_password($userID, $newPassword))
 			Rest_fatal_error(500, "Could not update user password!");
 
+		//Cancel password reset token of the password
+		components()->account->remove_password_reset_token($userID);
+
 		//Success
 		return array("success" => "Your password has been updated!");
 	}

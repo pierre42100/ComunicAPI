@@ -311,6 +311,24 @@ class AccountComponent {
 	}
 
 	/**
+	 * Delete the password reset token for an account
+	 * 
+	 * @param int $userID Target user ID
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function remove_password_reset_token(int $userID) : bool {
+		
+		//Prepare database update
+		$modifs = array(
+			"password_reset_token" => "",
+			"password_reset_token_time_create" => 84 //Too low value to be valid
+		);
+
+		//Apply update
+		return cs()->db->updateDB(self::USER_TABLE, "ID = ?", $modifs, array($userID));
+	}
+
+	/**
 	 * Associate password reset token with user ID
 	 * 
 	 * @param string $token The token to associate
