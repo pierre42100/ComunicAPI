@@ -629,6 +629,27 @@ class Conversations {
 	}
 
 	/**
+	 * Get all the messages of a conversation
+	 *
+	 * @param int $conversationID The ID of the target conversation
+	 * @return array The list of messages
+	 */
+	public function getAllMessages(int $conversationID) : array {
+
+		//Define conditions
+		$conditions = "WHERE ID_".$this->conversationsListTable." = ? ORDER BY ID";
+		$condVals = array(
+			$conversationID
+		);
+
+		//Perform request
+		$messages = $this->getMessages($conditions, $condVals);
+
+		//Return messages
+		return $messages;
+	}
+
+	/**
 	 * Check whether a conversation exists or not
 	 * 
 	 * @param int $convID The ID of the conversation to check
