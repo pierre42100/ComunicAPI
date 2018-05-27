@@ -130,6 +130,18 @@ CREATE TABLE `comunic_conversations_users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+DROP TABLE IF EXISTS `comunic_mails_queue`;
+CREATE TABLE `comunic_mails_queue` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `priority` int(11) DEFAULT NULL,
+  `time_insert` int(11) DEFAULT NULL,
+  `userID` int(11) DEFAULT NULL,
+  `template` varchar(45) DEFAULT NULL,
+  `data` json DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 DROP TABLE IF EXISTS `comunic_notifications`;
 CREATE TABLE `comunic_notifications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
