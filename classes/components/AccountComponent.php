@@ -393,10 +393,19 @@ class AccountComponent {
 		$data["movies"] = components()->movies->get_list($userID);
 
 		//Conversation messages
-		$data["conversation_messages"] = components()->conversations->getAllUserMessages($userID);
+		$data["all_conversation_messages"] = components()->conversations->getAllUserMessages($userID);
 
 		//Conversations list
 		$data["conversations_list"] = components()->conversations->getList($userID);
+
+		//Conversation messages
+		$data["conversations_messages"] = array();
+		foreach($data["conversations_list"] as $conversation)
+
+			//Get all the messages of the conversation
+			$data["conversations_messages"][$conversation->get_ID()] = 
+				components()->conversations->getAllMessages($conversation->get_ID());
+		
 
 		//Friend list
 		$data["friends_list"] = components()->friends->getList($userID);

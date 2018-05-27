@@ -298,14 +298,20 @@ class accountController {
 		foreach($data["movies"] as $num => $movie)
 			$data["movies"][$num] = MoviesController::MovieToAPI($movie);
 
-		//Conversations messages
-		foreach($data["conversation_messages"] as $num => $message)
-			$data["conversation_messages"][$num] = ConversationsController::ConvMessageToAPI($message);
+		//All conversations messages from user
+		foreach($data["all_conversation_messages"] as $num => $message)
+			$data["all_conversation_messages"][$num] = ConversationsController::ConvMessageToAPI($message);
 
 		//Conversations list
 		foreach($data["conversations_list"] as $num => $conversation)
 			$data["conversations_list"][$num] = ConversationsController::ConvInfoToAPI($conversation);
 		
+		//Conversation messages
+		foreach($data["conversations_messages"] as $convID=>$messages){
+			foreach($messages as $num=>$message)
+				$data["conversations_messages"][$convID][$num] = ConversationsController::ConvMessageToAPI($message); 
+		}
+
 		//Friends list
 		foreach($data["friends_list"] as $num => $friend)
 			$data["friends_list"][$num] = friendsController::parseFriendAPI($friend);
