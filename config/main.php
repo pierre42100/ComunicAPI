@@ -33,8 +33,8 @@ $config->set("storage_path", "/home/pierre/Documents/projets_web/comunic/current
 $config->set("mysql", array(
     "host" => "localhost",
     "database" => "comunic", 
-    "user" => "root", 
-    "password" => "root"
+    "user" => "pierre", 
+    "password" => "pierre"
 ));
 
 /**
