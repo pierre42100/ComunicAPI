@@ -139,7 +139,7 @@ function postEmail(string $name) : string {
  * @return int $output The output (safe integer)
  */
 function toInt($input) : int{
-	return floor($input*1);
+	return (int) $input;
 }
 
 /**
