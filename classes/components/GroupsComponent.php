@@ -107,6 +107,48 @@ class GroupsComponent {
     }
 
     /**
+     * Check whether a user has already a saved membership in a group or not
+     * 
+     * @param int $userID The ID of the target user
+     * @param int $groupID The ID of the target group
+     * @return bool TRUE if the database includes a membership for the user / FALSE else
+     */
+    private function hasMembership(int $userID, int $groupID) : bool {
+        return db()->count(
+            self::GROUPS_MEMBERS_TABLE,
+            "WHERE groups_id = ? AND user_id = ?", 
+            array($groupID, $userID)) > 0;
+    }
+
+    /**
+     * Get the membership level of a user to a group
+     * 
+     * @param int $userID The ID of the queried user
+     * @param int $groupID The ID of the target group
+     * @return int The membership level of the user
+     */
+    public function getMembershipLevel(int $userID, int $groupID) : int {
+
+        //Check for membership
+        if(!$this->hasMembership($userID, $groupID))
+            return GroupMember::VISITOR;
+        
+        //Fetch the database to get membership
+        $results = db()->select(
+            self::GROUPS_MEMBERS_TABLE,
+            "WHERE groups_id = ? AND user_id = ?",
+            array($groupID, $userID),
+            array("level")
+        );
+
+        //Check for results
+        if(count($results) < 0)
+            return GroupMember::VISITOR; //Security first
+        
+        return $results[0]["level"];
+    }
+
+    /**
      * Count the number of members of a group
      * 
      * @param int $id The ID of the target group
@@ -133,6 +175,7 @@ class GroupsComponent {
         $info->set_id($data["id"]);
         $info->set_name($data["name"]);
         $info->set_number_members($this->countMembers($info->get_id()));
+        $info->set_membership_level($this->getMembershipLevel(userID, $info->get_id()));
 
         return $info;
 

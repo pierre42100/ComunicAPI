@@ -8,6 +8,17 @@
 class GroupsController {
 	
 	/**
+	 * API groups membership levels
+	 */
+	const GROUPS_MEMBERSHIP_LEVELS = array(
+		0 => "administrator",
+		1 => "moderator",
+		2 => "member",
+		3 => "pending",
+		4 => "visitor"
+	);
+
+	/**
 	 * Create a group
 	 * 
 	 * @url POST /groups/create
@@ -95,6 +106,7 @@ class GroupsController {
 		$data["name"] = $info->get_name();
 		$data["icon_url"] = $info->get_icon_url();
 		$data["number_members"] = $info->get_number_members();
+		$data["membership"] = self::GROUPS_MEMBERSHIP_LEVELS[$info->get_membership_level()];
 
 		return $data;
 	}

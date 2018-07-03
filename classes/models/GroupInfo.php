@@ -14,6 +14,7 @@ class GroupInfo extends BaseUniqueObject {
     private $name;
     private $number_members = -1;
 	private $icon;
+	private $membership_level = -1;
     
     
     //Get and set the name of group
@@ -57,5 +58,18 @@ class GroupInfo extends BaseUniqueObject {
 	
 	public function get_icon_url() : string {
 		return path_user_data($this->get_icon());
-    }
+	}
+	
+	//Get and set the membership level of the current user
+	public function set_membership_level(int $membership_level){
+		$this->membership_level = $membership_level;
+	}
+
+	public function has_membership_level() : bool {
+		return $this->membership_level > -1;
+	}
+
+	public function get_membership_level() : int {
+		return $this->membership_level;
+	}
 }
