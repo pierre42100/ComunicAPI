@@ -93,6 +93,7 @@ class GroupsController {
 
 		$data["id"] = $info->get_id();
 		$data["name"] = $info->get_name();
+		$data["icon_url"] = $info->get_icon_url();
 		$data["number_members"] = $info->get_number_members();
 
 		return $data;

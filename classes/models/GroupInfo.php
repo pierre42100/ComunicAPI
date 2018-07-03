@@ -7,10 +7,13 @@
 
 class GroupInfo extends BaseUniqueObject {
 
+	//Path to group icons in user data
+	const PATH_GROUPS_ICON = "groups_icon/";
+
     //Private fields
     private $name;
     private $number_members = -1;
-
+	private $icon;
     
     
     //Get and set the name of group
@@ -37,5 +40,22 @@ class GroupInfo extends BaseUniqueObject {
 
 	public function get_number_members() : int {
 		return $this->number_members;
+	}
+	
+	//Get and set the URL of the icon of group
+    public function set_icon(string $icon){
+		$this->icon = $icon == "" ? null : $icon;
+	}
+
+	public function has_icon() : bool {
+		return $this->icon != null;
+	}
+
+	public function get_icon() : string {
+		return $this->icon != null ? $this->icon : self::PATH_GROUPS_ICON."default.png";
+	}
+	
+	public function get_icon_url() : string {
+		return path_user_data($this->get_icon());
     }
 }
