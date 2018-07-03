@@ -52,6 +52,46 @@ class GroupsComponent {
     }
 
     /**
+     * Get and return information about a group
+     * 
+     * @param int $id The ID of the target group
+     * @return GroupInfo Information about the group / invalid
+     * object in case of failure
+     */
+    public function get_info(int $id) : GroupInfo {
+
+        //Query the database
+        $info = db()->select(self::GROUPS_LIST_TABLE, "WHERE id = ?", array($id));
+
+        //Check for results
+        if(count($info) == 0)
+            return new GroupInfo(); //Return invalid object
+        
+        //Create and fill GroupInfo object with database entry
+        return $this->dbToGroupInfo($info[0]);
+    }
+
+    /**
+     * Get and return advanced information about a group
+     * 
+     * @param int $id The ID of the target group
+     * @return GroupInfo Information about the group / invalid
+     * object in case of failure
+     */
+    public function get_advanced_info(int $id) : AdvancedGroupInfo {
+
+        //Query the database
+        $info = db()->select(self::GROUPS_LIST_TABLE, "WHERE id = ?", array($id));
+
+        //Check for results
+        if(count($info) == 0)
+            return new AdvancedGroupInfo(); //Return invalid object
+        
+        //Create and fill GroupInfo object with database entry
+        return $this->dbToAdvancedGroupInfo($info[0]);
+    }
+
+    /**
      * Insert a new group member
      * 
      * @param GroupMember $member Information about the member to insert
@@ -66,6 +106,56 @@ class GroupsComponent {
         ));
     }
 
+    /**
+     * Count the number of members of a group
+     * 
+     * @param int $id The ID of the target group
+     * @return int The number of members of the group
+     */
+    private function countMembers(int $id) : int {
+        return db()->count(self::GROUPS_MEMBERS_TABLE, 
+            "WHERE groups_id = ?",
+            array($id));
+    }
+
+    /**
+     * Turn a database entry into a GroupInfo object
+     * 
+     * @param array $data Database entry
+     * @param GroupInfo $group The object to fill with the information (optionnal)
+     * @return GroupInfo Generated object
+     */
+    private function dbToGroupInfo(array $data, GroupInfo $info = null) : GroupInfo {
+
+        if($info == null)
+            $info = new GroupInfo();
+
+        $info->set_id($data["id"]);
+        $info->set_name($data["name"]);
+        $info->set_number_members($this->countMembers($info->get_id()));
+
+        return $info;
+
+    }
+
+    /**
+     * Turn a database entry into AdvancedGroupInfo object entry
+     * 
+     * @param array $data Database entry
+     * @return AdvancedGroupInfo Advanced information about the group
+     */
+    private function dbToAdvancedGroupInfo(array $data) : AdvancedGroupInfo {
+
+        //Parse basical information about the group
+        $info = new AdvancedGroupInfo();
+        $this->dbToGroupInfo($data, $info);
+
+        //Parse advanced information
+        $info->set_time_create($data["time_create"]);
+
+        return $info;
+
+    }
 }
 
 //Register component
