@@ -137,7 +137,7 @@ CREATE TABLE `comunic_mails_queue` (
   `time_insert` int(11) DEFAULT NULL,
   `userID` int(11) DEFAULT NULL,
   `template` varchar(45) DEFAULT NULL,
-  `data` json DEFAULT NULL,
+  `data` text DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
