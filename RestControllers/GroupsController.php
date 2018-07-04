@@ -172,6 +172,27 @@ class GroupsController {
 	}
 
 	/**
+	 * Delete a group logo
+	 * 
+	 * @url POST /groups/delete_logo
+	 */
+	public function deleteLogo(){
+
+		//Get the ID of the group (with admin access)
+		$groupID = $this->getPostGroupIDWithAdmin("id");
+
+		//Try to delete group logo
+		if(!components()->groups->deleteLogo($groupID))
+			Rest_fatal_error(500, "An error occurred while trying to delete group logo!");
+		
+		//Success
+		return array(
+			"success" => "The group logo has been successfully deleted!",
+			"url" => components()->groups->get_settings($groupID)->get_logo_url()
+		);
+	}
+
+	/**
 	 * Get and return a group ID specified in the POST request
 	 * in which the current user has admin rigths
 	 * 

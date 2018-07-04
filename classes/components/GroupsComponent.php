@@ -249,7 +249,7 @@ class GroupsComponent {
                     return FALSE;
             
             //Save new information
-            $settings->set_logo("");
+            $settings->set_logo("null");
             return $this->set_settings($settings);
         }
         
@@ -274,7 +274,7 @@ class GroupsComponent {
         $info->set_number_members($this->countMembers($info->get_id()));
         $info->set_membership_level($this->getMembershipLevel(userID, $info->get_id()));
 
-        if($data["path_logo"] != null && $data["path_logo"] != "")
+        if($data["path_logo"] != null && $data["path_logo"] != "" && $data["path_logo"] != "null")
             $info->set_logo($data["path_logo"]);
 
         return $info;
