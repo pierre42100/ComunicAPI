@@ -21,7 +21,21 @@ class GroupInfo extends BaseUniqueObject {
 	private $logo;
 	private $membership_level = -1;
 	private $visiblity = -1;
-    
+
+	//User access to a group
+	const NO_ACCESS = 0; //Can not even know if the group exists or not
+	const LIMITED_ACCESS = 1; //Access to the name of the group only
+	const VIEW_ACCESS = 2; //Can see the posts of the group, but not a member of the group
+	const MEMBER_ACCESS = 3; //Member access (same as view access but as member)
+	const MODERATOR_ACCESS = 4; //Can create posts, even if posts creation is restricted
+	const ADMIN_ACCESS = 5; //Can do everything
+	
+	//Membership levels
+	const ADMINISTRATOR = 0;
+	const MODERATOR = 1;
+	const MEMBER = 2;
+	const PENDING = 3;
+	const VISITOR = 4;
     
     //Get and set the name of group
     public function set_name(string $name){

@@ -570,7 +570,7 @@ function getPostUserDirectory(string $name) : string {
  * 
  * @param string $name The name of variable in the $_POST request
  * @return int The ID of the group
- * @throws RESTException If the directory is missing
+ * @throws RESTException If the value is missing
  */
 function getPostGroupId(string $name) : int {
 
@@ -583,4 +583,30 @@ function getPostGroupId(string $name) : int {
 	
 	//Return the ID of the group
 	return $id;
+}
+
+/**
+ * Get a POST group ID with a check for the minimal access requested
+ * 
+ * @param string $name The name of the post field containing group ID
+ * @param int $minAccess The minimal access required
+ * @return int The ID of the group
+ */
+function getPostGroupIdWithAccess(string $name, int $minVisibility) : int {
+	
+	//Get the ID of the group
+	$groupID = getPostGroupId($name);
+
+	//Get the access level of the current user over the group
+	$accessLevel = components()->groups->getAccessLevel($groupID, userID);
+
+	//Check if the user has no access
+	if($accessLevel == GroupInfo::NO_ACCESS)
+		Rest_fatal_error(404, "Specified group does not exists !"); //Act like if the group did not exists
+	
+	//Check access level
+	if($accessLevel < $minVisibility)
+		Rest_fatal_error(401, "You do not have enough rights to perform what you intend to do on this group!");
+
+	return $groupID;
 }

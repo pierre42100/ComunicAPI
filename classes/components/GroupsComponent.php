@@ -68,6 +68,26 @@ class GroupsComponent {
     }
 
     /**
+     * Get the visibility level of a group
+     * 
+     * @param int $id The ID of the target group
+     * @return int The visibility level of the group
+     */
+    public function getVisiblity(int $id) : int {
+        $data = db()->select(
+            self::GROUPS_LIST_TABLE,
+            "WHERE id = ?",
+            array($id),
+            array("visibility")
+        );
+
+        if(count($data) < 1)
+            throw new Exception("Group " + $id + " does not exists!");
+        
+        return $data[0]["visibility"];
+    }
+
+    /**
      * Get and return information about a group
      * 
      * @param int $id The ID of the target group
@@ -210,11 +230,38 @@ class GroupsComponent {
      * or not
      * 
      * @param int $userID Requested user ID to check
+     * @param int $groupID Requested group to check
      * @return bool TRUE if the user is an admin / FALSE else
      */
-    public function isAdmin(int $userID, int $groupID){
+    public function isAdmin(int $userID, int $groupID) : bool {
         return $this->getMembershipLevel($userID, $groupID)
              == GroupMember::ADMINISTRATOR;
+    }
+
+    /**
+     * Check whether a group is open or not
+     * 
+     * @param int $groupID The ID of the target group
+     * @return bool TRUE if the group is open / FALSE else
+     */
+    public function isOpen(int $groupID) : bool {
+        return db()->count(
+            self::GROUPS_LIST_TABLE,
+            "WHERE id = ? AND visibility = ?",
+            array($groupID, GroupInfo::OPEN_GROUP)) > 0;
+    }
+
+    /**
+     * Check whether a group is secret or not
+     * 
+     * @param int $groupID The ID of the target group
+     * @return bool TRUE if the group is open / FALSE else
+     */
+    public function isSecret(int $groupID) : bool {
+        return db()->count(
+            self::GROUPS_LIST_TABLE,
+            "WHERE id = ? AND visibility = ?",
+            array($groupID, GroupInfo::SECRET_GROUP)) > 0;
     }
 
     /**
@@ -227,6 +274,49 @@ class GroupsComponent {
         return db()->count(self::GROUPS_MEMBERS_TABLE, 
             "WHERE groups_id = ?",
             array($id));
+    }
+
+    /**
+     * Get and return the access level of a user over a group
+     * 
+     * @param int $groupID The ID of the target group
+     * @param int $userID The ID of the user
+     * @return int The visiblity access level of the user
+     */
+    public function getAccessLevel(int $groupID, int $userID) : int {
+
+        if($userID > 0)
+            //Get the membership level of the user
+            $membership_level = $this->getMembershipLevel($userID, $groupID);
+        
+        else
+            $membership_level = GroupInfo::VISITOR; //Signed out users are all visitors
+
+        //Check if the user is a confirmed member of group
+        if($membership_level == GroupInfo::ADMINISTRATOR)
+            return GroupInfo::ADMIN_ACCESS;
+        if($membership_level == GroupInfo::MODERATOR)
+            return GroupInfo::MODERATOR_ACCESS;
+        if($membership_level == GroupInfo::MEMBER)
+            return GroupInfo::MEMBER_ACCESS;
+        
+        //Get the visibility level of the group
+        $group_visibility_level = $this->getVisiblity($groupID);
+
+        //If the group is open, everyone has view access
+        if($group_visibility_level == GroupInfo::OPEN_GROUP)
+            return GroupInfo::VIEW_ACCESS;
+
+        //Else, all pending membership gives limited access
+        if($membership_level == GroupInfo::PENDING)
+            return GroupInfo::LIMITED_ACCESS;
+
+        //Private groups gives limited access
+        if($group_visibility_level == GroupInfo::PRIVATE_GROUP)
+            return GroupInfo::LIMITED_ACCESS;
+        
+        //Else the user can not see the group
+        return GroupInfo::NO_ACCESS;
     }
 
     /**

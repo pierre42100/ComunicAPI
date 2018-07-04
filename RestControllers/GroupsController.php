@@ -11,11 +11,11 @@ class GroupsController {
 	 * API groups membership levels
 	 */
 	const GROUPS_MEMBERSHIP_LEVELS = array(
-		0 => "administrator",
-		1 => "moderator",
-		2 => "member",
-		3 => "pending",
-		4 => "visitor"
+		GroupInfo::ADMINISTRATOR => "administrator",
+		GroupInfo::MODERATOR => "moderator",
+		GroupInfo::MEMBER => "member",
+		GroupInfo::PENDING => "pending",
+		GroupInfo::VISITOR => "visitor"
 	);
 
 	/**
@@ -68,7 +68,7 @@ class GroupsController {
 	public function getInfo(){
 
 		//Get the ID of the requested group
-		$id = getPostGroupId("id");
+		$groupID = getPostGroupIdWithAccess("id", GroupInfo::LIMITED_ACCESS);
 
 		//Get information about the group
 		$group = components()->groups->get_info($id);
@@ -89,7 +89,7 @@ class GroupsController {
 	public function getAdvancedInfo(){
 
 		//Get the ID of the requested group
-		$id = getPostGroupId("id");
+		$groupID = getPostGroupIdWithAccess("id", GroupInfo::VIEW_ACCESS);
 
 		//Get information about the group
 		$group = components()->groups->get_advanced_info($id);
@@ -110,7 +110,7 @@ class GroupsController {
 	public function getSettings(){
 
 		//Get the ID of the group (with admin access)
-		$groupID = $this->getPostGroupIDWithAdmin("id");
+		$groupID = getPostGroupIdWithAccess("id", GroupInfo::ADMIN_ACCESS);
 
 		//Retrieve the settings of the group
 		$settings = components()->groups->get_settings($groupID);
@@ -131,7 +131,7 @@ class GroupsController {
 	public function setSettings(){
 
 		//Get the ID of the group (with admin access)
-		$groupID = $this->getPostGroupIDWithAdmin("id");
+		$groupID = getPostGroupIdWithAccess("id", GroupInfo::ADMIN_ACCESS);
 
 		//Create and fill a GroupSettings object with new values
 		$settings = new GroupSettings();
@@ -160,7 +160,7 @@ class GroupsController {
 	public function uploadLogo(){
 
 		//Get the ID of the group (with admin access)
-		$groupID = $this->getPostGroupIDWithAdmin("id");
+		$groupID = getPostGroupIdWithAccess("id", GroupInfo::ADMIN_ACCESS);
 
 		//Check if it is a valid file
 		if(!check_post_file("logo"))
@@ -195,7 +195,7 @@ class GroupsController {
 	public function deleteLogo(){
 
 		//Get the ID of the group (with admin access)
-		$groupID = $this->getPostGroupIDWithAdmin("id");
+		$groupID = getPostGroupIdWithAccess("id", GroupInfo::ADMIN_ACCESS);
 
 		//Try to delete group logo
 		if(!components()->groups->deleteLogo($groupID))
@@ -206,28 +206,6 @@ class GroupsController {
 			"success" => "The group logo has been successfully deleted!",
 			"url" => components()->groups->get_settings($groupID)->get_logo_url()
 		);
-	}
-
-	/**
-	 * Get and return a group ID specified in the POST request
-	 * in which the current user has admin rigths
-	 * 
-	 * @param string $name The name of the POST field
-	 * @return int The ID of the group
-	 */
-	private function getPostGroupIDWithAdmin(string $name) : int {
-
-		//User must be signed in
-		user_login_required();
-
-		//Get the ID of the group
-		$groupID = getPostGroupId($name);
-
-		//Check if the user is an admin of the group or not
-		if(!components()->groups->isAdmin(userID, $groupID))
-			Rest_fatal_error(401, "You are not an administrator of this group!");
-		
-		return $groupID;
 	}
 
 	/**
