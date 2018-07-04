@@ -71,7 +71,7 @@ class GroupsController {
 		$groupID = getPostGroupIdWithAccess("id", GroupInfo::LIMITED_ACCESS);
 
 		//Get information about the group
-		$group = components()->groups->get_info($id);
+		$group = components()->groups->get_info($groupID);
 
 		//Check if the group was not found
 		if(!$group->isValid())
@@ -92,7 +92,7 @@ class GroupsController {
 		$groupID = getPostGroupIdWithAccess("id", GroupInfo::VIEW_ACCESS);
 
 		//Get information about the group
-		$group = components()->groups->get_advanced_info($id);
+		$group = components()->groups->get_advanced_info($groupID);
 
 		//Check if the group was not found
 		if(!$group->isValid())
