@@ -115,6 +115,28 @@ class GroupsController {
 	}
 
 	/**
+	 * Set (update) the settings of a group
+	 * 
+	 * @url POST /groups/set_settings
+	 */
+	public function setSettings(){
+
+		//Get the ID of the group (with admin access)
+		$groupID = $this->getPostGroupIDWithAdmin("id");
+
+		//Create and fill a GroupSettings object with new values
+		$settings = new GroupSettings();
+		$settings->set_id($groupID);
+		$settings->set_name(postString("name", 3));
+
+		//Try to save the new settings of the group
+		if(!components()->groups->set_settings($settings))
+			Rest_fatal_error(500, "An error occured while trying to update group settings!");
+		
+		return array("success" => "Group settings have been successfully updated!");
+	}
+
+	/**
 	 * Get and return a group ID specified in the POST request
 	 * in which the current user has admin rigths
 	 * 

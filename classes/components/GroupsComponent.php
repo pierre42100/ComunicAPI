@@ -129,6 +129,26 @@ class GroupsComponent {
     }
 
     /**
+     * Set (update) group settings
+     * 
+     * @param GroupSettings $settings The settings to update
+     * @return bool TRUE for a success / FALSE
+     */
+    public function set_settings(GroupSettings $settings) : bool {
+        
+        //Generate database entry
+        $modif = $this->GroupSettingsToDB($settings);
+
+        //Apply update
+        return db()->updateDB(
+            self::GROUPS_LIST_TABLE, 
+            "id = ?",
+            $modif,
+            array($settings->get_id()));
+
+    }
+
+    /**
      * Insert a new group member
      * 
      * @param GroupMember $member Information about the member to insert
@@ -267,6 +287,20 @@ class GroupsComponent {
 
         return $info;
 
+    }
+
+    /**
+     * Turn a GroupSettings object into a database entry
+     * 
+     * @param GroupSettings $settings The object to convert
+     * @return array Generated database entry
+     */
+    private function GroupSettingsToDB(GroupSettings $settings) : array {
+        $data = array();
+
+        $data["name"] = $settings->get_name();
+
+        return $data;
     }
 }
 
