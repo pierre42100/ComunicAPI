@@ -564,3 +564,23 @@ function getPostUserDirectory(string $name) : string {
 	return $directory;
 
 }
+
+/**
+ * Get a POST group ID
+ * 
+ * @param string $name The name of variable in the $_POST request
+ * @return int The ID of the group
+ * @throws RESTException If the directory is missing
+ */
+function getPostGroupId(string $name) : int {
+
+	//Get the ID of the group
+	$id = postInt($name);
+
+	//Check if the group exists or not
+	if(!components()->groups->exists($id))
+		Rest_fatal_error(404, "Specified group does not exists !");
+	
+	//Return the ID of the group
+	return $id;
+}
