@@ -273,6 +273,7 @@ class GroupsComponent {
         $info->set_name($data["name"]);
         $info->set_number_members($this->countMembers($info->get_id()));
         $info->set_membership_level($this->getMembershipLevel(userID, $info->get_id()));
+        $info->set_visibility($data["visibility"]);
 
         if($data["path_logo"] != null && $data["path_logo"] != "" && $data["path_logo"] != "null")
             $info->set_logo($data["path_logo"]);

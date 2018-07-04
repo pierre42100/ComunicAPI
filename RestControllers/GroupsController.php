@@ -19,6 +19,15 @@ class GroupsController {
 	);
 
 	/**
+	 * API groups visibility levels
+	 */
+	const GROUPS_VISIBILITY_LEVELS = array(
+		GroupInfo::OPEN_GROUP => "open",
+		GroupInfo::PRIVATE_GROUP => "private",
+		GroupInfo::SECRET_GROUP => "secrete"
+	);
+
+	/**
 	 * Create a group
 	 * 
 	 * @url POST /groups/create
@@ -228,6 +237,7 @@ class GroupsController {
 		$data["icon_url"] = $info->get_logo_url();
 		$data["number_members"] = $info->get_number_members();
 		$data["membership"] = self::GROUPS_MEMBERSHIP_LEVELS[$info->get_membership_level()];
+		$data["visibility"] = self::GROUPS_VISIBILITY_LEVELS[$info->get_visibility()];
 
 		return $data;
 	}

@@ -10,11 +10,17 @@ class GroupInfo extends BaseUniqueObject {
 	//Path to group logo in user data
 	const PATH_GROUPS_LOGO = "groups_logo";
 
+	//Groups visibility
+	const OPEN_GROUP = 0;
+	const PRIVATE_GROUP = 1;
+	const SECRET_GROUP = 2;
+
     //Private fields
     private $name;
     private $number_members = -1;
 	private $logo;
 	private $membership_level = -1;
+	private $visiblity;
     
     
     //Get and set the name of group
@@ -82,5 +88,18 @@ class GroupInfo extends BaseUniqueObject {
 
 	public function get_membership_level() : int {
 		return $this->membership_level;
+	}
+
+	//Get and set group visibility
+    public function set_visibility(int $visibility){
+		$this->visibility = $visibility;
+	}
+
+	public function has_visibility() : bool {
+		return $this->visibility > -1;
+	}
+
+	public function get_visibility() : int {
+		return $this->visibility;
 	}
 }
