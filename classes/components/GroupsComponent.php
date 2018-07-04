@@ -52,6 +52,22 @@ class GroupsComponent {
     }
 
     /**
+     * Check whether a group exists or not
+     * 
+     * @param int $id The ID of the target group
+     * @return bool TRUE if the group exists / FALSE else
+     */
+    public function exists(int $id) : bool {
+
+        return db()->count(
+            self::GROUPS_LIST_TABLE,
+            "WHERE id = ?",
+            array($id)
+        ) > 0;
+
+    }
+
+    /**
      * Get and return information about a group
      * 
      * @param int $id The ID of the target group
