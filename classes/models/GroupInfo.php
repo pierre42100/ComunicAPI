@@ -20,7 +20,7 @@ class GroupInfo extends BaseUniqueObject {
     private $number_members = -1;
 	private $logo;
 	private $membership_level = -1;
-	private $visiblity;
+	private $visiblity = -1;
     
     
     //Get and set the name of group

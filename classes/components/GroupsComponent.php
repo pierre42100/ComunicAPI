@@ -336,6 +336,9 @@ class GroupsComponent {
         if($settings->has_logo())
             $data["path_logo"] = $settings->get_logo();
 
+        if($settings->has_visibility())
+            $data["visibility"] = $settings->get_visibility();
+
         return $data;
     }
 }

@@ -138,6 +138,13 @@ class GroupsController {
 		$settings->set_id($groupID);
 		$settings->set_name(postString("name", 3));
 
+		//Get group visibility
+		$visiblity = postString("visibility", 3);
+		$levels = array_flip(self::GROUPS_VISIBILITY_LEVELS);
+		if(!isset($levels[$visiblity]))
+			Rest_fatal_error(400, "Unrecognized group visibility level!");
+		$settings->set_visibility($levels[$visiblity]);
+
 		//Try to save the new settings of the group
 		if(!components()->groups->set_settings($settings))
 			Rest_fatal_error(500, "An error occured while trying to update group settings!");
