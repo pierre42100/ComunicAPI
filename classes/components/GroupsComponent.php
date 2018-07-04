@@ -230,6 +230,34 @@ class GroupsComponent {
     }
 
     /**
+     * Delete current group logo (if any)
+     * 
+     * @param int $id The ID of the target group
+     * @return bool TRUE if the logo was deleted / FALSE else
+     */
+    public function deleteLogo(int $id) : bool {
+
+        //Get the current settings of the group
+		$settings = $this->get_settings($id);
+
+		//Check if the group has currently an group logo or not
+		if($settings->has_logo()){
+			
+			//Delete the previous logo
+			if(file_exists($settings->get_logo_sys_path()))
+				if(!unlink($settings->get_logo_sys_path()))
+                    return FALSE;
+            
+            //Save new information
+            $settings->set_logo("");
+            return $this->set_settings($settings);
+        }
+        
+        //Success (nothing to be done)
+        return TRUE;
+    }
+
+    /**
      * Turn a database entry into a GroupInfo object
      * 
      * @param array $data Database entry
@@ -245,6 +273,9 @@ class GroupsComponent {
         $info->set_name($data["name"]);
         $info->set_number_members($this->countMembers($info->get_id()));
         $info->set_membership_level($this->getMembershipLevel(userID, $info->get_id()));
+
+        if($data["path_logo"] != null && $data["path_logo"] != "")
+            $info->set_logo($data["path_logo"]);
 
         return $info;
 
@@ -298,7 +329,11 @@ class GroupsComponent {
     private function GroupSettingsToDB(GroupSettings $settings) : array {
         $data = array();
 
-        $data["name"] = $settings->get_name();
+        if($settings->has_name())
+            $data["name"] = $settings->get_name();
+
+        if($settings->has_logo())
+            $data["path_logo"] = $settings->get_logo();
 
         return $data;
     }

@@ -7,13 +7,13 @@
 
 class GroupInfo extends BaseUniqueObject {
 
-	//Path to group icons in user data
-	const PATH_GROUPS_ICON = "groups_icon/";
+	//Path to group logo in user data
+	const PATH_GROUPS_LOGO = "groups_logo";
 
     //Private fields
     private $name;
     private $number_members = -1;
-	private $icon;
+	private $logo;
 	private $membership_level = -1;
     
     
@@ -43,21 +43,32 @@ class GroupInfo extends BaseUniqueObject {
 		return $this->number_members;
 	}
 	
-	//Get and set the URL of the icon of group
-    public function set_icon(string $icon){
-		$this->icon = $icon == "" ? null : $icon;
+	//Get and set the URL of the logo of group
+    public function set_logo(string $logo){
+		$this->logo = $logo == "" ? null : $logo;
 	}
 
-	public function has_icon() : bool {
-		return $this->icon != null;
+	public function has_logo() : bool {
+		return $this->logo != null;
 	}
 
-	public function get_icon() : string {
-		return $this->icon != null ? $this->icon : self::PATH_GROUPS_ICON."default.png";
+	public function get_logo() : string {
+		return $this->logo != null ? $this->logo : self::PATH_GROUPS_LOGO."/default.png";
 	}
 	
-	public function get_icon_url() : string {
-		return path_user_data($this->get_icon());
+	public function get_logo_url() : string {
+		return path_user_data($this->get_logo());
+	}
+
+	public function get_logo_sys_path() : string {
+
+		//For security reasons, this method is available 
+		//only if the user has really a logo (avoid unattended
+		//operation on default logo)
+		if(!$this->has_logo())
+			throw new Exception("This GroupInfo object has not any logo set!");
+
+		return path_user_data($this->get_logo(), true);
 	}
 	
 	//Get and set the membership level of the current user

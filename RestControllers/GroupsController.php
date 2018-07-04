@@ -137,6 +137,41 @@ class GroupsController {
 	}
 
 	/**
+	 * Change (update) the logo of the group
+	 * 
+	 * @url POST /groups/upload_logo
+	 */
+	public function uploadLogo(){
+
+		//Get the ID of the group (with admin access)
+		$groupID = $this->getPostGroupIDWithAdmin("id");
+
+		//Check if it is a valid file
+		if(!check_post_file("logo"))
+			Rest_fatal_error(400, "An error occurred while receiving logo !");
+		
+		//Delete any previous logo
+		if(!components()->groups->deleteLogo($groupID))
+			Rest_fatal_error(500, "An error occurred while trying to delete previous group logo!");
+		
+		//Save the new group logo
+		$file_path = save_post_image("logo", 0, GroupInfo::PATH_GROUPS_LOGO, 500, 500);
+
+		//Update the settings of the group
+		$settings = components()->groups->get_settings($groupID);
+		$settings->set_logo($file_path);
+		
+		if(!components()->groups->set_settings($settings))
+			Rest_fatal_error(500, "Could not save information about new group logo!");
+		
+		//Success
+		return array(
+			"success" => "The new group logo has been successfully saved !",
+			"url" => $settings->get_logo_url()
+		);
+	}
+
+	/**
 	 * Get and return a group ID specified in the POST request
 	 * in which the current user has admin rigths
 	 * 
@@ -169,7 +204,7 @@ class GroupsController {
 
 		$data["id"] = $info->get_id();
 		$data["name"] = $info->get_name();
-		$data["icon_url"] = $info->get_icon_url();
+		$data["icon_url"] = $info->get_logo_url();
 		$data["number_members"] = $info->get_number_members();
 		$data["membership"] = self::GROUPS_MEMBERSHIP_LEVELS[$info->get_membership_level()];
 
