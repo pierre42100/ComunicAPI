@@ -34,8 +34,9 @@ class GroupInfo extends BaseUniqueObject {
 	const ADMINISTRATOR = 0;
 	const MODERATOR = 1;
 	const MEMBER = 2;
-	const PENDING = 3;
-	const VISITOR = 4;
+	const INVITED = 3;
+	const PENDING = 4;
+	const VISITOR = 5;
     
     //Get and set the name of group
     public function set_name(string $name){

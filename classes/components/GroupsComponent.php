@@ -307,8 +307,9 @@ class GroupsComponent {
         if($group_visibility_level == GroupInfo::OPEN_GROUP)
             return GroupInfo::VIEW_ACCESS;
 
-        //Else, all pending membership gives limited access
-        if($membership_level == GroupInfo::PENDING)
+        //Else, all pending and invited membership get limited access
+        if($membership_level == GroupInfo::PENDING ||
+            $membership_level == GroupInfo::INVITED)
             return GroupInfo::LIMITED_ACCESS;
 
         //Private groups gives limited access

@@ -14,6 +14,7 @@ class GroupsController {
 		GroupInfo::ADMINISTRATOR => "administrator",
 		GroupInfo::MODERATOR => "moderator",
 		GroupInfo::MEMBER => "member",
+		GroupInfo::INVITED => "invited",
 		GroupInfo::PENDING => "pending",
 		GroupInfo::VISITOR => "visitor"
 	);
