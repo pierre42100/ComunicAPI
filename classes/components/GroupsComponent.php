@@ -108,6 +108,27 @@ class GroupsComponent {
     }
 
     /**
+     * Get a group settings
+     * 
+     * @param int $id The ID of the target group
+     * @return GroupSettings The settings of the group / invalid
+     * GroupSettings object in case of failure
+     */
+    public function get_settings(int $id) : GroupSettings {
+
+        //Query the database
+        $info = db()->select(self::GROUPS_LIST_TABLE, "WHERE id = ?", array($id));
+
+        //Check for results
+        if(count($info) == 0)
+            return new GroupSettings(); //Return invalid object
+        
+        //Create and fill GroupInfo object with database entry
+        return $this->dbToGroupSettings($info[0]);
+
+    }
+
+    /**
      * Insert a new group member
      * 
      * @param GroupMember $member Information about the member to insert
@@ -165,6 +186,18 @@ class GroupsComponent {
     }
 
     /**
+     * Check whether a user is an administrator of a group
+     * or not
+     * 
+     * @param int $userID Requested user ID to check
+     * @return bool TRUE if the user is an admin / FALSE else
+     */
+    public function isAdmin(int $userID, int $groupID){
+        return $this->getMembershipLevel($userID, $groupID)
+             == GroupMember::ADMINISTRATOR;
+    }
+
+    /**
      * Count the number of members of a group
      * 
      * @param int $id The ID of the target group
@@ -198,19 +231,39 @@ class GroupsComponent {
     }
 
     /**
-     * Turn a database entry into AdvancedGroupInfo object entry
+     * Turn a database group entry into AdvancedGroupInfo object entry
      * 
      * @param array $data Database entry
+     * @param AdvancedGroupInfo $info Optionnal, fill an existing object
+     * instead of creating a new one
      * @return AdvancedGroupInfo Advanced information about the group
      */
-    private function dbToAdvancedGroupInfo(array $data) : AdvancedGroupInfo {
+    private function dbToAdvancedGroupInfo(array $data, AdvancedGroupInfo $info = null) : AdvancedGroupInfo {
+
+        if($info == null)
+            $info = new AdvancedGroupInfo();
 
         //Parse basical information about the group
-        $info = new AdvancedGroupInfo();
         $this->dbToGroupInfo($data, $info);
 
         //Parse advanced information
         $info->set_time_create($data["time_create"]);
+
+        return $info;
+
+    }
+
+    /**
+     * Turn a database group entry into GroupSettings object
+     * 
+     * @param array $data Database entry
+     * @return GroupSettings The settings of the group
+     */
+    private function dbToGroupSettings(array $data) : GroupSettings {
+
+        //Parse advanced settings about the group
+        $info = new GroupSettings();
+        $this->dbToAdvancedGroupInfo($data, $info);
 
         return $info;
 

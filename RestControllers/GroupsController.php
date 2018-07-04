@@ -59,7 +59,7 @@ class GroupsController {
 	public function getInfo(){
 
 		//Get the ID of the requested group
-		$id = postInt("id");
+		$id = getPostGroupId("id");
 
 		//Get information about the group
 		$group = components()->groups->get_info($id);
@@ -80,7 +80,7 @@ class GroupsController {
 	public function getAdvancedInfo(){
 
 		//Get the ID of the requested group
-		$id = postInt("id");
+		$id = getPostGroupId("id");
 
 		//Get information about the group
 		$group = components()->groups->get_advanced_info($id);
@@ -91,6 +91,49 @@ class GroupsController {
 		
 		//Parse and return information about the group
 		return self::AdvancedGroupInfoToAPI($group);
+	}
+
+	/**
+	 * Get the settings of a group
+	 * 
+	 * @url POST /groups/get_settings
+	 */
+	public function getSettings(){
+
+		//Get the ID of the group (with admin access)
+		$groupID = $this->getPostGroupIDWithAdmin("id");
+
+		//Retrieve the settings of the group
+		$settings = components()->groups->get_settings($groupID);
+
+		//Check for error
+		if(!$settings->isValid())
+			Rest_fatal_error(500, "Could not get the settings of the group!");
+		
+		//Return parsed settings
+		return self::GroupSettingsToAPI($settings);
+	}
+
+	/**
+	 * Get and return a group ID specified in the POST request
+	 * in which the current user has admin rigths
+	 * 
+	 * @param string $name The name of the POST field
+	 * @return int The ID of the group
+	 */
+	private function getPostGroupIDWithAdmin(string $name) : int {
+
+		//User must be signed in
+		user_login_required();
+
+		//Get the ID of the group
+		$groupID = getPostGroupId($name);
+
+		//Check if the user is an admin of the group or not
+		if(!components()->groups->isAdmin(userID, $groupID))
+			Rest_fatal_error(401, "You are not an administrator of this group!");
+		
+		return $groupID;
 	}
 
 	/**
@@ -121,6 +164,18 @@ class GroupsController {
 		$data = self::GroupInfoToAPI($info);
 
 		$data["time_create"] = $info->get_time_create();
+
+		return $data;
+	}
+
+	/**
+	 * Parse a GroupSettings object into an array for the API
+	 * 
+	 * @param GroupSettings $settings The settings to parse
+	 * @return array Generated array
+	 */
+	public static function GroupSettingsToAPI(GroupSettings $info) : array {
+		$data = self::AdvancedGroupInfoToAPI($info);
 
 		return $data;
 	}
