@@ -155,6 +155,13 @@ class GroupsController {
 			Rest_fatal_error(400, "Unrecognized group visibility level!");
 		$settings->set_visibility($levels[$visiblity]);
 
+		//Get group registration level
+		$registration_level = postString("registration_level", 3);
+		$levels = array_flip(self::GROUPS_REGISTRATION_LEVELS);
+		if(!isset($levels[$registration_level]))
+			Reset_fatal_error(400, "Unrecognized group registration level!");
+		$settings->set_registration_level($levels[$registration_level]);
+
 		//Try to save the new settings of the group
 		if(!components()->groups->set_settings($settings))
 			Rest_fatal_error(500, "An error occured while trying to update group settings!");

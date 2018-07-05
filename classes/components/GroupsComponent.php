@@ -430,6 +430,9 @@ class GroupsComponent {
 
         if($settings->has_visibility())
             $data["visibility"] = $settings->get_visibility();
+        
+        if($settings->has_registration_level())
+            $data["registration_level"] = $settings->get_registration_level();
 
         return $data;
     }
