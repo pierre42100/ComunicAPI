@@ -15,12 +15,10 @@ class GroupInfo extends BaseUniqueObject {
 	const PRIVATE_GROUP = 1;
 	const SECRET_GROUP = 2;
 
-    //Private fields
-    private $name;
-    private $number_members = -1;
-	private $logo;
-	private $membership_level = -1;
-	private $visiblity = -1;
+	//Registration levels
+	const OPEN_REGISTRATION = 0;
+	const MODERATED_REGISTRATION = 1;
+	const CLOSED_REGISTRATION = 2;
 
 	//User access to a group
 	const NO_ACCESS = 0; //Can not even know if the group exists or not
@@ -37,6 +35,14 @@ class GroupInfo extends BaseUniqueObject {
 	const INVITED = 3;
 	const PENDING = 4;
 	const VISITOR = 5;
+
+	//Private fields
+    private $name;
+    private $number_members = -1;
+	private $logo;
+	private $membership_level = -1;
+	private $visiblity = -1;
+	private $registration_level = -1;
     
     //Get and set the name of group
     public function set_name(string $name){
@@ -116,5 +122,18 @@ class GroupInfo extends BaseUniqueObject {
 
 	public function get_visibility() : int {
 		return $this->visibility;
+	}
+
+	//Get and set registration levels
+    public function set_registration_level(int $registration_level){
+		$this->registration_level = $registration_level;
+	}
+
+	public function has_registration_level() : bool {
+		return $this->registration_level > -1;
+	}
+
+	public function get_registration_level() : int {
+		return $this->registration_level;
 	}
 }
