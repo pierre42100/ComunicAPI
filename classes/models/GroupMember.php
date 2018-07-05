@@ -13,8 +13,9 @@ class GroupMember extends BaseUniqueObjectFromUser {
     const ADMINISTRATOR = 0;
     const MODERATOR = 1;
 	const MEMBER = 2;
-	const PENDING = 3; //When the group membership has not been approved yet
-	const VISITOR = 4; //Simple visitor
+	const INVITED = 3;
+	const PENDING = 4; //When the group membership has not been approved yet
+	const VISITOR = 5; //Simple visitor
 
     //Private fields
     private $group_id = 1;

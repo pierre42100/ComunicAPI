@@ -20,12 +20,12 @@ class GroupsController {
 	 * API groups membership levels
 	 */
 	const GROUPS_MEMBERSHIP_LEVELS = array(
-		GroupInfo::ADMINISTRATOR => "administrator",
-		GroupInfo::MODERATOR => "moderator",
-		GroupInfo::MEMBER => "member",
-		GroupInfo::INVITED => "invited",
-		GroupInfo::PENDING => "pending",
-		GroupInfo::VISITOR => "visitor"
+		GroupMember::ADMINISTRATOR => "administrator",
+		GroupMember::MODERATOR => "moderator",
+		GroupMember::MEMBER => "member",
+		GroupMember::INVITED => "invited",
+		GroupMember::PENDING => "pending",
+		GroupMember::VISITOR => "visitor"
 	);
 
 	/**

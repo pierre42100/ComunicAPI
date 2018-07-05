@@ -290,14 +290,14 @@ class GroupsComponent {
             $membership_level = $this->getMembershipLevel($userID, $groupID);
         
         else
-            $membership_level = GroupInfo::VISITOR; //Signed out users are all visitors
+            $membership_level = GroupMember::VISITOR; //Signed out users are all visitors
 
         //Check if the user is a confirmed member of group
-        if($membership_level == GroupInfo::ADMINISTRATOR)
+        if($membership_level == GroupMember::ADMINISTRATOR)
             return GroupInfo::ADMIN_ACCESS;
-        if($membership_level == GroupInfo::MODERATOR)
+        if($membership_level == GroupMember::MODERATOR)
             return GroupInfo::MODERATOR_ACCESS;
-        if($membership_level == GroupInfo::MEMBER)
+        if($membership_level == GroupMember::MEMBER)
             return GroupInfo::MEMBER_ACCESS;
         
         //Get the visibility level of the group
@@ -308,8 +308,8 @@ class GroupsComponent {
             return GroupInfo::VIEW_ACCESS;
 
         //Else, all pending and invited membership get limited access
-        if($membership_level == GroupInfo::PENDING ||
-            $membership_level == GroupInfo::INVITED)
+        if($membership_level == GroupMember::PENDING ||
+            $membership_level == GroupMember::INVITED)
             return GroupInfo::LIMITED_ACCESS;
 
         //Private groups gives limited access

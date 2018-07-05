@@ -27,14 +27,6 @@ class GroupInfo extends BaseUniqueObject {
 	const MEMBER_ACCESS = 3; //Member access (same as view access but as member)
 	const MODERATOR_ACCESS = 4; //Can create posts, even if posts creation is restricted
 	const ADMIN_ACCESS = 5; //Can do everything
-	
-	//Membership levels
-	const ADMINISTRATOR = 0;
-	const MODERATOR = 1;
-	const MEMBER = 2;
-	const INVITED = 3;
-	const PENDING = 4;
-	const VISITOR = 5;
 
 	//Private fields
     private $name;
