@@ -8,6 +8,15 @@
 class GroupsController {
 	
 	/**
+	 * API groups registration levels
+	 */
+	const GROUPS_REGISTRATION_LEVELS = array(
+		GroupInfo::OPEN_REGISTRATION => "open",
+		GroupInfo::MODERATED_REGISTRATION => "moderated",
+		GroupInfo::CLOSED_REGISTRATION => "closed"
+	);
+
+	/**
 	 * API groups membership levels
 	 */
 	const GROUPS_MEMBERSHIP_LEVELS = array(
@@ -224,6 +233,7 @@ class GroupsController {
 		$data["number_members"] = $info->get_number_members();
 		$data["membership"] = self::GROUPS_MEMBERSHIP_LEVELS[$info->get_membership_level()];
 		$data["visibility"] = self::GROUPS_VISIBILITY_LEVELS[$info->get_visibility()];
+		$data["registration_level"] = self::GROUPS_REGISTRATION_LEVELS[$info->get_registration_level()];
 
 		return $data;
 	}
