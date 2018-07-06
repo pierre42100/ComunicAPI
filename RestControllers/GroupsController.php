@@ -284,6 +284,44 @@ class GroupsController {
 	}
 
 	/**
+	 * Send a membership request to the server
+	 * 
+	 * @url POST /groups/send_request
+	 */
+	public function sendRequest(){
+
+		user_login_required();
+
+		//Get the ID of the target gropu
+		$groupID = getPostGroupIdWithAccess("id", GroupInfo::LIMITED_ACCESS);
+
+		//Check if the user is currently only a visitor of the website
+		if(components()->groups->getMembershipLevel(userID, $groupID) != GroupMember::VISITOR)
+			Rest_fatal_error(401, "You are not currently a visitor of the group!");
+
+		//Check if the user can register a new membership to the group
+		//Get information about the group
+		$info = components()->groups->get_info($groupID);
+
+		if($info->get_registration_level() == GroupInfo::CLOSED_REGISTRATION)
+			Rest_fatal_error(401, "You are not authorized to send a registration request for this group!");
+		
+		//Create and insert membership
+		$member = new GroupMember();
+		$member->set_userID(userID);
+		$member->set_time_sent(time());
+		$member->set_group_id($groupID);
+		$member->set_level(
+			$info->get_registration_level() == GroupInfo::MODERATED_REGISTRATION ? 
+			GroupMember::PENDING : GroupMember::MEMBER);
+		if(!components()->groups->insertMember($member))
+			Rest_fatal_error(500, "Could not register membership!");
+		
+		//Success
+		return array("success" => "The membership has been successfully saved!");
+	}
+
+	/**
 	 * Parse a GroupInfo object into an array for the API
 	 * 
 	 * @param GroupInfo $info Information about the group

@@ -174,7 +174,7 @@ class GroupsComponent {
 	 * @param GroupMember $member Information about the member to insert
 	 * @return bool TRUE for a success / FALSE else
 	 */
-	private function insertMember(GroupMember $member) : bool {
+	public function insertMember(GroupMember $member) : bool {
 		return db()->addLine(self::GROUPS_MEMBERS_TABLE, array(
 			"groups_id" => $member->get_group_id(),
 			"user_id" => $member->get_userID(),
