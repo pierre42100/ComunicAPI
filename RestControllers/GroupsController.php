@@ -119,6 +119,8 @@ class GroupsController {
 	 */
 	public function getSettings(){
 
+		user_login_required();
+
 		//Get the ID of the group (with admin access)
 		$groupID = getPostGroupIdWithAccess("id", GroupInfo::ADMIN_ACCESS);
 
@@ -139,6 +141,8 @@ class GroupsController {
 	 * @url POST /groups/set_settings
 	 */
 	public function setSettings(){
+
+		user_login_required();
 
 		//Get the ID of the group (with admin access)
 		$groupID = getPostGroupIdWithAccess("id", GroupInfo::ADMIN_ACCESS);
@@ -176,6 +180,8 @@ class GroupsController {
 	 */
 	public function uploadLogo(){
 
+		user_login_required();
+
 		//Get the ID of the group (with admin access)
 		$groupID = getPostGroupIdWithAccess("id", GroupInfo::ADMIN_ACCESS);
 
@@ -211,6 +217,8 @@ class GroupsController {
 	 */
 	public function deleteLogo(){
 
+		user_login_required();
+
 		//Get the ID of the group (with admin access)
 		$groupID = getPostGroupIdWithAccess("id", GroupInfo::ADMIN_ACCESS);
 
@@ -223,6 +231,33 @@ class GroupsController {
 			"success" => "The group logo has been successfully deleted!",
 			"url" => components()->groups->get_settings($groupID)->get_logo_url()
 		);
+	}
+
+	/**
+	 * Respond to a membership invitation
+	 * 
+	 * @url POST /groups/respond_invitation
+	 */
+	public function respondInvitation(){
+
+		user_login_required();
+
+		//Get the ID of the group (with basic access)
+		$groupID = getPostGroupIdWithAccess("id", GroupInfo::LIMITED_ACCESS);
+
+		//Get the response to the invitation
+		$accept = postBool("accept");
+
+		//Check if the user received an invitation or not
+		if(!components()->groups->receivedInvitation(userID, $groupID))
+			Rest_fatal_error(404, "Invitation not found!");
+
+		//Try to respond to the invitation
+		if(!components()->groups->respondInvitation(userID, $groupID, $accept))
+			Rest_fatal_error(500, "An error occurred while trying to respond to membership invitation!");
+
+		//Success
+		return array("success" => "The response to the invitation was saved!");
 	}
 
 	/**
