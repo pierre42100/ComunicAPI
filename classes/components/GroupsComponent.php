@@ -215,6 +215,22 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Delete a user membership with a precise status
+	 * 
+	 * @param int $userID Target user ID
+	 * @param int $groupID Target group
+	 * @param int $status The status of the membership to delete
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	private function deleteMembershipWithStatus(int $userID, int $groupID, int $status) : bool {
+		return db()->deleteEntry(
+			self::GROUPS_MEMBERS_TABLE,
+			"groups_id = ? AND user_id = ? AND level = ?",
+			array($groupID, $userID, $status)
+		);
+	}
+
+	/**
 	 * Check whether a user received an invitation or not
 	 * 
 	 * @param int $userID The ID of the user to check
@@ -255,11 +271,18 @@ class GroupsComponent {
 	 * @return bool TRUE for a success / FALSE else
 	 */
 	public function deleteInvitation(int $userID, int $groupID) : bool {
-		return db()->deleteEntry(
-			self::GROUPS_MEMBERS_TABLE,
-			"groups_id = ? AND user_id = ? AND level = ?",
-			array($groupID, $userID, GroupMember::INVITED)
-		);
+		return $this->deleteMembershipWithStatus($userID, $groupID, GroupMember::INVITED);
+	}
+
+	/**
+	 * Cancel a membership request
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @param int $groupID The ID of the related group
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function cancelRequest(int $userID, int $groupID) : bool {
+		return $this->deleteMembershipWithStatus($userID, $groupID, GroupMember::PENDING);
 	}
 
 	/**

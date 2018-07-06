@@ -261,6 +261,29 @@ class GroupsController {
 	}
 
 	/**
+	 * Cancel a membership request
+	 * 
+	 * @url POST /groups/cancel_request
+	 */
+	public function cancelRequest(){
+
+		user_login_required();
+
+		//Get the ID of the group (with basic access)
+		$groupID = getPostGroupIdWithAccess("id", GroupInfo::LIMITED_ACCESS);
+
+		//Check if the user has created a membership request
+		if(components()->groups->getMembershipLevel(userID, $groupID) != GroupMember::PENDING)
+			Rest_fatal_error(401, "You did not send a membership request to this group!");
+		
+		//Try to cancel membership request
+		if(!components()->groups->cancelRequest(userID, $groupID))
+			Rest_fatal_error(500, "An error occurred while trying to cancel membership request!");
+		
+		return array("success" => "The request has been successfully cancelled!");
+	}
+
+	/**
 	 * Parse a GroupInfo object into an array for the API
 	 * 
 	 * @param GroupInfo $info Information about the group
