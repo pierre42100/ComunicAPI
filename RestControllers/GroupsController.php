@@ -234,6 +234,28 @@ class GroupsController {
 	}
 
 	/**
+	 * Get the entire list of the members of a group
+	 * 
+	 * @url POST /groups/get_members
+	 */
+	public function getMembers(){
+
+		user_login_required();
+
+		//Get the ID of the group (with admin access)
+		$groupID = getPostGroupIdWithAccess("id", GroupInfo::MODERATOR_ACCESS);
+
+		//Get the list of members of the group
+		$members = components()->groups->getListMembers($groupID);
+
+		//Parse the list of members
+		foreach($members as $num => $member)
+			$members[$num] = self::GroupMemberToAPI($member);
+
+		return $members;
+	}
+
+	/**
 	 * Respond to a membership invitation
 	 * 
 	 * @url POST /groups/respond_invitation
@@ -363,6 +385,23 @@ class GroupsController {
 	 */
 	public static function GroupSettingsToAPI(GroupSettings $info) : array {
 		$data = self::AdvancedGroupInfoToAPI($info);
+
+		return $data;
+	}
+
+	/**
+	 * Turn GroupMember oject into an API array
+	 * 
+	 * @param GroupMember $member The member entry to convert
+	 * @return array Generated entry
+	 */
+	public static function GroupMemberToAPI(GroupMember $member) : array {
+		$data = array();
+
+		$data["user_id"] = $member->get_userID();
+		$data["group_id"] = $member->get_group_id();
+		$data["time_create"] = $member->get_time_sent();
+		$data["level"] = self::GROUPS_MEMBERSHIP_LEVELS[$member->get_level()];
 
 		return $data;
 	}

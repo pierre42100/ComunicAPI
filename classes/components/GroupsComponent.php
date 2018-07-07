@@ -169,6 +169,24 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Get the list of members of a group
+	 * 
+	 * @param int $groupID The ID of the group to fetch
+	 * @return array The list of members of the group
+	 */
+	public function getListMembers(int $groupID) : array {
+
+		$members = db()->select(
+			self::GROUPS_MEMBERS_TABLE,
+			"WHERE groups_id = ?",
+			array($groupID)
+		);
+
+		//Process the list of results
+		return $this->multipleDBToGroupMember($members);
+	}
+
+	/**
 	 * Insert a new group member
 	 * 
 	 * @param GroupMember $member Information about the member to insert
@@ -523,6 +541,39 @@ class GroupsComponent {
 			$data["registration_level"] = $settings->get_registration_level();
 
 		return $data;
+	}
+
+	/**
+	 * Turn multiple database entries into GroupMember entries
+	 * 
+	 * @param array $entries The entries to process
+	 * @return array Generated GroupMember objects
+	 */
+	private function multipleDBToGroupMember(array $entries) : array {
+		foreach($entries as $num => $entry)
+			$entries[$num] = $this->dbToGroupMember($entry);
+		
+		return $entries;
+	}
+
+	/**
+	 * Turn a database entry into a GroupMember entry
+	 * 
+	 * @param array $entry The database entry to convert
+	 * @return GroupMember Generated entry
+	 */
+	private function dbToGroupMember(array $entry) : GroupMember {
+
+		$member = new GroupMember();
+
+		$member->set_id($entry["id"]);
+		$member->set_group_id($entry["groups_id"]);
+		$member->set_userID($entry["user_id"]);
+		$member->set_time_sent($entry["time_create"]);
+		$member->set_level($entry["level"]);
+
+		return $member;
+
 	}
 }
 
