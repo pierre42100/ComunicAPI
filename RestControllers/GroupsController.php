@@ -353,7 +353,7 @@ class GroupsController {
 		$data = array();
 
 		$data["id"] = $info->get_id();
-		$data["name"] = $info->get_name();
+		$data["name"] = removeHTMLnodes($info->get_name());
 		$data["icon_url"] = $info->get_logo_url();
 		$data["number_members"] = $info->get_number_members();
 		$data["membership"] = self::GROUPS_MEMBERSHIP_LEVELS[$info->get_membership_level()];
