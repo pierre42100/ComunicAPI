@@ -314,7 +314,7 @@ class GroupsController {
 
 		user_login_required();
 
-		//Get the ID of the target gropu
+		//Get the ID of the target group
 		$groupID = getPostGroupIdWithAccess("id", GroupInfo::LIMITED_ACCESS);
 
 		//Check if the user is currently only a visitor of the website
@@ -341,6 +341,45 @@ class GroupsController {
 		
 		//Success
 		return array("success" => "The membership has been successfully saved!");
+	}
+
+	/**
+	 * Delete the member from the group
+	 * 
+	 * @url POST /groups/delete_member
+	 */
+	public function deleteMember() : array {
+
+		user_login_required();
+
+		//Get the ID of the target group
+		$groupID = getPostGroupIdWithAccess("groupID", GroupInfo::MODERATOR_ACCESS);
+		$currUserLevel = components()->groups->getMembershipLevel(userID, $groupID);
+
+		//Get the ID of the member
+		$userID = getPostUserID("userID");
+
+		if($userID == userID && $currUserLevel == GroupMember::ADMINISTRATOR){
+
+			//Count the number of admin in the group
+			if(components()->groups->countMembersAtLevel($groupID, GroupMember::ADMINISTRATOR) == 1)
+				Rest_fatal_error(401, "You are the last administrator of this group!");
+
+		}
+
+		//Get the current membership level
+		$level = components()->groups->getMembershipLevel($userID, $groupID);
+
+		//Check if the user is more than a member. In this case, only an administrator can delete him
+		if($level < GroupMember::MEMBER && $currUserLevel != GroupMember::ADMINISTRATOR)
+			Rest_fatal_error(401, "Only an administrator can delete this membership!");
+		
+		//Delete the membership
+		if(!components()->groups->deleteMembershipWithStatus($userID, $groupID, $level))
+			Rest_fatal_error(500, "Could not delete membership!");
+
+		//Success
+		return array("success" => "The membership has been successfully deleted!");
 	}
 
 	/**

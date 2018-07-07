@@ -187,6 +187,21 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Count the number of a kind of membership in a group
+	 * 
+	 * @param int $groupID The ID of the target group
+	 * @param int $level The membership level to count
+	 * @return int The number of administrators of the group
+	 */
+	public function countMembersAtLevel(int $groupID, int $level) : int {
+		return db()->count(
+			self::GROUPS_MEMBERS_TABLE,
+			"WHERE groups_id = ? AND level = ?",
+			array($groupID, $level)
+		);
+	}
+
+	/**
 	 * Insert a new group member
 	 * 
 	 * @param GroupMember $member Information about the member to insert
@@ -240,7 +255,7 @@ class GroupsComponent {
 	 * @param int $status The status of the membership to delete
 	 * @return bool TRUE for a success / FALSE else
 	 */
-	private function deleteMembershipWithStatus(int $userID, int $groupID, int $status) : bool {
+	public function deleteMembershipWithStatus(int $userID, int $groupID, int $status) : bool {
 		return db()->deleteEntry(
 			self::GROUPS_MEMBERS_TABLE,
 			"groups_id = ? AND user_id = ? AND level = ?",
