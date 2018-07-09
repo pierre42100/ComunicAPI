@@ -337,17 +337,6 @@ class GroupsComponent {
 	}
 
 	/**
-	 * Cancel a membership request
-	 * 
-	 * @param int $userID The ID of the target user
-	 * @param int $groupID The ID of the related group
-	 * @return bool TRUE for a success / FALSE else
-	 */
-	public function cancelRequest(int $userID, int $groupID) : bool {
-		return $this->deleteMembershipWithStatus($userID, $groupID, GroupMember::PENDING);
-	}
-
-	/**
 	 * Get the membership level of a user to a group
 	 * 
 	 * @param int $userID The ID of the queried user

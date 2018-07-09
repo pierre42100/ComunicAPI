@@ -299,7 +299,7 @@ class GroupsController {
 			Rest_fatal_error(401, "You did not send a membership request to this group!");
 		
 		//Try to cancel membership request
-		if(!components()->groups->cancelRequest(userID, $groupID))
+		if(!components()->groups->deleteRequest(userID, $groupID))
 			Rest_fatal_error(500, "An error occurred while trying to cancel membership request!");
 		
 		return array("success" => "The request has been successfully cancelled!");
