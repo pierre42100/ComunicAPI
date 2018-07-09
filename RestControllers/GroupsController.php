@@ -413,6 +413,30 @@ class GroupsController {
 	}
 
 	/**
+	 * Get information about a membership
+	 * 
+	 * @url POST /groups/get_membership
+	 */
+	public function getMembership() : array {
+
+		//Get the ID of the target group
+		$groupID = getPostGroupIdWithAccess("groupID", GroupInfo::MODERATOR_ACCESS);
+
+		//Get user ID
+		$userID = getPostUserID("userID");
+
+		//Check if the user has a membership or not
+		if(!components()->groups->hasMembership($userID, $groupID))
+			Rest_fatal_error(404, "Specified user does not have any membership in this group!");
+
+		//Get user membership
+		$membership = components()->groups->getMembership($userID, $groupID);
+
+		//Parse and return result
+		return self::GroupMemberToAPI($membership);
+	}
+
+	/**
 	 * Parse a GroupInfo object into an array for the API
 	 * 
 	 * @param GroupInfo $info Information about the group

@@ -240,7 +240,7 @@ class GroupsComponent {
 	 * @param int $groupID The ID of the target group
 	 * @return bool TRUE if the database includes a membership for the user / FALSE else
 	 */
-	private function hasMembership(int $userID, int $groupID) : bool {
+	public function hasMembership(int $userID, int $groupID) : bool {
 		return db()->count(
 			self::GROUPS_MEMBERS_TABLE,
 			"WHERE groups_id = ? AND user_id = ?", 
@@ -373,6 +373,28 @@ class GroupsComponent {
 			return GroupMember::VISITOR; //Security first
 		
 		return $results[0]["level"];
+	}
+
+	/**
+	 * Get information the membership of a user over a group
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @param int $groupID The ID of the target group
+	 * @param GroupMember User membership
+	 */
+	public function getMembership(int $userID, int $groupID) : GroupMember {
+		//Fetch the database to get membership
+		$results = db()->select(
+			self::GROUPS_MEMBERS_TABLE,
+			"WHERE groups_id = ? AND user_id = ?",
+			array($groupID, $userID)
+		);
+
+		//Check for results
+		if(count($results) < 0)
+			return new GroupMember(); //Invalid object
+		
+		return $this->dbToGroupMember($results[0]);
 	}
 
 	/**
