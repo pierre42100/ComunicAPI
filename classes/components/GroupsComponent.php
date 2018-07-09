@@ -297,6 +297,24 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Respond to a membership request
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @param int $groupID The ID of the related group
+	 * @param bool $accept Set whether the request was accepted or not
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function respondRequest(int $userID, int $groupID, bool $accept) : bool {
+
+		//If the user reject the invitation, delete it
+		if(!$accept)
+			return $this->deleteRequest($userID, $groupID);
+
+		//Upgrade the user as member
+		return $this->updateMembershipLevel($userID, $groupID, GroupMember::MEMBER);
+	}
+
+	/**
 	 * Delete a membership invitation
 	 * 
 	 * @param int $userID The ID of the target user
@@ -305,6 +323,17 @@ class GroupsComponent {
 	 */
 	public function deleteInvitation(int $userID, int $groupID) : bool {
 		return $this->deleteMembershipWithStatus($userID, $groupID, GroupMember::INVITED);
+	}
+
+	/**
+	 * Delete a membership request
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @param int $groupID The ID of the related group
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteRequest(int $userID, int $groupID) : bool {
+		return $this->deleteMembershipWithStatus($userID, $groupID, GroupMember::PENDING);
 	}
 
 	/**

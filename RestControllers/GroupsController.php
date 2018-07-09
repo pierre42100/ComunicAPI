@@ -383,6 +383,36 @@ class GroupsController {
 	}
 
 	/**
+	 * Respond to a membership request
+	 * 
+	 * @url POST /groups/respond_request
+	 */
+	public function respondRequest() : array {
+
+		user_login_required();
+
+		//Get the ID of the target group
+		$groupID = getPostGroupIdWithAccess("groupID", GroupInfo::MODERATOR_ACCESS);
+
+		//Get user ID
+		$userID = getPostUserID("userID");
+
+		//Get the response
+		$accept = postBool("accept");
+
+		//Check if the user membership is really pending or not
+		if(components()->groups->getMembershipLevel($userID, $groupID) != GroupMember::PENDING)
+			Rest_fatal_error(401, "This user has not requested a membership in this group!");
+		
+		//Respond to the request
+		if(!components()->groups->respondRequest($userID, $groupID, $accept))
+			Rest_fatal_error(500, "Could not respond to the membership request!");
+		
+		//Success
+		return array("success" => "The response to the request has been successfully saved!");
+	}
+
+	/**
 	 * Parse a GroupInfo object into an array for the API
 	 * 
 	 * @param GroupInfo $info Information about the group
