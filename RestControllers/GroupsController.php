@@ -437,6 +437,31 @@ class GroupsController {
 	}
 
 	/**
+	 * Cancel a membership invitation
+	 * 
+	 * @url POST /groups/cancel_invitation
+	 */
+	public function canceInvitation() : array {
+
+		//Get the ID of the target group
+		$groupID = getPostGroupIdWithAccess("groupID", GroupInfo::MODERATOR_ACCESS);
+
+		//Get user ID
+		$userID = getPostUserID("userID");
+
+		//Check if the user has really been invited to the group or not
+		if(components()->groups->getMembershipLevel($userID, $groupID) != GroupMember::INVITED)
+			Rest_fatal_error(401, "This user has not been invited to join this group!");
+		
+		//Cancel group invitation
+		if(!components()->groups->deleteInvitation($userID, $groupID))
+			Rest_fatal_error(500, "Could not cancel membership invitation!");
+
+		//Success
+		return array("success" => "Membership invitation has been cancelled !");
+	}
+
+	/**
 	 * Parse a GroupInfo object into an array for the API
 	 * 
 	 * @param GroupInfo $info Information about the group
