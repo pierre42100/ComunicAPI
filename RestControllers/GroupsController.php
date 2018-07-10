@@ -506,6 +506,26 @@ class GroupsController {
 	}
 
 	/**
+	 * Get the list of membership of the current user
+	 * 
+	 * @url POST groups/get_my_list
+	 */
+	public function getMyList() : array {
+
+		user_login_required();
+
+		//Get the list of groups of the user
+		$list = components()->groups->getListUser(userID);
+
+		//Parse list
+		foreach($list as $num => $info)
+			$list[$num] = self::GroupInfoToAPI($info);
+		
+		return $list;
+
+	}
+
+	/**
 	 * Parse a GroupInfo object into an array for the API
 	 * 
 	 * @param GroupInfo $info Information about the group

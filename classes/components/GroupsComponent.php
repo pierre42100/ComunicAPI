@@ -68,6 +68,30 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Get the list of groups of a user
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return array The list of groups of the user
+	 */
+	public function getListUser(int $userID) : array {
+
+		//First, get IDs of the groups the user belongs to
+		$groups = db()->select(
+			self::GROUPS_MEMBERS_TABLE,
+			"WHERE user_id = ?",
+			array($userID),
+			array("groups_id")
+		);
+
+		//Parse results
+		$info = array();
+		foreach($groups as $group)
+			$info[] = $this->get_info($group["groups_id"]);
+		
+		return $info;
+	}
+
+	/**
 	 * Get the visibility level of a group
 	 * 
 	 * @param int $id The ID of the target group
