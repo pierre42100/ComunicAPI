@@ -224,7 +224,7 @@ class GroupsComponent {
 	 * @param int $level The target level
 	 * @return bool TRUE for a success / FALSE else
 	 */
-	private function updateMembershipLevel(int $userID, int $groupID, int $level) : bool {
+	public function updateMembershipLevel(int $userID, int $groupID, int $level) : bool {
 		return db()->updateDB(
 			self::GROUPS_MEMBERS_TABLE,
 			"user_id = ? AND groups_id = ?",

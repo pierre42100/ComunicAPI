@@ -383,6 +383,50 @@ class GroupsController {
 	}
 
 	/**
+	 * Update a membership level
+	 * 
+	 * @url POST /groups/update_membership_level
+	 */
+	public function updateMembershipLevel() : array {
+
+		user_login_required();
+
+		//Get the ID of the target group
+		$groupID = getPostGroupIdWithAccess("groupID", GroupInfo::ADMIN_ACCESS);
+
+		//Get target user ID
+		$userID = getPostUserID("userID");
+
+		if($userID == userID)
+			Rest_fatal_error(400, "You can not update your own membership!");
+
+		//Get current user membership
+		$level = components()->groups->getMembershipLevel($userID, $groupID);
+
+		//Check if the user is at least a member of the group
+		if($level > GroupMember::MEMBER)
+			Rest_fatal_error(401, "This user is not a member of the group!");
+		
+		//Get the new membership level of the user
+		$levels = array_flip(self::GROUPS_MEMBERSHIP_LEVELS);
+
+		$new_level_str = postString("level");
+		if(!isset($levels[$new_level_str]))
+			Rest_fatal_error(401, "Specified membership level not found!");
+		$newLevel = $levels[$new_level_str];
+		
+		if($newLevel > GroupMember::MEMBER)
+			Rest_fatal_error(401, "You can not assign this visibility level to a group member!");
+
+		//Try to update the membership of the user
+		if(!components()->groups->updateMembershipLevel($userID, $groupID, $newLevel))
+			Rest_fatal_error(500, "Could not update membership level!");
+
+		//Success
+		return array("success" => "User membership has been updated!");
+	}
+
+	/**
 	 * Respond to a membership request
 	 * 
 	 * @url POST /groups/respond_request
