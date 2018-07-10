@@ -526,6 +526,36 @@ class GroupsController {
 	}
 
 	/**
+	 * Delete a user membership to a group
+	 * 
+	 * @url POST groups/remove_membership
+	 */
+	public function removeMembership() : array {
+		user_login_required();
+
+		//Get the group
+		$groupID = getPostGroupIdWithAccess("id", GroupInfo::LIMITED_ACCESS);
+
+		//Get user membership level
+		$level = components()->groups->getMembershipLevel(userID, $groupID);
+
+		if($level == GroupMember::ADMINISTRATOR){
+
+			//Check the user is not the last administrator of the page
+			if(components()->groups->countMembersAtLevel($groupID, GroupMember::ADMINISTRATOR) == 1)
+				Rest_fatal_error(401, "You are the latest administrator of the group!");
+
+		}
+
+		//Delete membership
+		if(!components()->groups->deleteMembershipWithStatus(userID, $groupID, $level))
+			Rest_fatal_error(500, "An error occurred while trying to delete your membership!");
+		
+		//Success
+		return array("success" => "Your membership has been successfully deleted!");
+	}
+
+	/**
 	 * Parse a GroupInfo object into an array for the API
 	 * 
 	 * @param GroupInfo $info Information about the group
