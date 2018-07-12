@@ -12,5 +12,4 @@ class APIClientTest extends TestCase {
 		$client->set_token("token");
 		$this->assertEquals(TRUE, $client->has_token());
 	}
-
 }
