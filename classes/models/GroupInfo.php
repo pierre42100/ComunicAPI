@@ -35,6 +35,7 @@ class GroupInfo extends BaseUniqueObject {
 	private $membership_level = -1;
 	private $visiblity = -1;
 	private $registration_level = -1;
+	private $virtual_directory;
     
     //Get and set the name of group
     public function set_name(string $name){
@@ -127,5 +128,18 @@ class GroupInfo extends BaseUniqueObject {
 
 	public function get_registration_level() : int {
 		return $this->registration_level;
+	}
+
+	//Get and set virtual directory
+    public function set_virtual_directory(int $virtual_directory){
+		$this->virtual_directory = $virtual_directory;
+	}
+
+	public function has_virtual_directory() : bool {
+		return $this->virtual_directory > -1;
+	}
+
+	public function get_virtual_directory() : int {
+		return $this->virtual_directory;
 	}
 }
