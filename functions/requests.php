@@ -543,13 +543,14 @@ function checkVirtualDirectoryValidity(string $directory) : bool {
 }
 
 /**
- * Get a user post directory from a $_POST request and transform it to make it SQL-safe
+ * Get a user / group post directory from a $_POST 
+ * request and transform it to make it SQL-safe
  * 
  * @param string $name The name of the $_POST Request
  * @return string The user virtual directory, safe for saving
  * @throws RESTException If the directory is missing, or invalid
  */
-function getPostUserDirectory(string $name) : string {
+function getPostVirtualDirectory(string $name) : string {
 
 	//Check if the $_POST variable exists or not
 	if(!isset($_POST[$name]))

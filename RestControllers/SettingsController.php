@@ -55,7 +55,7 @@ class SettingsController {
 		//Get and check virtual directory
 		$virtualDirectory = postString("virtualDirectory", 0);
 		if($virtualDirectory != ""){
-			$virtualDirectory = getPostUserDirectory("virtualDirectory");
+			$virtualDirectory = getPostVirtualDirectory("virtualDirectory");
 
 			//Check if the directory is available
 			if(!components()->settings->checkUserDirectoryAvailability($virtualDirectory, userID))
@@ -104,7 +104,7 @@ class SettingsController {
 		user_login_required();
 
 		//Get user directory
-		$userDirectory = getPostUserDirectory("directory");
+		$userDirectory = getPostVirtualDirectory("directory");
 
 		//Check if the directory is available
 		if(!components()->settings->checkUserDirectoryAvailability($userDirectory, userID))
