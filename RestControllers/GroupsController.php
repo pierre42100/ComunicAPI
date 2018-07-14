@@ -188,6 +188,27 @@ class GroupsController {
 	}
 
 	/**
+	 * Check the availability of a virtual directory
+	 * 
+	 * @url POST /groups/checkVirtualDirectory
+	 */
+	public function checkVirtualDirectory() : array {
+
+		//Get the ID of the group to check
+		$groupID = getPostGroupIdWithAccess("groupID", GroupMember::ADMINISTRATOR);
+
+		//Get post virtual directory
+		$virtualDirectory = getPostVirtualDirectory("directory");
+
+		//Check virtual directory availability
+		if(!checkVirtualDirectoryAvailability($virtualDirectory, $groupID, TRUE))
+			Rest_fatal_error(401, "The virtual directory seems not to be available!");
+		
+		//The directory is available
+		return array("success" => "The directory is available!");
+	}
+
+	/**
 	 * Change (update) the logo of the group
 	 * 
 	 * @url POST /groups/upload_logo
