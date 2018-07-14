@@ -528,7 +528,7 @@ function save_post_image(string $fieldName, int $userID, string $folder, int $ma
  * @param string $directory The directory to check
  * @return bool TRUE if the domain seems to be valid / FALSE else
  */
-function checkUserDirectoryValidity(string $directory) : bool {
+function checkVirtualDirectoryValidity(string $directory) : bool {
 	
 	//Check domain length
 	if(strlen($directory) < 4)
@@ -557,7 +557,7 @@ function getPostUserDirectory(string $name) : string {
 	$directory = (string) $_POST[$name];
 
 	//Check domain validity
-	if(!checkUserDirectoryValidity($directory))
+	if(!checkVirtualDirectoryValidity($directory))
 		Rest_fatal_error(401, "Specified directory seems to be invalid!");
 	
 	//Return the directory
