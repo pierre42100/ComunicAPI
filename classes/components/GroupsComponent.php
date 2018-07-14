@@ -112,6 +112,27 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Find a group by its virtual directory
+	 * 
+	 * @param string $directory The directory to search
+	 * @return int The ID of the target group / 0 if none found
+	 */
+	public function findByVirtualDirectory(string $directory) : int {
+		
+		$data = db()->select(
+			self::GROUPS_LIST_TABLE,
+			"WHERE virtual_directory = ?",
+			array($directory),
+			array("id")
+		);
+
+		if(count($data) == 0)
+			return 0;
+		else
+			return $data[0]["id"];
+	}
+
+	/**
 	 * Get and return information about a group
 	 * 
 	 * @param int $id The ID of the target group
@@ -534,6 +555,25 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Check whether a directory is available or not
+	 * 
+	 * @param string $directory The directory to check
+	 * @param int $groupID The ID of the target group
+	 * @return bool TRUE if the directory is available / FALSE
+	 */
+	public function checkDirectoryAvailability(string $directory, int $groupID) : int {
+		$currID = $this->findByVirtualDirectory($directory);
+
+		//Check if the domain has not been allocated
+		if($currID < 1)
+			return TRUE;
+		
+		else
+			//Else check if the directory has been allocated to the current user 
+			return $groupID == $currID;
+	}
+
+	/**
 	 * Turn a database entry into a GroupInfo object
 	 * 
 	 * @param array $data Database entry
@@ -554,6 +594,9 @@ class GroupsComponent {
 
 		if($data["path_logo"] != null && $data["path_logo"] != "" && $data["path_logo"] != "null")
 			$info->set_logo($data["path_logo"]);
+		
+		if($data["virtual_directory"] != null && $data["virtual_directory"] != "" && $data["virtual_directory"] != "null")
+			$info->set_virtual_directory($data["virtual_directory"]);
 
 		return $info;
 
@@ -618,6 +661,9 @@ class GroupsComponent {
 		
 		if($settings->has_registration_level())
 			$data["registration_level"] = $settings->get_registration_level();
+
+		if($settings->has_virtual_directory())
+			$data["virtual_directory"] = $settings->get_virtual_directory();
 
 		return $data;
 	}

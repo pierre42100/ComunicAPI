@@ -166,6 +166,20 @@ class GroupsController {
 			Reset_fatal_error(400, "Unrecognized group registration level!");
 		$settings->set_registration_level($levels[$registration_level]);
 
+		//Get and check group virtual directory
+		$virtualDirectory = postString("virtual_directory", 0);
+		if($virtualDirectory != ""){
+
+			$virtualDirectory = getPostVirtualDirectory("virtual_directory");
+
+			//Check virtual directory availability
+			if(!checkVirtualDirectoryAvailability($virtualDirectory, $groupID, TRUE))
+				Rest_fatal_error(401, "The virtual directory seems not to be available!");
+			
+			$settings->set_virtual_directory($virtualDirectory);
+
+		}
+
 		//Try to save the new settings of the group
 		if(!components()->groups->set_settings($settings))
 			Rest_fatal_error(500, "An error occured while trying to update group settings!");
@@ -485,7 +499,7 @@ class GroupsController {
 	 * 
 	 * @url POST /groups/cancel_invitation
 	 */
-	public function canceInvitation() : array {
+	public function cancelInvitation() : array {
 
 		//Get the ID of the target group
 		$groupID = getPostGroupIdWithAccess("groupID", GroupInfo::MODERATOR_ACCESS);
@@ -571,6 +585,7 @@ class GroupsController {
 		$data["membership"] = self::GROUPS_MEMBERSHIP_LEVELS[$info->get_membership_level()];
 		$data["visibility"] = self::GROUPS_VISIBILITY_LEVELS[$info->get_visibility()];
 		$data["registration_level"] = self::GROUPS_REGISTRATION_LEVELS[$info->get_registration_level()];
+		$data["virtual_directory"] = $info->get_virtual_directory();
 
 		return $data;
 	}

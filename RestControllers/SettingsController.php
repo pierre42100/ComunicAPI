@@ -58,7 +58,7 @@ class SettingsController {
 			$virtualDirectory = getPostVirtualDirectory("virtualDirectory");
 
 			//Check if the directory is available
-			if(!components()->settings->checkUserDirectoryAvailability($virtualDirectory, userID))
+			if(!checkVirtualDirectoryAvailability($virtualDirectory, userID, FALSE))
 				Rest_fatal_error(401, "The specified directory is not available!");
 
 		}
@@ -107,7 +107,7 @@ class SettingsController {
 		$userDirectory = getPostVirtualDirectory("directory");
 
 		//Check if the directory is available
-		if(!components()->settings->checkUserDirectoryAvailability($userDirectory, userID))
+		if(!checkVirtualDirectoryAvailability($userDirectory, userID, FALSE))
 			Rest_fatal_error(401, "The specified directory is not available!");
 
 		//Else the directory is available

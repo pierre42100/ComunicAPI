@@ -567,6 +567,41 @@ function getPostVirtualDirectory(string $name) : string {
 }
 
 /**
+ * Check wether a virtual directory is available or not
+ * 
+ * @param string $name The virtual directory to check
+ * @param int $id The ID of the target element
+ * @param bool $isPage TRUE if the request is made for a page
+ * @return bool TRUE if the virtual directory is valid / FALSE else
+ */
+function checkVirtualDirectoryAvailability(string $name, int $id, bool $isPage) : bool {
+
+	if(!checkVirtualDirectoryValidity($name))
+		return FALSE;
+	
+	if(!$isPage){
+
+		if(!components()->settings->checkUserDirectoryAvailability($name, $id))
+			return FALSE;
+
+		if(!components()->groups->checkDirectoryAvailability($name, -1))
+			return FALSE;
+			
+	}
+	else {
+
+		if(!components()->settings->checkUserDirectoryAvailability($name, -1))
+			return FALSE;
+
+		if(!components()->groups->checkDirectoryAvailability($name, $id))
+			return FALSE;
+	}
+
+	//The directory seems to be valid
+	return TRUE;
+}
+
+/**
  * Get a POST group ID
  * 
  * @param string $name The name of variable in the $_POST request
