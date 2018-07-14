@@ -131,15 +131,15 @@ class GroupInfo extends BaseUniqueObject {
 	}
 
 	//Get and set virtual directory
-    public function set_virtual_directory(int $virtual_directory){
-		$this->virtual_directory = $virtual_directory;
+    public function set_virtual_directory(string $virtual_directory){
+		$this->virtual_directory = $virtual_directory == "" ? null : $virtual_directory;
 	}
 
 	public function has_virtual_directory() : bool {
-		return $this->virtual_directory > -1;
+		return $this->virtual_directory != null;
 	}
 
-	public function get_virtual_directory() : int {
-		return $this->virtual_directory;
+	public function get_virtual_directory() : string {
+		return $this->virtual_directory != null ? $this->virtual_directory : "null";
 	}
 }
