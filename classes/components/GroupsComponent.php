@@ -620,6 +620,10 @@ class GroupsComponent {
 
 		//Parse advanced information
 		$info->set_time_create($data["time_create"]);
+		if($data["description"] != null && $data["description"] != "" && $data["description"] != "null")
+			$info->set_description($data["description"]);
+		if($data["url"] != null && $data["url"] != "" && $data["url"] != "null")
+			$info->set_url($data["url"]);
 
 		return $info;
 

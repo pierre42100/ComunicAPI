@@ -621,6 +621,8 @@ class GroupsController {
 		$data = self::GroupInfoToAPI($info);
 
 		$data["time_create"] = $info->get_time_create();
+		$data["description"] = $info->get_description();
+		$data["url"] = $info->get_url();
 
 		return $data;
 	}
