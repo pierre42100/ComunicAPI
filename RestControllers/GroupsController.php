@@ -151,6 +151,16 @@ class GroupsController {
 		$settings = new GroupSettings();
 		$settings->set_id($groupID);
 		$settings->set_name(postString("name", 3));
+		$settings->set_description(removeHTMLnodes(postString("description", 0)));
+		
+		//Get group URL
+		$url = postString("url", 0);
+		if($url != ""){
+			if(!filter_var($url, FILTER_VALIDATE_URL))
+				Rest_fatal_error(401, "Invalid group URL!");
+			
+			$settings->set_url($url);
+		}
 
 		//Get group visibility
 		$visiblity = postString("visibility", 3);
