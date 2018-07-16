@@ -666,6 +666,9 @@ class GroupsComponent {
 		
 		if($settings->has_registration_level())
 			$data["registration_level"] = $settings->get_registration_level();
+		
+		if($settings->has_posts_level())
+			$data["posts_level"] = $settings->get_posts_level();
 
 		$data["virtual_directory"] = 
 			$settings->has_virtual_directory() ? $settings->get_virtual_directory() : "";

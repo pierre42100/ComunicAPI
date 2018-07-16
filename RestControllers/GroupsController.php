@@ -184,6 +184,13 @@ class GroupsController {
 			Reset_fatal_error(400, "Unrecognized group registration level!");
 		$settings->set_registration_level($levels[$registration_level]);
 
+		//Get group posts creation levels
+		$postsLevel = postString("posts_level", 3);
+		$levels = array_flip(self::GROUPS_POSTS_LEVELS);
+		if(!isset($levels[$postsLevel]))
+			Rest_fatal_error(400, "Unrecognized group posts level!");
+		$settings->set_posts_level($levels[$postsLevel]);
+
 		//Get and check group virtual directory
 		$virtualDirectory = postString("virtual_directory", 0);
 		if($virtualDirectory != ""){
