@@ -118,7 +118,7 @@ class Posts {
 		$visibilityLevel = $this->getUserVisibility($userID, $targetID);
 
 		//Prepare the request on the database
-		$conditions = "WHERE ID_personne = ? AND (";
+		$conditions = "WHERE ID_personne = ? AND group_id = 0 AND (";
 		$dataConds = array($targetID);
 
 		//Add the visibility level conditions
@@ -188,7 +188,7 @@ class Posts {
 		//Process the list of friends of the user
 		foreach($friendsList as $friend){
 			$friendID = $friend->getFriendID();
-			$conditions .= " OR ID_personne = ?";
+			$conditions .= " OR (ID_personne = ? AND group_id = 0)";
 			$dataConds[] = $friendID;
 		}
 
