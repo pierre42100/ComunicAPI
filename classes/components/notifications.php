@@ -101,10 +101,20 @@ class notificationComponent {
 				return false;
 				
 			//Update post informations
-			$notification->set_from_container_type(Notification::USER_PAGE);
-			$notification->set_from_container_id($info_post->get_user_page_id());
+			if($info_post->get_kind_page() == Posts::PAGE_KIND_USER){
+				$notification->set_from_container_type(Notification::USER_PAGE);
+				$notification->set_from_container_id($info_post->get_user_page_id());
+			}
+			else if($info_post->get_kind_page() == Posts::PAGE_KIND_GROUP){
+				$notification->set_from_container_type(Notification::GROUP_PAGE);
+				$notification->set_from_container_id($info_post->get_group_id());
+			}
+			else
+				throw new Exception("Unsupported page kind: ".$info_post->get_kind_page());
+			
 
 			//Check if the notification is private or not
+			//Private posts
 			if($info_post->get_visibility_level() == Posts::VISIBILITY_USER){
 
 				//Push the notification only to the user, and only if it is not him
@@ -117,7 +127,9 @@ class notificationComponent {
 				//Push the notification
 				return $this->push_private($notification);
 			}
-			else {
+
+			//For the posts on user pages
+			else if($notification->get_from_container_type() == Notification::USER_PAGE) {
 
 				//Get the list of friends of the user
 				$friendslist = components()->friends->getList($notification->get_from_user_id());
@@ -144,6 +156,17 @@ class notificationComponent {
 				//The notification can be publicy published
 				return $this->push_public($notification, $target_users);
 
+			}
+
+			//For the posts on groups
+			else if($notification->get_from_container_type() == Notification::GROUP_PAGE){
+				//TODO : implement
+				return TRUE;
+			}
+
+			//Unimplemented scenario
+			else {
+				throw new Exception("Notification scenarios not implemented!");
 			}
 
 		}

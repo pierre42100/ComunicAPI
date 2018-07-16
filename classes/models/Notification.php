@@ -11,6 +11,7 @@ class Notification {
 	 * Elements type
 	 */
 	const USER_PAGE = "user_page";
+	const GROUP_PAGE = "group_page";
 	const CONVERSATION = "conversation";
 	const CONVERSATION_MESSAGE = "conversation_message";
 	const POST = "post";

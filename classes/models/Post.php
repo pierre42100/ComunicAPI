@@ -75,6 +75,22 @@ class Post extends BaseUniqueObjectFromUser {
 		return $this->kind_page == Posts::PAGE_KIND_USER ? $this->kind_page_id : 0;
 	}
 
+	//Set and get the target group ID
+	public function set_group_id(int $group_id){
+		if($group_id > 0){
+			$this->set_kind_page(Posts::PAGE_KIND_GROUP);
+			$this->kind_page_id = $group_id;
+		}
+	}
+
+	public function has_group_id() : bool {
+		return $this->kind_page_id > 0 && $this->kind_page == Posts::PAGE_KIND_GROUP;
+	}
+
+	public function get_group_id() : int {
+		return $this->kind_page == Posts::PAGE_KIND_GROUP ? $this->kind_page_id : 0;
+	}
+
 
 	//Set and get content
 	public function set_content(string $content){

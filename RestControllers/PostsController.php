@@ -99,7 +99,11 @@ class PostsController {
 			Rest_fatal_error(500, "Couldn't retrieve post informations !");
 
 		//Check if we can get the comments of the post
-		if(components()->user->allowComments($postInfos->get_user_page_id()))
+		$load_comments = TRUE;
+		if($postInfos->get_kind_page() == Posts::PAGE_KIND_USER)
+			$load_comments = components()->user->allowComments($postInfos->get_user_page_id());
+
+		if($load_comments)
 			$postInfos->set_comments(components()->comments->get($postInfos->get_id()));
 
 		//Parse post informations
@@ -141,6 +145,20 @@ class PostsController {
 					Rest_fatal_error(401, "You are not allowed to create post on this page !");
 
 				break;
+			
+
+			//In case of group
+			case "group":
+
+				//Save the values
+				$kind_page = Posts::PAGE_KIND_GROUP;
+				$kind_page_id = getPostGroupIdWithAccess("kind-id", GroupInfo::MEMBER_ACCESS);
+
+				//Check whether the user is authorized to create posts on the page or not
+				if(!components()->groups->canUserCreatePost(userID, $kind_page_id))
+					Rest_fatal_error(401, "You are not authorized to create posts on this group!");
+				
+				break;	
 			
 			//Unsupported kind of page
 			default:
@@ -349,13 +367,19 @@ class PostsController {
 		if($postID < 0)
 			Rest_fatal_error(400, "Couldn't create post !");
 
-		//Create a notification
-		$notification = new Notification();
-		$notification->set_from_user_id(userID);
-		$notification->set_on_elem_id($postID);
-		$notification->set_on_elem_type(Notification::POST);
-		$notification->set_type(Notification::ELEM_CREATED);
-		components()->notifications->push($notification);
+		
+		if($post->get_kind_page() == Posts::PAGE_KIND_USER){
+
+			//Create a notification
+			$notification = new Notification();
+			$notification->set_from_user_id(userID);
+			$notification->set_on_elem_id($postID);
+			$notification->set_on_elem_type(Notification::POST);
+			$notification->set_type(Notification::ELEM_CREATED);
+			components()->notifications->push($notification);
+			
+		}
+		
 
 		//Success
 		return array(

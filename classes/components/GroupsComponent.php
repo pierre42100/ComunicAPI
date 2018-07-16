@@ -527,6 +527,40 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Check whether a user can create posts or not on a group
+	 * 
+	 * @param int $userID The related user ID
+	 * @param int $groupID The ID of the target group
+	 * @return bool TRUE if the user is authorized / FALSE else
+	 */
+	public function canUserCreatePost(int $userID, int $groupID) : bool {
+
+		//Get the membership level of the user over the post
+		$membership_level = $this->getMembershipLevel($userID, $groupID);
+
+		//Moderators + administrators : can always create posts
+		if($membership_level == GroupMember::ADMINISTRATOR
+			|| $membership_level == GroupMember::MODERATOR)
+
+			return TRUE;
+		
+		if($membership_level == GroupMember::MEMBER) {
+
+			//Get information about the group to check whether all the members of
+			//the group are authorized to create posts or not
+			$group = $this->get_advanced_info($groupID);
+
+			if($group->get_posts_level() == GroupInfo::POSTS_LEVEL_ALL_MEMBERS)
+				return TRUE;
+
+		}
+		
+		//Other members can not create posts
+		return FALSE;
+
+	}
+
+	/**
 	 * Delete current group logo (if any)
 	 * 
 	 * @param int $id The ID of the target group

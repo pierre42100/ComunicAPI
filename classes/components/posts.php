@@ -39,6 +39,7 @@ class Posts {
 	 */
 	//Post on user page
 	const PAGE_KIND_USER = "user";
+	const PAGE_KIND_GROUP = "group";
 
 	/**
 	 * Kinds of post
@@ -333,53 +334,83 @@ class Posts {
 		//Check if the user is the owner of the post
 		if($post_info->get_userID() == $userID)
 			return $this::FULL_ACCESS;
-
-		//Check if the post was made on the user page
-		if($post_info->get_user_page_id() == $userID)
-			return $this::INTERMEDIATE_ACCESS;
-
-		//Check if the post is private
-		if($post_info->get_visibility_level() == $this::VISIBILITY_USER)
-			return $this::NO_ACCESS;
 		
-		//Check if the post is for friends only
-		if($post_info->get_visibility_level() == $this::VISIBILITY_FRIENDS){
+		//Special checks if the posts belongs to a user's page
+		if($post_info->get_kind_page() == Posts::PAGE_KIND_USER){
 
-			//Check if user is signed in
-			if($userID == 0)
+			//Check if the post was made on the user page
+			if($post_info->get_user_page_id() == $userID)
+				return $this::INTERMEDIATE_ACCESS;
+
+			//Check if the post is private
+			if($post_info->get_visibility_level() == $this::VISIBILITY_USER)
 				return $this::NO_ACCESS;
 			
-			//Check if this user and the owner of the page are friends or not
-			else if(!CS::get()->components->friends->are_friend($userID, $post_info->get_user_page_id()))
-				return $this::NO_ACCESS;
-			
-			else
-				//User can access the post
-				return $this::BASIC_ACCESS;
-		}
+			//Check if the post is for friends only
+			if($post_info->get_visibility_level() == $this::VISIBILITY_FRIENDS){
 
-		//Check if the post is public
-		if($post_info->get_visibility_level() == $this::VISIBILITY_PUBLIC){
-
-			//Check if the two personns are friend
-			if($userID != 0){
-				if(CS::get()->components->friends->are_friend($userID, $post_info->get_user_page_id()))
+				//Check if user is signed in
+				if($userID == 0)
+					return $this::NO_ACCESS;
+				
+				//Check if this user and the owner of the page are friends or not
+				else if(!CS::get()->components->friends->are_friend($userID, $post_info->get_user_page_id()))
+					return $this::NO_ACCESS;
+				
+				else
+					//User can access the post
 					return $this::BASIC_ACCESS;
 			}
 
-			//Get user visibility level
-			$visibilityLevel = CS::get()->components->user->getVisibility($post_info->get_user_page_id());
+			//Check if the post is public
+			if($post_info->get_visibility_level() == $this::VISIBILITY_PUBLIC){
 
-			//If the page is open, access is free
-			if($visibilityLevel == UserComponent::USER_PAGE_OPEN)
+				//Check if the two personns are friend
+				if($userID != 0){
+					if(CS::get()->components->friends->are_friend($userID, $post_info->get_user_page_id()))
+						return $this::BASIC_ACCESS;
+				}
+
+				//Get user visibility level
+				$visibilityLevel = CS::get()->components->user->getVisibility($post_info->get_user_page_id());
+
+				//If the page is open, access is free
+				if($visibilityLevel == UserComponent::USER_PAGE_OPEN)
+					return $this::BASIC_ACCESS;
+				
+				//Else check if the user is signed in and the page is public 
+				else if($userID != 0 AND $visibilityLevel == UserComponent::USER_PAGE_PUBLIC)
+					return $this::BASIC_ACCESS;
+				
+				else
+					return $this::NO_ACCESS;
+			}
+		}
+
+		//Checks if the posts belongs to a group's page
+		if($post_info->get_kind_page() == Posts::PAGE_KIND_GROUP){
+
+			//Get the access level of the user over the group
+			$access_level = components()->groups->getMembershipLevel($userID, $post_info->get_group_id());
+
+			//Moderators and administrators can delete all the posts of the group
+			if($access_level < GroupMember::MEMBER)
+				return $this::INTERMEDIATE_ACCESS;
+				
+			//Members of a group can see all the posts of the group
+			if($access_level == GroupMember::MEMBER)
 				return $this::BASIC_ACCESS;
-			
-			//Else check if the user is signed in and the page is public 
-			else if($userID != 0 AND $visibilityLevel == UserComponent::USER_PAGE_PUBLIC)
-				return $this::BASIC_ACCESS;
-			
-			else
+				
+			//Check if the post is public or not
+			if($post_info->get_visibility_level() != Posts::VISIBILITY_PUBLIC)
 				return $this::NO_ACCESS;
+			
+			//Check if the group is open or not
+			if(!components()->groups->is_open($post_info->get_group_id()))
+				return $this::NO_ACCESS;
+			
+			// Post public + open group > basic access
+			return $this::BASIC_ACCESS;
 		}
 		
 		//Not implemented
@@ -417,6 +448,14 @@ class Posts {
 			//Determine who is creating the post
 			$post_user_id = $post->get_kind_page_id();
 			$post_friend_id = $post->get_kind_page_id() == $post->get_userID() ? 0 : $post->get_userID();
+			$post_group_id = 0;
+
+		}
+		else if($post->get_kind_page() == $this::PAGE_KIND_GROUP){
+
+			$post_user_id = $post->get_userID();
+			$post_friend_id = 0;
+			$post_group_id = $post->get_kind_page_id();
 
 		}
 		else {
@@ -427,6 +466,7 @@ class Posts {
 		$data = array(
 			"ID_personne" => $post_user_id,
 			"ID_amis" => $post_friend_id,
+			"group_id" => $post_group_id,
 			"date_envoi" => mysql_date(),
 			"time_insert" => time(),
 			"texte" => $post->has_content() ? $post->get_content() : "",
@@ -688,7 +728,11 @@ class Posts {
 		//General information
 		$post->set_id($entry["ID"]);
 		$post->set_userID($entry["ID_amis"] == 0 ? $entry["ID_personne"] : $entry["ID_amis"]);
+
+		//Determine the kind of target page and its ID
 		$post->set_user_page_id($entry["ID_personne"]);
+		$post->set_group_id($entry["group_id"]);
+		
 		$post->set_time_sent($entry["time_insert"] == null ? strtotime($entry["date_envoi"]) : $entry["time_insert"]);
 		$post->set_content($entry["texte"]);
 		$post->set_visibility_level($entry["niveau_visibilite"]);
