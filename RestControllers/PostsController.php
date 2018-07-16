@@ -57,6 +57,31 @@ class PostsController {
 	}
 
 	/**
+	 * Get group posts
+	 * 
+	 * @url POST /posts/get_group
+	 */
+	public function getGroupPosts(){
+
+		//Get group ID
+		$groupID = getPostGroupIdWithAccess("groupID", GroupInfo::VIEW_ACCESS);
+
+		//Get the startpoint for the posts
+		$startFrom = postInt("startFrom", 0);
+
+		//Check whether the user can see members only posts or not
+		$membershipLevel = components()->groups->getMembershipLevel(userID, $groupID);
+		$seeAllPosts = $membershipLevel <= GroupMember::MEMBER;
+
+		//Get the posts of the group
+		$posts = components()->posts->getGroupPosts($groupID, $seeAllPosts, $startFrom);
+
+		//Return parsed list of posts
+		return $this->parsePostsList($posts);
+
+	}
+
+	/**
 	 * Get the latest posts for the user
 	 * 
 	 * @url POST /posts/get_latest

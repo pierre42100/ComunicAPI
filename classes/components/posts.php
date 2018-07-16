@@ -160,6 +160,56 @@ class Posts {
 	}
 
 	/**
+	 * Get the posts of a group
+	 * 
+	 * @param int $groupID The ID of the related group
+	 * @param bool $all_posts Specify whether we should get all the posts of the user or not
+	 * @param int $from Start point for the query
+	 * @param int $limit The limit for the request (default = 10)
+	 */
+	public function getGroupPosts(int $groupID, bool $all_posts, int $from = 0, int $limit = 10){
+
+		//Check the value of limit (security)
+		if($limit < 1){
+			throw new Exception("The limit of the query must absolutly be positive !");
+		}
+
+		//Get user visibility level
+		$visibilityLevel = $all_posts ? $this::VISIBILITY_USER : $this::VISIBILITY_PUBLIC;
+
+		//Prepare the request on the database
+		$conditions = "WHERE group_id = ? AND (";
+		$dataConds = array($groupID);
+
+		//Add the visibility level conditions
+		$conditions .= "(niveau_visibilite <= ?)";
+		$dataConds[] = $visibilityLevel;
+
+		//Close permissions conditions
+		$conditions .= ")";
+		
+		//Add startpoint condition if required (and get older messages)
+		if($from != 0){
+			$conditions .= " AND ID <= ? ";
+			$dataConds[] = $from;
+		}
+
+		//Specify order and limit
+		$conditions.= " ORDER BY ID DESC LIMIT ".$limit;
+
+		//Perform the request
+		$list = CS::get()->db->select(
+			$this::TABLE_NAME,
+			$conditions,
+			$dataConds
+		);
+
+		//Parse and return posts
+		return $this->processGetMultiple($list, TRUE);
+
+	}
+
+	/**
 	 * Get the list of latest posts for a user
 	 * 
 	 * @param int $userID The ID of the user requesting its list of posts
@@ -406,7 +456,7 @@ class Posts {
 				return $this::NO_ACCESS;
 			
 			//Check if the group is open or not
-			if(!components()->groups->is_open($post_info->get_group_id()))
+			if(!components()->groups->isOpen($post_info->get_group_id()))
 				return $this::NO_ACCESS;
 			
 			// Post public + open group > basic access

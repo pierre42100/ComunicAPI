@@ -102,15 +102,19 @@ function postBool(string $name) : bool {
  * This function makes a REST_Error in case of error
  * 
  * @param string $name The name of the $_POST field
+ * @param string $default The default value (null = none)
  * @return int The integer
  */
-function postInt(string $name) : int {
+function postInt(string $name, string $default = null) : int {
 	
 	//Check the variable
-	if(!isset($_POST[$name]))
+	if(!isset($_POST[$name]) && $default == null)
 		Rest_fatal_error(400, "Please add a POST integer named '".$name."' in the request !");
 
-	return (int)$_POST[$name];
+	if(isset($_POST[$name]))
+		return (int)$_POST[$name];
+	else
+		return (int) $default;
 }
 
 /**
