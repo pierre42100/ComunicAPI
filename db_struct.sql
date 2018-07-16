@@ -436,6 +436,7 @@ CREATE TABLE `texte` (
   `time_insert` int(11) DEFAULT NULL,
   `texte` text NOT NULL,
   `ID_amis` int(11) NOT NULL DEFAULT '0',
+  `group_id` int(11) DEFAULT '0',
   `niveau_visibilite` varchar(255) NOT NULL DEFAULT '1',
   `type` varchar(255) NOT NULL DEFAULT 'texte',
   `idvideo` int(11) DEFAULT NULL,
