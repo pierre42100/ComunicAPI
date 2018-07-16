@@ -591,6 +591,7 @@ class GroupsComponent {
 		$info->set_membership_level($this->getMembershipLevel(userID, $info->get_id()));
 		$info->set_visibility($data["visibility"]);
 		$info->set_registration_level($data["registration_level"]);
+		$info->set_posts_level($data["posts_level"]);
 
 		if($data["path_logo"] != null && $data["path_logo"] != "" && $data["path_logo"] != "null")
 			$info->set_logo($data["path_logo"]);

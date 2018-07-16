@@ -28,6 +28,10 @@ class GroupInfo extends BaseUniqueObject {
 	const MODERATOR_ACCESS = 4; //Can create posts, even if posts creation is restricted
 	const ADMIN_ACCESS = 5; //Can do everything
 
+	//Post levels
+	const POSTS_LEVEL_MODERATORS = 0; //Only the moderators and the administrator can create posts
+	const POSTS_LEVEL_ALL_MEMBERS = 1; //All the members of the group can create posts
+
 	//Private fields
     private $name;
     private $number_members = -1;
@@ -35,6 +39,7 @@ class GroupInfo extends BaseUniqueObject {
 	private $membership_level = -1;
 	private $visiblity = -1;
 	private $registration_level = -1;
+	private $posts_level = -1;
 	private $virtual_directory;
     
     //Get and set the name of group
@@ -128,6 +133,19 @@ class GroupInfo extends BaseUniqueObject {
 
 	public function get_registration_level() : int {
 		return $this->registration_level;
+	}
+
+	//Get and set posts level
+    public function set_posts_level(int $posts_level){
+		$this->posts_level = $posts_level;
+	}
+
+	public function has_posts_level() : bool {
+		return $this->posts_level > -1;
+	}
+
+	public function get_posts_level() : int {
+		return $this->posts_level;
 	}
 
 	//Get and set virtual directory

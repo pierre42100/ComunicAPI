@@ -38,6 +38,14 @@ class GroupsController {
 	);
 
 	/**
+	 * API posts creation levels
+	 */
+	const GROUPS_POSTS_LEVELS = array(
+		GroupInfo::POSTS_LEVEL_MODERATORS => "moderators",
+		GroupInfo::POSTS_LEVEL_ALL_MEMBERS => "members"
+	);
+
+	/**
 	 * Create a group
 	 * 
 	 * @url POST /groups/create
@@ -616,6 +624,7 @@ class GroupsController {
 		$data["membership"] = self::GROUPS_MEMBERSHIP_LEVELS[$info->get_membership_level()];
 		$data["visibility"] = self::GROUPS_VISIBILITY_LEVELS[$info->get_visibility()];
 		$data["registration_level"] = self::GROUPS_REGISTRATION_LEVELS[$info->get_registration_level()];
+		$data["posts_level"] = self::GROUPS_POSTS_LEVELS[$info->get_posts_level()];
 		$data["virtual_directory"] = $info->get_virtual_directory();
 
 		return $data;
