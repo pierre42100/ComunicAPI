@@ -577,6 +577,7 @@ class PostsController {
 		$data["ID"] = $post->get_id();
 		$data["userID"] = $post->get_userID();
 		$data["user_page_id"] = $post->get_user_page_id();
+		$data["group_id"] = $post->get_group_id();
 		$data["post_time"] = $post->get_time_sent();
 		$data["content"] = $post->has_content() ? $post->get_content() : null;
 		$data["visibility_level"] = self::VISIBILITY_LEVELS_API[$post->get_visibility_level()];
