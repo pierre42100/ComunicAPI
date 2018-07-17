@@ -18,6 +18,7 @@ class Likes {
 	const LIKE_USER = "user";
 	const LIKE_POST = "post";
 	const LIKE_COMMENT = "comment";
+	const LIKE_GROUP = "group";
 
 	/**
 	 * Translation of the kinds of like for the database
@@ -25,7 +26,8 @@ class Likes {
 	const KINDS_DB = array(
 		Likes::LIKE_USER => "page",
 		Likes::LIKE_POST => "texte",
-		Likes::LIKE_COMMENT => "commentaire"
+		Likes::LIKE_COMMENT => "commentaire",
+		Likes::LIKE_GROUP => "group"
 	);
 
 	/**

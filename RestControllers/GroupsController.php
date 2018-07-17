@@ -116,6 +116,11 @@ class GroupsController {
 		if(!$group->isValid())
 			Rest_fatal_error(404, "The requested group was not found !");
 		
+		//If the user is signed in, check whether he is liking or not the group
+		if(userID > 0)
+			$group->setLiking(components()->likes->is_liking(
+				userID, $group->get_id(), Likes::LIKE_GROUP));
+
 		//Parse and return information about the group
 		return self::AdvancedGroupInfoToAPI($group);
 	}
@@ -649,6 +654,8 @@ class GroupsController {
 		$data["time_create"] = $info->get_time_create();
 		$data["description"] = $info->get_description();
 		$data["url"] = $info->get_url();
+		$data["number_likes"] = $info->get_number_likes();
+		$data["is_liking"] = $info->isLiking();
 
 		return $data;
 	}

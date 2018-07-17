@@ -169,7 +169,7 @@ class GroupsComponent {
 			return new AdvancedGroupInfo(); //Return invalid object
 		
 		//Create and fill GroupInfo object with database entry
-		return $this->dbToAdvancedGroupInfo($info[0]);
+		return $this->dbToAdvancedGroupInfo($info[0], null, TRUE);
 	}
 
 	/**
@@ -643,9 +643,11 @@ class GroupsComponent {
 	 * @param array $data Database entry
 	 * @param AdvancedGroupInfo $info Optionnal, fill an existing object
 	 * instead of creating a new one
+	 * @param bool $load_likes Specified whether the likes of the group should
+	 * be loaded or not (default: FALSE)
 	 * @return AdvancedGroupInfo Advanced information about the group
 	 */
-	private function dbToAdvancedGroupInfo(array $data, AdvancedGroupInfo $info = null) : AdvancedGroupInfo {
+	private function dbToAdvancedGroupInfo(array $data, AdvancedGroupInfo $info = null, bool $load_likes = FALSE) : AdvancedGroupInfo {
 
 		if($info == null)
 			$info = new AdvancedGroupInfo();
@@ -659,6 +661,11 @@ class GroupsComponent {
 			$info->set_description($data["description"]);
 		if($data["url"] != null && $data["url"] != "" && $data["url"] != "null")
 			$info->set_url($data["url"]);
+		
+		//Load likes information, if required
+		if($load_likes){
+			$info->set_number_likes(components()->likes->count($info->get_id(), Likes::LIKE_GROUP));
+		}
 
 		return $info;
 

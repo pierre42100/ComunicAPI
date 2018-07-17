@@ -14,6 +14,8 @@ class AdvancedGroupInfo extends GroupInfo {
 	private $time_create = -1;
 	private $url;
 	private $description;
+	private $number_likes = -1;
+	private $is_liking = false;
 
 	//Get and set the creation time of the group
 	public function set_time_create(int $time_create){
@@ -52,5 +54,27 @@ class AdvancedGroupInfo extends GroupInfo {
 
 	public function get_description() : string {
 		return $this->description != null ? $this->description : "null";
+	}
+
+	//Set and get the number of likes over the group
+	public function set_number_likes(int $number_likes){
+		$this->number_likes = $number_likes;
+	}
+
+	public function has_number_likes() : bool {
+		return $this->number_likes > -1;
+	}
+
+	public function get_number_likes() : int {
+		return $this->number_likes;
+	}
+
+	//Set and get wheter the user is liking the group or not
+	public function setLiking(bool $liking){
+		$this->is_liking = $liking;
+	}
+	
+	public function isLiking() : bool {
+		return $this->is_liking;
 	}
 }
