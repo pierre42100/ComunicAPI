@@ -68,6 +68,13 @@ class LikesController {
 				break;
 
 
+			//In case of group
+			case "group":
+				$id = getPostGroupIdWithAccess("id", GroupInfo::VIEW_ACCESS);
+				$componentType = Likes::LIKE_GROUP;
+				break;
+				
+
 			//Default case : error
 			default:
 				Rest_fatal_error(404, "Specifed component type currently not supported !");
