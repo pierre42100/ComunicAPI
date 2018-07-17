@@ -19,6 +19,9 @@ class Posts {
 	//Posts that can be seen by the user only
 	const VISIBILITY_USER = 3;
 
+	//Posts that can be seen by the members of a group (same as friends)
+	const VISIBILITY_GROUP_MEMBERS = 50;
+
 	/**
 	 * Access level to a post
 	 */
@@ -175,7 +178,7 @@ class Posts {
 		}
 
 		//Get user visibility level
-		$visibilityLevel = $all_posts ? $this::VISIBILITY_USER : $this::VISIBILITY_PUBLIC;
+		$visibilityLevel = $all_posts ? $this::VISIBILITY_GROUP_MEMBERS : $this::VISIBILITY_PUBLIC;
 
 		//Prepare the request on the database
 		$conditions = "WHERE group_id = ? AND (";

@@ -15,7 +15,8 @@ class PostsController {
 	const VISIBILITY_LEVELS_API = array(
 		Posts::VISIBILITY_PUBLIC => "public",
 		Posts::VISIBILITY_FRIENDS => "friends",
-		Posts::VISIBILITY_USER => "private"
+		Posts::VISIBILITY_USER => "private",
+		Posts::VISIBILITY_GROUP_MEMBERS => "members",
 	);
 
 	/**
