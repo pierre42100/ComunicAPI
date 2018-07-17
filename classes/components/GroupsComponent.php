@@ -432,6 +432,21 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Determine whether a user is following or not a group
+	 * 
+	 * @param int $userID Target user ID
+	 * @param int $groupID The ID of the related group
+	 * @return bool TRUE if the user is following the group / FALSE else
+	 */
+	public function isFollowing(int $userID, int $groupID) : bool {
+		return db()->count(
+			self::GROUPS_MEMBERS_TABLE,
+			"WHERE groups_id = ? AND user_ID = ? AND following = 1",
+			array($groupID, $userID)
+		) > 0;
+	}
+
+	/**
 	 * Check whether a user is an administrator of a group
 	 * or not
 	 * 
@@ -751,6 +766,7 @@ class GroupsComponent {
 		$member->set_userID($entry["user_id"]);
 		$member->set_time_sent($entry["time_create"]);
 		$member->set_level($entry["level"]);
+		$member->set_following($entry["following"] == 1);
 
 		return $member;
 

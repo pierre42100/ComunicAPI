@@ -116,10 +116,16 @@ class GroupsController {
 		if(!$group->isValid())
 			Rest_fatal_error(404, "The requested group was not found !");
 		
-		//If the user is signed in, check whether he is liking or not the group
-		if(userID > 0)
+		//If the user is signed in, check whether he is liking and following or not the group
+		if(userID > 0) {
 			$group->setLiking(components()->likes->is_liking(
 				userID, $group->get_id(), Likes::LIKE_GROUP));
+
+			
+			$group->set_following(components()->groups->isFollowing(
+				userID, $group->get_id()
+			));
+		}
 
 		//Parse and return information about the group
 		return self::AdvancedGroupInfoToAPI($group);
@@ -638,6 +644,7 @@ class GroupsController {
 		$data["registration_level"] = self::GROUPS_REGISTRATION_LEVELS[$info->get_registration_level()];
 		$data["posts_level"] = self::GROUPS_POSTS_LEVELS[$info->get_posts_level()];
 		$data["virtual_directory"] = $info->get_virtual_directory();
+		$data["following"] = $info->isFollowing();
 
 		return $data;
 	}

@@ -19,7 +19,8 @@ class GroupMember extends BaseUniqueObjectFromUser {
 
     //Private fields
     private $group_id = 1;
-    private $level = -1;
+	private $level = -1;
+	private $following;
 
     //Set and get group id
     public function set_group_id(int $group_id){
@@ -45,5 +46,14 @@ class GroupMember extends BaseUniqueObjectFromUser {
 
 	public function get_level() : int {
 		return $this->level;
+	}
+
+	//Set and get following status
+	public function set_following(bool $following){
+		$this->is_following = $following;
+	}
+	
+	public function isFollowing() : bool {
+		return $this->is_following;
 	}
 }

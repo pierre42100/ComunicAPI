@@ -41,6 +41,7 @@ class GroupInfo extends BaseUniqueObject {
 	private $registration_level = -1;
 	private $posts_level = -1;
 	private $virtual_directory;
+	private $following = FALSE;
     
     //Get and set the name of group
     public function set_name(string $name){
@@ -159,5 +160,14 @@ class GroupInfo extends BaseUniqueObject {
 
 	public function get_virtual_directory() : string {
 		return $this->virtual_directory != null ? $this->virtual_directory : "null";
+	}
+
+	//Set and get following status
+	public function set_following(bool $following){
+		$this->following = $following;
+	}
+	
+	public function isFollowing() : bool {
+		return $this->following;
 	}
 }
