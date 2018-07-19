@@ -623,6 +623,22 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Set (update) user following status
+	 * 
+	 * @param int $groupID Target group ID
+	 * @param int $userID Target user ID
+	 * @param bool $following New following status
+	 * @return bool TRUE to follow / FALSE else
+	 */
+	public function setFollowing(int $groupID, int $userID, bool $following) : bool {
+		return db()->updateDB(
+			self::GROUPS_MEMBERS_TABLE, 
+			"groups_id = ? AND user_id = ?",
+			array("following" => $following ? 1 : 0),
+			array($groupID, $userID));
+	}
+
+	/**
 	 * Turn a database entry into a GroupInfo object
 	 * 
 	 * @param array $data Database entry

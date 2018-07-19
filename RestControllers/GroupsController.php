@@ -627,6 +627,28 @@ class GroupsController {
 	}
 
 	/**
+	 * Set whether a user is following a group or not
+	 * 
+	 * @url POST groups/set_following
+	 */
+	public function setFollowing(){
+		user_login_required();
+
+		//Get the group
+		$groupID = getPostGroupIdWithAccess("groupID", GroupInfo::MEMBER_ACCESS);
+
+		//Get following status
+		$following = postBool("follow");
+
+		//Save the new value
+		if(!components()->groups->setFollowing($groupID, userID, $following))
+			Rest_fatal_error(500, "Could not update following status!");
+		
+		//Success
+		return array("success" => "Follow status has been successfully updated!");
+	}
+
+	/**
 	 * Parse a GroupInfo object into an array for the API
 	 * 
 	 * @param GroupInfo $info Information about the group
