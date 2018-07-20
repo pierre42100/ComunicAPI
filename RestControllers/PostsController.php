@@ -393,18 +393,14 @@ class PostsController {
 		if($postID < 0)
 			Rest_fatal_error(400, "Couldn't create post !");
 
-		
-		if($post->get_kind_page() == Posts::PAGE_KIND_USER){
 
-			//Create a notification
-			$notification = new Notification();
-			$notification->set_from_user_id(userID);
-			$notification->set_on_elem_id($postID);
-			$notification->set_on_elem_type(Notification::POST);
-			$notification->set_type(Notification::ELEM_CREATED);
-			components()->notifications->push($notification);
-			
-		}
+		//Create a notification
+		$notification = new Notification();
+		$notification->set_from_user_id(userID);
+		$notification->set_on_elem_id($postID);
+		$notification->set_on_elem_type(Notification::POST);
+		$notification->set_type(Notification::ELEM_CREATED);
+		components()->notifications->push($notification);
 		
 
 		//Success

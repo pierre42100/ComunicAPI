@@ -160,8 +160,24 @@ class notificationComponent {
 
 			//For the posts on groups
 			else if($notification->get_from_container_type() == Notification::GROUP_PAGE){
-				//TODO : implement
-				return TRUE;
+				
+				//Get the list of the members of the group that follows it
+				$list = components()->groups->getListFollowers($notification->get_from_container_id());
+				
+
+				//Process the list of followers
+				$target_users = array();
+				foreach($list as $userID){
+
+					//If the current follower is the user creating the notification
+					if($userID == $notification->get_from_user_id())
+						continue;
+					
+					$target_users[] = $userID;
+				}
+
+				//Push the notification
+				return $this->push_public($notification, $target_users);
 			}
 
 			//Unimplemented scenario
