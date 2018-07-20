@@ -106,7 +106,7 @@ class GroupsComponent {
 		);
 
 		if(count($data) < 1)
-			throw new Exception("Group " + $id + " does not exists!");
+			throw new Exception("Group " . $id . " does not exists!");
 		
 		return $data[0]["visibility"];
 	}
