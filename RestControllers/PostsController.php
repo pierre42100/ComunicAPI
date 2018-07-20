@@ -98,8 +98,11 @@ class PostsController {
 		else
 			$startFrom = 0; //No start point
 
+		//Check whether groups posts should be included or not
+		$include_groups = isset($_POST['include_groups']) ? postBool("include_groups") : FALSE;
+		
 		//Get the post of the user
-		$posts = CS::get()->components->posts->get_latest(userID, $startFrom, 10);
+		$posts = CS::get()->components->posts->get_latest(userID, $startFrom, 10, $include_groups);
 
 		//Return parsed list of posts
 		return $this->parsePostsList($posts);

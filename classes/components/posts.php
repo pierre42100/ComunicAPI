@@ -218,9 +218,12 @@ class Posts {
 	 * @param int $userID The ID of the user requesting its list of posts
 	 * @param int $startPoint The startpoint of the research (default: 0 = none)
 	 * @param int $limit The limit of the research (default: 10)
+	 * @param bool $include_groups Specify whether groups post can be selected
+	 * too or not
 	 * @return array The list of newest posts for the user
 	 */
-	public function get_latest(int $userID, int $startPoint = 0, int $limit = 10) : array {
+	public function get_latest(int $userID, int $startPoint = 0, 
+		int $limit = 10, bool $include_groups) : array {
 
 		//Check the value of limit (security)
 		if($limit < 1){
@@ -236,7 +239,7 @@ class Posts {
 
 		//Prepare the request on the database
 		//Add the visibility level conditions
-		$conditions = "WHERE group_id = 0 AND niveau_visibilite <= ? AND (ID_personne = ?";
+		$conditions = "WHERE (group_id = 0 AND niveau_visibilite <= ? AND (ID_personne = ?";
 		$dataConds = array($visibilityLevel, $userID);
 
 		//Process the list of friends of the user
@@ -247,7 +250,21 @@ class Posts {
 		}
 
 		//Close user list conditions
-		$conditions .= ")";
+		$conditions .= "))";
+
+		//Check whether posts from groups should be included too
+		if($include_groups){
+
+			//Get the list of groups the user is following
+			$groups = components()->groups->getListFollowedByUser($userID);
+
+			//Process the list of groups
+			foreach($groups as $groupID){
+				$conditions .= " OR (group_id = ?)";
+				$dataConds[] = $groupID;
+			}
+		}
+
 		
 		//Add startpoint condition if required (and get older messages)
 		if($startPoint != 0){
