@@ -232,6 +232,29 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Get the list of members of the group that follows it
+	 * 
+	 * @param int $groupID The ID of the target group
+	 * @return array The list of members
+	 */
+	public function getListFollowers(int $groupID) : array {
+
+		$result = db()->select(
+			self::GROUPS_MEMBERS_TABLE,
+			"WHERE groups_id = ? AND following = 1",
+			array($groupID),
+			array("user_id")
+		);
+
+		//Parse the list of IDs
+		$list = array();
+		foreach($result as $el)
+			$list[] = $el["user_id"];
+		return $list;
+
+	}
+
+	/**
 	 * Count the number of a kind of membership in a group
 	 * 
 	 * @param int $groupID The ID of the target group
