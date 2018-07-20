@@ -100,6 +100,39 @@ class GroupsController {
 	}
 
 	/**
+	 * Get information about multiple groups
+	 * 
+	 * @url POST /groups/get_multiple_info
+	 */
+	public function getMultipleInfo(){
+
+		//Get the IDs of requested groups
+		$IDs = numbers_list_to_array(postString("list", 1));
+
+		//Process the list of groups
+		foreach($IDs as $groupID){
+
+			//Check if the group exists or not
+			if(!components()->groups->exists($groupID))
+				Rest_fatal_error(404, "Group ".$groupID." not found!");
+
+			//Check the user is allowed to access this group information
+			if(components()->groups->getAccessLevel($groupID, userID) < GroupInfo::LIMITED_ACCESS)
+				Rest_fatal_error(404, "Group ".$groupID." not found!");
+			
+			//Get the group information
+			$group = components()->groups->get_info($groupID);
+
+			if(!$group->isValid())
+				Rest_fatal_error(500, "Could not get a group information!");
+			
+			$IDs[$groupID] = self::GroupInfoToAPI($group);
+		}
+
+		return $IDs;
+	}
+
+	/**
 	 * Get advanced information about a group
 	 * 
 	 * @url POST /groups/get_advanced_info
