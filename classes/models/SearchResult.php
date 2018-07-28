@@ -15,6 +15,17 @@ class SearchResult {
 	private $kind;
 	private $kind_id;
 
+	/**
+	 * Constructor of the object
+	 * 
+	 * @param int $kind The kind of result (group, user...)
+	 * @param int $kind_id The ID of the result
+	 */
+	public function SearchResult(int $kind, int $kind_id){
+		$this->set_kind($kind);
+		$this->set_kind_id($kind_id);
+	}
+
 	//Set and get the kind of object
 	public function set_kind(int $kind){
 		$this->kind = $kind;

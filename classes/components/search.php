@@ -37,6 +37,34 @@ class search {
 		//Return result
 		return $return;
 	}
+
+	/**
+	 * Search for groups in the database
+	 * 
+	 * @param string $query
+	 * @param int $limit (default = 10)
+	 * @return array List of results
+	 */
+	public function search_group(string $query, int $limit = 10){
+
+		//Query string
+		$query = "%".$query."%";
+
+		//Request
+		$results = db()->select(
+			GroupsComponent::GROUPS_LIST_TABLE,
+			"WHERE name LIKE ?",
+			array($query),
+			array("id")
+		);
+
+		//Parse and return results
+		$list = array();
+		foreach($results as $el)
+			$list[] = $el["id"];
+		
+		return $list;
+	}
 }
 
 //Register class
