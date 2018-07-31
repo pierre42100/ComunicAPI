@@ -53,7 +53,7 @@ class search {
 		//Request
 		$results = db()->select(
 			GroupsComponent::GROUPS_LIST_TABLE,
-			"WHERE name LIKE ?",
+			"WHERE name LIKE ? AND visibility != ".GroupInfo::SECRET_GROUP,
 			array($query),
 			array("id")
 		);
