@@ -25,6 +25,7 @@ class URLAnalyzer {
 		
 		//Set timeout
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 5);
 		
 		//Get the response
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
