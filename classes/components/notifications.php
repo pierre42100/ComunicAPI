@@ -161,23 +161,8 @@ class notificationComponent {
 			//For the posts on groups
 			else if($notification->get_from_container_type() == Notification::GROUP_PAGE){
 				
-				//Get the list of the members of the group that follows it
-				$list = components()->groups->getListFollowers($notification->get_from_container_id());
-				
-
-				//Process the list of followers
-				$target_users = array();
-				foreach($list as $userID){
-
-					//If the current follower is the user creating the notification
-					if($userID == $notification->get_from_user_id())
-						continue;
-					
-					$target_users[] = $userID;
-				}
-
-				//Push the notification
-				return $this->push_public($notification, $target_users);
+				//Push to all the members of a group who follows it
+				return $this->push_members_group($notification, $notification->get_from_container_id());
 			}
 
 			//Unimplemented scenario
@@ -226,6 +211,34 @@ class notificationComponent {
 			throw new Exception("The kind of notification ".$notification->get_on_elem_type()." is not currently supported !");
 		}
 		
+	}
+
+	/**
+	 * Push a notification to all the members of a group following it
+	 * 
+	 * @param Notification $notification The notification to push
+	 * @param int $groupID Target group ID
+	 * @return bool TRUE success / FALSE else
+	 */
+	private function push_members_group(Notification $notification, int $groupID) : bool {
+
+		//Get the list of the members of the group that follows it
+		$list = components()->groups->getListFollowers($groupID);
+		
+		//Process the list of followers
+		$target_users = array();
+		foreach($list as $userID){
+
+			//If the current follower is the user creating the notification
+			if($userID == $notification->get_from_user_id())
+				continue;
+			
+			$target_users[] = $userID;
+		}
+
+		//Push the notification
+		return $this->push_public($notification, $target_users);
+
 	}
 
 	/**
