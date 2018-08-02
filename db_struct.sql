@@ -151,7 +151,7 @@ CREATE TABLE `comunic_notifications` (
   `dest_user_id` int(11) DEFAULT NULL,
   `on_elem_id` int(11) DEFAULT NULL,
   `on_elem_type` varchar(25) DEFAULT NULL,
-  `type` varchar(25) DEFAULT NULL,
+  `type` varchar(50) DEFAULT NULL,
   `visibility` varchar(20) DEFAULT NULL,
   `from_container_id` int(11) DEFAULT NULL,
   `from_container_type` varchar(25) DEFAULT NULL,

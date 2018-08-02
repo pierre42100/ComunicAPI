@@ -381,6 +381,10 @@ class GroupsController {
 		//Try to respond to the invitation
 		if(!components()->groups->respondInvitation(userID, $groupID, $accept))
 			Rest_fatal_error(500, "An error occurred while trying to respond to membership invitation!");
+		
+		//Push notification
+		create_group_membership_notification(userID, 0, $groupID, 
+			$accept ? Notification::ACCEPTED_GROUP_MEMBERSHIP_INVITATION : Notification::REJECTED_GROUP_MEMBERSHIP_INVITATION);
 
 		//Success
 		return array("success" => "The response to the invitation was saved!");
@@ -406,6 +410,9 @@ class GroupsController {
 		if(!components()->groups->deleteRequest(userID, $groupID))
 			Rest_fatal_error(500, "An error occurred while trying to cancel membership request!");
 		
+		//Delete group membership notifications
+		delete_notifications_group_membership(userID, $groupID);
+
 		return array("success" => "The request has been successfully cancelled!");
 	}
 
@@ -443,6 +450,11 @@ class GroupsController {
 		if(!components()->groups->insertMember($member))
 			Rest_fatal_error(500, "Could not register membership!");
 		
+		//Push notification
+		if($info->get_registration_level() == GroupInfo::MODERATED_REGISTRATION)
+			create_group_membership_notification(userID, 0, $groupID, 
+				Notification::SENT_GROUP_MEMBERSHIP_REQUEST);
+
 		//Success
 		return array("success" => "The membership has been successfully saved!");
 	}
@@ -481,6 +493,9 @@ class GroupsController {
 		//Delete the membership
 		if(!components()->groups->deleteMembershipWithStatus($userID, $groupID, $level))
 			Rest_fatal_error(500, "Could not delete membership!");
+		
+		//Delete group membership notifications
+		delete_notifications_group_membership($userID, $groupID);
 
 		//Success
 		return array("success" => "The membership has been successfully deleted!");
@@ -556,6 +571,10 @@ class GroupsController {
 		if(!components()->groups->respondRequest($userID, $groupID, $accept))
 			Rest_fatal_error(500, "Could not respond to the membership request!");
 		
+		//Push notification
+		create_group_membership_notification($userID, userID, $groupID, 
+			$accept ? Notification::ACCEPTED_GROUP_MEMBERSHIP_REQUEST : Notification::REJECTED_GROUP_MEMBERSHIP_REQUEST);
+
 		//Success
 		return array("success" => "The response to the request has been successfully saved!");
 	}
@@ -604,6 +623,9 @@ class GroupsController {
 		//Cancel group invitation
 		if(!components()->groups->deleteInvitation($userID, $groupID))
 			Rest_fatal_error(500, "Could not cancel membership invitation!");
+
+		//Delete group membership notifications
+		delete_notifications_group_membership($userID, $groupID);
 
 		//Success
 		return array("success" => "Membership invitation has been cancelled !");
@@ -655,6 +677,9 @@ class GroupsController {
 		if(!components()->groups->deleteMembershipWithStatus(userID, $groupID, $level))
 			Rest_fatal_error(500, "An error occurred while trying to delete your membership!");
 		
+		//Delete group membership notifications
+		delete_notifications_group_membership(userID, $groupID);
+
 		//Success
 		return array("success" => "Your membership has been successfully deleted!");
 	}

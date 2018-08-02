@@ -58,6 +58,36 @@ function delete_notifications_friendship_request(int $userOne, int $userTwo) : b
 }
 
 /**
+ * Delete all the notifications related to a group membership
+ * 
+ * @param int $userID The ID of the target user
+ * @param int $groupID The ID of the target group
+ * @return bool TRUE for a success / FALSE else
+ */
+function delete_notifications_group_membership(int $userID, int $groupID) : bool {
+	
+	user_login_required();
+
+	//Create notification object
+	$notification = new Notification();
+	$notification->set_on_elem_type(Notification::GROUP_MEMBERSHIP);
+	$notification->set_on_elem_id($groupID);
+
+	//Delete notifications
+	$notification->set_dest_user_id($userID);
+	$notification->set_from_user_id(-1);
+	if(!components()->notifications->delete($notification))
+		return false;
+	
+	$notification->set_dest_user_id(-1);
+	$notification->set_from_user_id($userID);
+	if(!components()->notifications->delete($notification))
+		return false;
+
+	return true;
+}
+
+/**
  * Create and push a friendship request notification
  * 
  * @param int $fromUser The ID of the user generating the notification
@@ -80,6 +110,46 @@ function create_friendship_notification(int $fromUser, int $destUser, string $ki
 	$notif->set_on_elem_type(Notification::FRIENDSHIP_REQUEST);
 	$notif->set_type($kind);
 
+	//Try to push the notification
+	return components()->notifications->push($notif);
+}
+
+/**
+ * Create and push a group membership  notification
+ * 
+ * @param int $userID The ID of the target user for the membershp
+ * @param int $moderatorID The ID of the moderator creating the notification (0 if it is the user)
+ * @param int $groupID The ID of the target group
+ * @param string $kind The kind of notification to create
+ * @return bool TRUE in case of success / FALSE else
+ */
+function create_group_membership_notification(int $userID, int $moderatorID, int $groupID, string $kind) : bool {
+
+	//Delete all the previous notifications
+	if(!delete_notifications_group_membership($userID, $groupID))
+		return false;
+	
+	//Create the notification
+	$notif = new Notification();
+	$notif->set_time_create(time());
+	$notif->set_on_elem_id($groupID);
+	$notif->set_on_elem_type(Notification::GROUP_MEMBERSHIP);
+	$notif->set_type($kind);
+
+	if($moderatorID < 1){
+
+		//The notification must be sent to all the moderators of the group
+		$notif->set_from_user_id($userID);
+		$notif->set_dest_user_id(-1);
+
+	}
+	else {
+		//We specify both the source and the destination of the notification not
+		//to broadcast the notification to all the group members
+		$notif->set_from_user_id($moderatorID);
+		$notif->set_dest_user_id($userID);
+	}
+	
 	//Try to push the notification
 	return components()->notifications->push($notif);
 }

@@ -198,12 +198,56 @@ class notificationComponent {
 			return $this->push_private($notification);
 
 		}
+
+		//Handles groups membership notifications
+		else if($notification->get_on_elem_type() == Notification::GROUP_MEMBERSHIP){
+
+			//Complete the notification
+			$notification->set_from_container_id(0);
+			$notification->set_from_container_type("");
+			
+			//Check whether the notification has to be pushed to a single user
+			//or to all the moderators of the page
+			if($notification->has_dest_user_id())
+
+				//Push the notification in private way (if it has a destination,
+				//generally the target of the membership request)
+				return $this->push_private($notification);
+			
+			else {
+				//Push the notification to all the moderators of the group
+				return $this->push_group_moderators($notification, $notification->get_on_elem_id());
+			}
+
+		}
 		
 		//Unsupported element
 		else {
 			throw new Exception("The kind of notification ".$notification->get_on_elem_type()." is not currently supported !");
 		}
 		
+	}
+
+	/**
+	 * Push a notification to all the moderators of a group
+	 * 
+	 * @param Notification $notification The notification to push
+	 * @param int $groupID The ID of the target group
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	private function push_group_moderators(Notification $notification, int $groupID) : bool {
+
+		//Get the list of the moderators of the group
+		$members = components()->groups->getListMembers($groupID);
+		$moderators = array();
+
+		foreach($members as $member){
+			if($member->get_level() <= GroupMember::MODERATOR)
+				$moderators[] = $member->get_userID();
+			
+		}
+
+		return $this->push_public($notification, $moderators);
 	}
 
 	/**

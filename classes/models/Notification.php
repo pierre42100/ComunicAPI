@@ -25,6 +25,7 @@ class Notification {
 	const POST_SURVEY = "post_survey";
 	const COMMENT = "comment";
 	const FRIENDSHIP_REQUEST = "friend_request";
+	const GROUP_MEMBERSHIP = "group_membership";
 
 	/**
 	 * Event type
@@ -35,6 +36,12 @@ class Notification {
 	const REJECTED_FRIEND_REQUEST = "rejected_friend_request";
 	const ELEM_CREATED = "elem_created";
 	const ELEM_UPDATED = "elem_updated";
+	const SENT_GROUP_MEMBERSHIP_INVITATION = "sent_group_membership_invitation";
+	const ACCEPTED_GROUP_MEMBERSHIP_INVITATION = "accepted_group_membership_invitation";
+	const REJECTED_GROUP_MEMBERSHIP_INVITATION = "rejected_group_membership_invitation";
+	const SENT_GROUP_MEMBERSHIP_REQUEST = "sent_group_membership_request";
+	const ACCEPTED_GROUP_MEMBERSHIP_REQUEST = "accepted_group_membership_request";
+	const REJECTED_GROUP_MEMBERSHIP_REQUEST = "rejected_group_membership_request";
 
 	/**
 	 * Event visibility
@@ -159,6 +166,10 @@ class Notification {
 	 */
 	public function set_from_user_id(int $from_user_id){
 		$this->from_user_id = $from_user_id;
+
+		//Check if we have to reset the value
+		if($from_user_id < 0)
+			$this->from_user_id = null;
 	}
 
 	/**
@@ -186,6 +197,10 @@ class Notification {
 	 */
 	public function set_dest_user_id(int $dest_user_id){
 		$this->dest_user_id = $dest_user_id;
+
+		//Reset the value if required
+		if($dest_user_id < 0)
+			$this->dest_user_id = null;
 	}
 
 	/**
