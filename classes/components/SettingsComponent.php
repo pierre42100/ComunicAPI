@@ -228,10 +228,10 @@ class SettingsComponents {
 		$obj = new SecuritySettings();
 
 		$obj->set_id($entry['ID']);
-		$obj->set_security_question_1($entry["question1"]);
-		$obj->set_security_answer_1($entry["reponse1"]);
-		$obj->set_security_question_2($entry["question2"]);
-		$obj->set_security_answer_2($entry["reponse2"]);
+		if($entry["question1"] != null) $obj->set_security_question_1($entry["question1"]);
+		if($entry["reponse1"] != null) $obj->set_security_answer_1($entry["reponse1"]);
+		if($entry["question2"] != null) $obj->set_security_question_2($entry["question2"]);
+		if($entry["reponse2"] != null) $obj->set_security_answer_2($entry["reponse2"]);
 
 		return $obj;
 
