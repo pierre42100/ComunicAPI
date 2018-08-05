@@ -239,7 +239,7 @@ class Posts {
 
 		//Prepare the request on the database
 		//Add the visibility level conditions
-		$conditions = "WHERE (group_id = 0 AND niveau_visibilite <= ? AND (ID_personne = ?";
+		$conditions = "WHERE ((group_id = 0 AND niveau_visibilite <= ? AND (ID_personne = ?";
 		$dataConds = array($visibilityLevel, $userID);
 
 		//Process the list of friends of the user
@@ -268,12 +268,12 @@ class Posts {
 		
 		//Add startpoint condition if required (and get older messages)
 		if($startPoint != 0){
-			$conditions .= " AND ID <= ? ";
+			$conditions .= ") AND (ID <= ? ";
 			$dataConds[] = $startPoint;
 		}
 
 		//Specify order and limit
-		$conditions.= " ORDER BY ID DESC LIMIT ".$limit;
+		$conditions.= ") ORDER BY ID DESC LIMIT ".$limit;
 
 		//Perform the request
 		$list = CS::get()->db->select(
