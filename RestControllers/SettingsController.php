@@ -115,6 +115,54 @@ class SettingsController {
 	}
 
 	/**
+	 * Get language settings
+	 * 
+	 * @url POST /settings/get_language
+	 */
+	public function getLanguage(){
+
+		//User login required
+		user_login_required();
+
+		//Get the settings of the user
+		$settings = components()->settings->get_language(userID);
+
+		if(!$settings->isValid())
+			Rest_fatal_error(500, "Could not get language settings!");
+
+		//Return parsed settings object
+		return $this->LanguageSettingsToAPI($settings);
+	}
+
+	/**
+	 * Set (update) language settings
+	 * 
+	 * @url POST /settings/set_language
+	 */
+	public function setLanguage(){
+
+		//User login required
+		user_login_required();
+
+		//Get specified language
+		$lang = postString("lang", 2);
+
+		if(!in_array($lang, LanguageSettings::LANGUAGES))
+			Rest_fatal_error(401, "Language not recognized !");
+
+		$settings = new LanguageSettings();
+		$settings->set_id(userID);
+		$settings->set_lang($lang);
+
+		//Save language in database
+		if(!components()->settings->save_language($settings))
+			Rest_fatal_error(500, "Could not save language settings!");
+		
+		//Success
+		return array("success" => "Language settings have been successfully updated!");
+	}
+
+	/**
 	 * Get security settings
 	 * 
 	 * Warning !!! This method is really sensitive, please double check any
@@ -307,6 +355,21 @@ class SettingsController {
 		$data["virtual_directory"] = $settings->get_virtualDirectory();
 		$data["personnal_website"] = $settings->get_personnalWebsite();
 		$data["publicNote"] = $settings->get_publicNote();
+
+		return $data;
+	}
+
+	/**
+	 * Turn a LanguageSettings object into a valid API object
+	 * 
+	 * @param LanguageSettings $settings The object to convert
+	 * @return array Generated API object
+	 */
+	private function LanguageSettingsToAPI(LanguageSettings $settings) : array {
+
+		$data = array();
+
+		$data["lang"] = $settings->get_lang();
 
 		return $data;
 	}

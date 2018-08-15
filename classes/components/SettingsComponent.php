@@ -65,6 +65,42 @@ class SettingsComponents {
 	}
 
 	/**
+	 * Get and return language settings of a user
+	 * 
+	 * @param int $userID Target user ID
+	 * @return LanguageSettings The language settings of the user / invalid object
+	 * in case of failure
+	 */
+	public function get_language(int $userID) : LanguageSettings {
+
+		//Get user database entry
+		$entry = $this->getDBUserInfo($userID);
+
+		//Check for error
+		if(count($entry) == 0)
+			return new LanguageSettings(); //Return invalid object
+		
+		//Parse database entry into LanguageSettings entry
+		return $this->dbToLanguageSettings($entry);
+
+	}
+
+	/**
+	 * Save new version of the language settings of a user
+	 * 
+	 * @param LanguageSettings $settings The settings to save in the database
+	 * @return bool TRUE in case of success / FALSE else
+	 */
+	public function save_language(LanguageSettings $settings) : bool {
+
+		//Convert LanguageSettings object into database entry
+		$entry = $this->LanguageSettingsToDb($settings);
+
+		//Save information in the database
+		return $this->saveDBUserInfo($settings->get_id(), $entry);
+	}
+
+	/**
 	 * Get and return security settings of a user
 	 * 
 	 * @param int $userID Target user ID
@@ -218,6 +254,21 @@ class SettingsComponents {
 	}
 
 	/**
+	 * Parse a user information into LanguageSettings object
+	 * 
+	 * @param array $entry The entry to parse
+	 * @return LanguageSettings Generated model
+	 */
+	private function dbToLanguageSettings(array $entry) : LanguageSettings {
+		$obj = new LanguageSettings();
+
+		$obj->set_id($entry['ID']);
+		$obj->set_lang($entry["lang"]);
+
+		return $obj;
+	}
+
+	/**
 	 * Parse a user information entry into SecuritySettings object
 	 * 
 	 * @param array $entry The database entry to process
@@ -235,6 +286,20 @@ class SettingsComponents {
 
 		return $obj;
 
+	}
+
+	/**
+	 * Turn LanguageSettings object into database entry
+	 * 
+	 * @param LanguageSettings $settings Language settings to turn into database entry
+	 * @return array Generated entry
+	 */
+	private function LanguageSettingsToDb(LanguageSettings $settings) : array {
+		$data = array();
+
+		$data["lang"] = $settings->get_lang();
+
+		return $data;
 	}
 
 	/**
