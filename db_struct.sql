@@ -499,5 +499,6 @@ CREATE TABLE `utilisateurs` (
   `public_note` varchar(255) DEFAULT NULL,
   `password_reset_token` varchar(255) DEFAULT NULL,
   `password_reset_token_time_create` int(11) DEFAULT NULL,
+  `lang` varchar(4) DEFAULT 'en',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
