@@ -225,6 +225,8 @@ class accountController {
 	 */
 	public function createAccount(){
 
+		api_limit_query(APILimits::ACTION_CREATE_ACCOUNT, false);
+
 		//Check post fields existence
 		if(!check_post_parametres(array("emailAddress", "firstName", "lastName", "password")))
 			Rest_fatal_error(400, "Please check given parameters");
@@ -260,6 +262,8 @@ class accountController {
 		//Try to create the account
 		if(!components()->account->create($newAccount))
 			Rest_fatal_error(500, "An error occured while trying to create the account !");
+
+		api_limit_query(APILimits::ACTION_CREATE_ACCOUNT, true);
 
 		//Success
 		return array(

@@ -21,6 +21,7 @@ class APILimits {
 	 * Actions list
 	 */
 	const ACTION_LOGIN_FAILED = "failed_login";
+	const ACTION_CREATE_ACCOUNT = "create_account";
 
 	/**
 	 * Actions configruation
@@ -30,7 +31,12 @@ class APILimits {
 		//Login failed
 		self::ACTION_LOGIN_FAILED => array(
 			"limit" => 10
-		)
+		),
+
+		//Create an account
+		self::ACTION_CREATE_ACCOUNT => array(
+			"limit" => 10
+		),
 	);
 
 	/**
