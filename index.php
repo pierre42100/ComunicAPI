@@ -70,6 +70,11 @@ else {
 	define("userID", 0);
 }
 
+//Setup API limits
+require_once "classes/APILimits.php";
+$api_limits = new APILimits();
+cs()->register("limit", $api_limits);
+
 /**
  * Handle Rest requests
  */

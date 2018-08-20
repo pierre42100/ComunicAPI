@@ -17,31 +17,38 @@ class accountController {
 	 * @url POST /account/login
 	 */
 	public function connectUSER(){
+
 		//Check variables sent in request
 		if(!isset($_POST['userMail']) OR !isset($_POST['userPassword']))
 		   throw new RestException(400, "Missing data !");
 	   
-	   //Retrieve database connection
-	   $db = CS::get()->db;;
+		//API limit
+		api_limit_query(APILimits::ACTION_LOGIN_FAILED, false);
 
-	   //Extract data
-	   $userMail = $_POST["userMail"];
-	   $userPassword = $_POST['userPassword'];
+		//Retrieve database connection
+		$db = CS::get()->db;;
 
-	   //Try to perform login
-	   $loginTokens = CS::get()->components->account->generateUserLoginTokens($userMail, $userPassword, APIServiceID, $db);
+		//Extract data
+		$userMail = $_POST["userMail"];
+		$userPassword = $_POST['userPassword'];
 
-	   if(count($loginTokens) == 0)
-		   throw new RestException(401, "Invalid e-mail address / password !");
+		//Try to perform login
+		$loginTokens = CS::get()->components->account->generateUserLoginTokens($userMail, $userPassword, APIServiceID, $db);
 
-	   //Return result with tokens
-	   return array(
-		   "success" => "User logged in !",
-		   "tokens" => array(
-			   "token1" => $loginTokens[0],
-			   "token2" => $loginTokens[1],
-		   ),
-	   );
+		if(count($loginTokens) == 0){
+			api_limit_query(APILimits::ACTION_LOGIN_FAILED, true);
+			throw new RestException(401, "Invalid e-mail address / password !");
+		}
+		   
+
+		//Return result with tokens
+		return array(
+			"success" => "User logged in !",
+			"tokens" => array(
+				"token1" => $loginTokens[0],
+				"token2" => $loginTokens[1],
+			),
+		);
 	}
 
 	/**

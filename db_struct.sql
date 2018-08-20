@@ -72,6 +72,14 @@ CREATE TABLE `commentaires` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+DROP TABLE IF EXISTS `comunic_api_limit_count`;
+CREATE TABLE `comunic_api_limit_count` (
+  `ip` varchar(15) NOT NULL,
+  `time_start` int(11) DEFAULT NULL,
+  `action` varchar(45) DEFAULT NULL,
+  `count` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 DROP TABLE IF EXISTS `comunic_API_ServicesToken`;
 CREATE TABLE `comunic_API_ServicesToken` (
