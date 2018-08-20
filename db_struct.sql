@@ -137,6 +137,34 @@ CREATE TABLE `comunic_conversations_users` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+DROP TABLE IF EXISTS `comunic_groups`;
+CREATE TABLE `comunic_groups` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `time_create` int(11) DEFAULT NULL,
+  `userid_create` int(11) DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `path_logo` varchar(45) DEFAULT NULL,
+  `visibility` int(11) NOT NULL DEFAULT '1',
+  `registration_level` int(11) DEFAULT '1',
+  `posts_level` int(11) DEFAULT '0',
+  `virtual_directory` varchar(45) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `url` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `comunic_groups_members`;
+CREATE TABLE `comunic_groups_members` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `groups_id` int(11) DEFAULT NULL,
+  `user_id` varchar(45) DEFAULT NULL,
+  `time_create` varchar(45) DEFAULT NULL,
+  `level` int(11) DEFAULT '2',
+  `following` tinyint(4) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
+
+
 
 DROP TABLE IF EXISTS `comunic_mails_queue`;
 CREATE TABLE `comunic_mails_queue` (
