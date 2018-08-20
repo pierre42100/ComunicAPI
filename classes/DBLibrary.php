@@ -560,7 +560,12 @@ class DBLibrary {
         
         //PDO informations
         if($this->verbose){
-            echo "\n PDO last error:";
+
+            echo "\n\n Call trace:";
+            echo $e->getTraceAsString();
+
+
+            echo "\n\n PDO last error:";
             print_r($this->db->errorInfo());
         }
     }
@@ -573,9 +578,13 @@ class DBLibrary {
     private function echoPDOException(PDOException $e){
         $message = '<b>Exception in '.$e->getFile().' on line '.$e->getLine().' </b>: '.$e->getMessage();
         echo $message;
-
+        
         //PDO informations
         if($this->verbose){
+
+            echo "\n\n Call trace:";
+            echo $e->getTraceAsString();
+
             echo "\n PDO last error:";
             print_r($this->db->errorInfo);
         }
