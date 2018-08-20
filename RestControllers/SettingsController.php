@@ -208,10 +208,10 @@ class SettingsController {
 		//Create a security settings object and fill it with the new information
 		$settings = new SecuritySettings();
 		$settings->set_id(userID);
-		$settings->set_security_question_1(postString("security_question_1", 0));
-		$settings->set_security_answer_1(postString("security_answer_1", 0));
-		$settings->set_security_question_2(postString("security_question_2", 0));
-		$settings->set_security_answer_2(postString("security_answer_2", 0));
+		$settings->set_security_question_1(removeHTMLnodes(postString("security_question_1", 0)));
+		$settings->set_security_answer_1(removeHTMLnodes(postString("security_answer_1", 0)));
+		$settings->set_security_question_2(removeHTMLnodes(postString("security_question_2", 0)));
+		$settings->set_security_answer_2(removeHTMLnodes(postString("security_answer_2", 0)));
 		
 		//Try to update settings
 		if(!components()->settings->save_security($settings))
