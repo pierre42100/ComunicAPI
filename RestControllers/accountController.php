@@ -248,7 +248,7 @@ class accountController {
 		
 		//Check if the email address is already associated with an account
 		if(components()->account->exists_email($email))
-			Rest_fatal_error(401, "The specified email address is already associated with an account!");
+			Rest_fatal_error(409, "The specified email address is already associated with an account!");
 		
 		//Create new account object
 		$newAccount = new NewAccount();
