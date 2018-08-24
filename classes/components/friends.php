@@ -410,6 +410,19 @@ class friends {
 	}
 
 	/**
+	 * Count the number of friendship requests a user has received
+	 * 
+	 * @param int $userID Target user ID
+	 * @return int The number of friendship request the user received
+	 */
+	public function count_requests(int $userID) : int {
+		return db()->count(
+			$this->friendsTable, 
+			"WHERE ID_personne = ? AND actif = 0", 
+			array($userID));
+	}
+
+	/**
 	 * Parse friend informations from the database
 	 * 
 	 * @param array $data Informations about the friend from the database

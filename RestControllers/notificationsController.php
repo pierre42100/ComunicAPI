@@ -40,11 +40,17 @@ class notificationsController {
 		user_login_required();
 
 		//Get and return the data
-		return array(
+		$data = array(
 			"notifications" => components()->notifications->count_unread(userID),
 			"conversations" => components()->conversations->number_user_unread(userID)
 		);
 
+		//Include friendship requests if required
+		if(isset($_POST["friends_request"]))
+			if(postBool("friends_request"))
+				$data["friends_request"] = components()->friends->count_requests(userID);
+
+		return $data;
 	}
 
 
