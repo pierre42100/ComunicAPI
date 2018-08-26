@@ -113,6 +113,10 @@ class friendsController{
 		//Get target ID
 		$friendID = getPostUserID('friendID');
 
+		//Check if the current user is requesting himself as friend
+		if($friendID == userID)
+			Rest_fatal_error(401, "You can not become a friend to yourself!");
+
 		//Check if the two persons are already friend
 		if(CS::get()->components->friends->are_friend(userID, $friendID))
 			Rest_fatal_error(401, "The two personns are already friend !");
