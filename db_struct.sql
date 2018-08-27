@@ -171,7 +171,7 @@ CREATE TABLE `comunic_mails_queue` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `priority` int(11) DEFAULT NULL,
   `time_insert` int(11) DEFAULT NULL,
-  `userID` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `template` varchar(45) DEFAULT NULL,
   `data` text DEFAULT NULL,
   PRIMARY KEY (`id`)
