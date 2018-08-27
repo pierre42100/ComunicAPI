@@ -105,8 +105,8 @@ CREATE TABLE `comunic_API_userLoginToken` (
 
 DROP TABLE IF EXISTS `comunic_conversations_list`;
 CREATE TABLE `comunic_conversations_list` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `ID_utilisateurs` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
   `name` varchar(50) DEFAULT NULL,
   `last_active` int(11) DEFAULT NULL,
   `creation_time` int(11) DEFAULT NULL,
@@ -116,9 +116,9 @@ CREATE TABLE `comunic_conversations_list` (
 
 DROP TABLE IF EXISTS `comunic_conversations_messages`;
 CREATE TABLE `comunic_conversations_messages` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `ID_comunic_conversations_list` int(11) DEFAULT NULL,
-  `ID_utilisateurs` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `conv_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `time_insert` int(11) DEFAULT NULL,
   `message` varchar(200) DEFAULT NULL,
   `image_path` varchar(100) DEFAULT NULL,
@@ -128,9 +128,9 @@ CREATE TABLE `comunic_conversations_messages` (
 
 DROP TABLE IF EXISTS `comunic_conversations_users`;
 CREATE TABLE `comunic_conversations_users` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `ID_comunic_conversations_list` int(11) DEFAULT NULL,
-  `ID_utilisateurs` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `conv_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `time_add` int(11) DEFAULT NULL,
   `following` int(1) DEFAULT '0',
   `saw_last_message` int(1) DEFAULT NULL,

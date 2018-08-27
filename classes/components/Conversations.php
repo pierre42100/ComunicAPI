@@ -28,8 +28,8 @@ class Conversations {
 		$tablesName = self::LIST_TABLE.", ".self::USERS_TABLE;
 		
 		//Prepare conditions
-		$tableJoinCondition = self::LIST_TABLE.".ID = ".self::USERS_TABLE.".ID_".self::LIST_TABLE."";
-		$userCondition = self::USERS_TABLE.".ID_utilisateurs = ?";
+		$tableJoinCondition = self::LIST_TABLE.".id = ".self::USERS_TABLE.".conv_id";
+		$userCondition = self::USERS_TABLE.".user_id = ?";
 		$orderResults = "ORDER BY ".self::LIST_TABLE.".last_active DESC";
 
 		//Specify conditions values
@@ -37,7 +37,7 @@ class Conversations {
 
 		//Check if we have to get informations about just one conversation
 		if($conversationID != 0){
-			$specificConditions = "AND ".self::LIST_TABLE.".ID  = ?";
+			$specificConditions = "AND ".self::LIST_TABLE.".id  = ?";
 			$conditionsValues[] = $conversationID;
 		}
 		else
@@ -48,10 +48,10 @@ class Conversations {
 		
 		//Fields list
 		$requiredFields = array(
-			self::LIST_TABLE.".ID",
+			self::LIST_TABLE.".id",
 			self::LIST_TABLE.".last_active",
 			self::LIST_TABLE.".name",
-			self::LIST_TABLE.".ID_utilisateurs AS ID_owner",
+			self::LIST_TABLE.".user_id AS owner_id",
 			self::USERS_TABLE.".following",
 			self::USERS_TABLE.".saw_last_message",
 		);
@@ -84,9 +84,9 @@ class Conversations {
 
 		//Perform a request on the database
 		$tableName = self::USERS_TABLE;
-		$conditions = "WHERE ID_".self::LIST_TABLE." = ?";
+		$conditions = "WHERE conv_id = ?";
 		$conditionsValues = array($conversationID*1);
-		$getFields = array("ID_utilisateurs as userID");
+		$getFields = array("user_id");
 
 		//Perform the request
 		$results = CS::get()->db->select($tableName, $conditions, $conditionsValues, $getFields);
@@ -98,7 +98,7 @@ class Conversations {
 		$membersList = array();
 
 		foreach($results as $processUser)
-			$membersList[] = $processUser["userID"];
+			$membersList[] = $processUser["user_id"];
 
 		//Return result
 		return $membersList;
@@ -113,7 +113,7 @@ class Conversations {
 	public function create(ConversationInfo $conv) : int{
 		
 		$mainInformations = array(
-			"ID_utilisateurs" => $conv->get_id_owner(),
+			"user_id" => $conv->get_id_owner(),
 			"name" => ($conv->has_name() ? $conv->get_name() : ""),
 			"last_active" => time(),
 			"creation_time" => time()
@@ -124,7 +124,7 @@ class Conversations {
 			return 0; //An error occured
 		
 		//Get the last inserted ID
-		$conversationID = CS::get()->db->getLastInsertedID();
+		$conversationID = db()->getLastInsertedID();
 
 		//Check for errors
 		if($conversationID == 0)
@@ -158,7 +158,7 @@ class Conversations {
 		
 		//Prepare a request on the database
 		$tableName = self::USERS_TABLE;
-		$conditions = "WHERE ID_".self::LIST_TABLE." = ? AND ID_utilisateurs = ?";
+		$conditions = "WHERE conv_id = ? AND user_id = ?";
 		$values = array(
 			$conversationID,
 			$userID
@@ -187,7 +187,7 @@ class Conversations {
 		
 		//Prepare the request on the database
 		$tableName = self::USERS_TABLE;
-		$conditions = "ID_".self::LIST_TABLE." = ? AND ID_utilisateurs = ?";
+		$conditions = "conv_id = ? AND user_id = ?";
 		$condVals = array(
 			$conversationID,
 			$userID
@@ -216,7 +216,7 @@ class Conversations {
 	public function changeName(int $conversationID, string $conversationName) : bool{
 		//Prepare database request
 		$tableName = self::LIST_TABLE;
-		$conditions = "ID = ?";
+		$conditions = "id = ?";
 		$condVals = array($conversationID);
 
 		//Changes
@@ -279,8 +279,8 @@ class Conversations {
 		//Prepare database request
 		$tableName = self::USERS_TABLE;
 		$values = array(
-			"ID_".self::LIST_TABLE => $conversationID,
-			"ID_utilisateurs" => $userID,
+			"conv_id" => $conversationID,
+			"user_id" => $userID,
 			"time_add" => time(),
 			"following" => $follow ? 1 : 0,
 			"saw_last_message" => 1
@@ -300,7 +300,7 @@ class Conversations {
 	private function removeMember(int $conversationID, int $userID) : bool {
 		//Prepare database request
 		$tableName = self::USERS_TABLE;
-		$conditions = "ID_".self::LIST_TABLE." = ? AND ID_utilisateurs = ?";
+		$conditions = "conv_id = ? AND user_id = ?";
 		$values = array(
 			$conversationID,
 			$userID
@@ -320,10 +320,10 @@ class Conversations {
 	public function userIsModerator(int $userID, int $conversationID) : bool {
 		//Prepare database request
 		$tableName = self::LIST_TABLE;
-		$conditions = "WHERE ID = ?";
+		$conditions = "WHERE id = ?";
 		$values = array($conversationID);
 		$requiredFields = array(
-			"ID_utilisateurs"
+			"user_id"
 		);
 
 		//Peform a request on the database
@@ -338,7 +338,7 @@ class Conversations {
 			return false;
 
 		//Check the first result only
-		return $results[0]["ID_utilisateurs"] == $userID;
+		return $results[0]["user_id"] == $userID;
 	}
 
 	/**
@@ -349,13 +349,11 @@ class Conversations {
 	 * @return bool TRUE if the user is the owner of the conversation / FALSE else
 	 */
 	public function isOwnerMessage(int $userID, int $messageID) : bool {
-
 		return db()->count(
 			self::MESSAGES_TABLE, 
-			"WHERE ID  = ? AND ID_utilisateurs = ?",
+			"WHERE id  = ? AND user_id = ?",
 			array($messageID, $userID)
 		) > 0;
-
 	}
 
 	/**
@@ -373,17 +371,17 @@ class Conversations {
 			self::USERS_TABLE." AS table3";
 		
 		//Prepare conditions
-		$joinCondition = "(table1.ID_".self::LIST_TABLE." = table2.ID_".self::LIST_TABLE.")".
-			"AND (table1.ID_".self::LIST_TABLE." = table3.ID_".self::LIST_TABLE.")";
-		$whereConditions = "table1.ID_utilisateurs = ? AND table2.ID_utilisateurs = ?";
-		$groupCondition = "table1.ID_".self::LIST_TABLE." having count(*) = 2";
+		$joinCondition = "(table1.conv_id = table2.conv_id)".
+			"AND (table1.conv_id = table3.conv_id)";
+		$whereConditions = "table1.user_id = ? AND table2.user_id = ?";
+		$groupCondition = "table1.conv_id having count(*) = 2";
 
 		//Conditions values
 		$condValues = array($user1, $user2);
 
 		//Required fields
 		$requiredFields = array(
-			"table1.ID_".self::LIST_TABLE." as conversationID",
+			"table1.conv_id as conversationID",
 		);
 
 		//Build conditions
@@ -416,8 +414,8 @@ class Conversations {
 		//Prepare values
 		$tableName = self::MESSAGES_TABLE;
 		$values = array(
-			"ID_".self::LIST_TABLE => $message->get_conversationID(),
-			"ID_utilisateurs" => $message->get_userID(),
+			"conv_id" => $message->get_conversationID(),
+			"user_id" => $message->get_userID(),
 			"time_insert" => time(),
 			"message" => $message->has_message() ? $message->get_message() : ""
 		);
@@ -445,7 +443,7 @@ class Conversations {
 
 		//Perform a request on the database
 		$tableName = self::LIST_TABLE;
-		$conditions = "ID = ?";
+		$conditions = "id = ?";
 		$condVals = array($conversationID);
 
 		//Set new values
@@ -472,12 +470,12 @@ class Conversations {
 
 		//Prepare request
 		$tableName = self::USERS_TABLE;
-		$conditions = "ID_".self::LIST_TABLE." = ?";
+		$conditions = "conv_id = ?";
 		$condVals = array($conversationID);
 
 		//Remove users exceptions
 		foreach($exceptions as $userID){
-			$conditions.= " AND ID_utilisateurs != ?";
+			$conditions.= " AND user_id != ?";
 			$condVals[] = $userID;
 		}
 
@@ -505,7 +503,7 @@ class Conversations {
 
 		//Prepare database request
 		$tableName = self::USERS_TABLE;
-		$conditions = "ID_".self::LIST_TABLE." = ? AND ID_utilisateurs = ?";
+		$conditions = "conv_id = ? AND user_id = ?";
 		$condVals = array(
 			$conversationID,
 			$userID
@@ -561,7 +559,7 @@ class Conversations {
 	public function getLastMessages(int $conversationID, int $numberOfMessages) : array {
 
 		//Define conditions
-		$conditions = "WHERE ID_".self::LIST_TABLE." = ? ORDER BY ID DESC LIMIT ".($numberOfMessages*1);
+		$conditions = "WHERE conv_id = ? ORDER BY id DESC LIMIT ".($numberOfMessages*1);
 		$condVals = array(
 			$conversationID
 		);
@@ -586,7 +584,7 @@ class Conversations {
 	public function getNewMessages(int $conversationID, int $lastMessageID) : array {
 
 		//Define conditions
-		$conditions = "WHERE ID_".self::LIST_TABLE." = ? AND ID > ? ORDER BY ID";
+		$conditions = "WHERE conv_id = ? AND ID > ? ORDER BY id";
 		$condVals = array(
 			$conversationID,
 			$lastMessageID
@@ -610,7 +608,7 @@ class Conversations {
 	public function getOlderMessages(int $conversationID, int $startID, int $limit) : array {
 
 		//Define conditions
-		$conditions = "WHERE ID_".self::LIST_TABLE." = ? AND ID < ? ORDER BY ID DESC LIMIT ".($limit);
+		$conditions = "WHERE conv_id = ? AND ID < ? ORDER BY id DESC LIMIT ".($limit);
 		$condVals = array(
 			$conversationID,
 			$startID + 1
@@ -636,7 +634,7 @@ class Conversations {
 	public function getAllMessages(int $conversationID) : array {
 
 		//Define conditions
-		$conditions = "WHERE ID_".self::LIST_TABLE." = ? ORDER BY ID";
+		$conditions = "WHERE conv_id = ? ORDER BY id";
 		$condVals = array(
 			$conversationID
 		);
@@ -659,7 +657,7 @@ class Conversations {
 		//Perform a request on the database
 		$tableName = self::LIST_TABLE;
 
-		return CS::get()->db->count($tableName, "WHERE ID = ?", array($convID)) > 0;
+		return CS::get()->db->count($tableName, "WHERE id = ?", array($convID)) > 0;
 
 	}
 
@@ -697,7 +695,7 @@ class Conversations {
 	public function delete_conversation(int $convID) : bool {
 
 		//Get all the messages of the conversation
-		$messages = $this->getMessages("WHERE ID_".self::LIST_TABLE." = ?", array($convID));
+		$messages = $this->getMessages("WHERE conv_id = ?", array($convID));
 
 		//Delete each message
 		foreach($messages as $message){
@@ -732,7 +730,7 @@ class Conversations {
 
 		//Get all the messages of member the conversation
 		$messages = $this->getMessages(
-			"WHERE ID_".self::LIST_TABLE." = ? AND ID_utilisateurs = ?", 
+			"WHERE conv_id = ? AND user_id = ?", 
 			array($convID, $memberID));
 
 		//Delete each message
@@ -758,7 +756,7 @@ class Conversations {
 	public function deleteConversationMessage(int $messageID) : bool {
 
 		//Get information about the message
-		$messages = $this->getMessages("WHERE ID = ?", array($messageID));
+		$messages = $this->getMessages("WHERE id = ?", array($messageID));
 
 		if(count($messages) < 1)
 			return FALSE; //Message not found
@@ -802,7 +800,7 @@ class Conversations {
 	private function delete_all_members(int $convID) : bool {
 
 		//Prepare request on the database
-		$conditions = "ID_".self::LIST_TABLE." = ?";
+		$conditions = "conv_id = ?";
 		$values = array(
 			$convID
 		);
@@ -819,7 +817,7 @@ class Conversations {
 	 * @return bool True in case of success / false else
 	 */
 	private function delete_conversation_entry(int $convID) : bool {
-		return CS::get()->db->deleteEntry(self::LIST_TABLE, "ID = ?", array($convID));
+		return CS::get()->db->deleteEntry(self::LIST_TABLE, "id = ?", array($convID));
 	}
 
 	/**
@@ -832,7 +830,7 @@ class Conversations {
 
 		//Prepare database request
 		$tableName = self::USERS_TABLE;
-		$conditions = "WHERE ID_utilisateurs = ? AND saw_last_message = 0 AND following = 1";
+		$conditions = "WHERE user_id = ? AND saw_last_message = 0 AND following = 1";
 		$values = array($userID);
 
 		//Perform request and return result
@@ -850,8 +848,8 @@ class Conversations {
 
 		//Perform the request on the server
 		$tablesName = self::USERS_TABLE." as users, ".self::LIST_TABLE." as list, ".self::MESSAGES_TABLE." as messages";
-		$conditions = "WHERE users.ID_utilisateurs = ? AND users.following = 1 AND users.saw_last_message = 0 AND users.ID_comunic_conversations_list = list.ID
-		AND list.ID = messages.ID_comunic_conversations_list AND list.last_active = messages.time_insert";
+		$conditions = "WHERE users.user_id = ? AND users.following = 1 AND users.saw_last_message = 0 AND users.conv_id = list.id
+		AND list.id = messages.conv_id AND list.last_active = messages.time_insert";
 		$values = array($userID);
 
 		//Perform the request
@@ -879,7 +877,7 @@ class Conversations {
 	public function getAllUserMessages(int $userID) : array {
 
 		//Define conditions
-		$conditions = "WHERE ID_utilisateurs = ? ";
+		$conditions = "WHERE user_id = ? ";
 		$condVals = array(
 			$userID
 		);
@@ -948,8 +946,8 @@ class Conversations {
 
 		//Define required fields
 		$requiredFields = array(
-			"ID",
-			"ID_utilisateurs AS ID_user",
+			"id",
+			"user_id",
 			"image_path",
 			"message",
 			"time_insert"
@@ -976,14 +974,14 @@ class Conversations {
 
 		$conv = new ConversationInfo();
 
-		$conv->set_id($entry["ID"]);
-		$conv->set_id_owner($entry["ID_owner"]);
+		$conv->set_id($entry["id"]);
+		$conv->set_id_owner($entry["owner_id"]);
 		$conv->set_last_active($entry["last_active"]);
 		if($entry["name"] != null)
 			$conv->set_name($entry["name"]);
 		$conv->set_following($entry["following"] == 1);
 		$conv->set_saw_last_message($entry["saw_last_message"] == 1);
-		$conv->set_members($this->getConversationMembers($entry["ID"]));
+		$conv->set_members($this->getConversationMembers($entry["id"]));
 
 		return $conv;
 
@@ -999,8 +997,8 @@ class Conversations {
 
 		$message = new ConversationMessage();
 
-		$message->set_id($entry["ID"]);
-		$message->set_userID($entry["ID_user"]);
+		$message->set_id($entry["id"]);
+		$message->set_userID($entry["user_id"]);
 		$message->set_time_sent($entry["time_insert"]);
 		if($entry["image_path"] != null)
 			$message->set_image_path($entry["image_path"]);
@@ -1021,11 +1019,11 @@ class Conversations {
 		
 		$conversation = new UnreadConversation();
 
-		$conversation->set_id($entry["ID_comunic_conversations_list"]);
+		$conversation->set_id($entry["conv_id"]);
 		if($entry["name"] != null)
 			$conversation->set_conv_name($entry["name"]);
 		$conversation->set_last_active($entry["last_active"]);
-		$conversation->set_userID($entry["ID_utilisateurs"]);
+		$conversation->set_userID($entry["user_id"]);
 		if($entry["message"] != null)
 			$conversation->set_message($entry["message"]);
 
