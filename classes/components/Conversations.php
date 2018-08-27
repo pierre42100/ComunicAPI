@@ -416,7 +416,7 @@ class Conversations {
 		$values = array(
 			"conv_id" => $message->get_conversationID(),
 			"user_id" => $message->get_userID(),
-			"time_insert" => time(),
+			"time_insert" => $message->get_time_sent(),
 			"message" => $message->has_message() ? $message->get_message() : ""
 		);
 
@@ -533,12 +533,15 @@ class Conversations {
 		//GUIDE LINE : this method act like a "controller" : it doesn't perform any database operation
 		//But it manages all operations (insert message; save image; inform other users; ...)
 
+		//Set unique message time
+		$message->set_time_sent(time());
+
 		//First, try to insert the message
 		if(!$this->insertMessage($message))
 			return false; //An error occured
 		
 		//Then, update the last activity of the conversation
-		if(!$this->updateLastActive($message->get_conversationID(), time()))
+		if(!$this->updateLastActive($message->get_conversationID(), $message->get_time_sent()))
 			return false; //An error occured (2)
 		
 		//Then, set all the users of the conversation as unread
