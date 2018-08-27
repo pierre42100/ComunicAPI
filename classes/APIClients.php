@@ -8,6 +8,12 @@
 class APIClients {
 	
 	/**
+	 * Tables name
+	 */
+	const SERVICES_TOKENS_TABLE = DBprefix."api_services_tokens";
+	const USERS_TOKENS_TABLE = DBprefix."api_users_tokens";
+
+	/**
 	 * Check request client tokens
 	 *
 	 * @return bool Depends of the validity of the tokens
@@ -21,7 +27,7 @@ class APIClients {
 			return false;
 
 		//Save service ID in a constant
-		define("APIServiceID", $serviceInfos["ID"]);
+		define("APIServiceID", $serviceInfos["id"]);
 
 		//Save service domain in a constant (if any)
 		if($serviceInfos["clientDomain"] != "")
@@ -40,8 +46,8 @@ class APIClients {
 	 */
 	private function validateClientTokens(string $serviceName, string $token) {
 		//Prepare DataBase request
-		$tableName = CS::get()->config->get("dbprefix")."API_ServicesToken";
-		$conditions = "WHERE serviceName = ? AND token = ?";
+		$tableName = self::SERVICES_TOKENS_TABLE;
+		$conditions = "WHERE service_name = ? AND token = ?";
 		$values = array(
 			$serviceName,
 			$token
@@ -58,7 +64,7 @@ class APIClients {
 			//The API is correctly identified
 			//Generate client informations
 			$clientInformations = array(
-				"ID" => $requestResult[0]['ID'],
+				"id" => $requestResult[0]['id'],
 				"clientDomain" => ($requestResult[0]["client_domain"] == "" ? false : $requestResult[0]["client_domain"])
 			);
 
@@ -80,7 +86,7 @@ class APIClients {
 		$entry = self::APIClientsToDb($client);
 
 		//Insert the entry in the database
-		$tableName = CS::get()->config->get("dbprefix")."API_ServicesToken";
+		$tableName = self::SERVICES_TOKENS_TABLE;
 		return CS::get()->db->addLine($tableName, $entry);
 	}
 
@@ -95,7 +101,7 @@ class APIClients {
 		$data = array();
 
 		$data["time_insert"] = $client->get_time_insert();
-		$data["serviceName"] = $client->get_name();
+		$data["service_name"] = $client->get_name();
 		$data["token"] = $client->get_token();
 		if($client->has_client_domain())
 			$data["client_domain"] = $client->get_client_domain();

@@ -81,25 +81,25 @@ CREATE TABLE `comunic_api_limit_count` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-DROP TABLE IF EXISTS `comunic_API_ServicesToken`;
-CREATE TABLE `comunic_API_ServicesToken` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS `comunic_api_services_tokens`;
+CREATE TABLE `comunic_api_services_tokens` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `time_insert` int(11) DEFAULT NULL,
-  `serviceName` varchar(255) NOT NULL,
+  `service_name` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
   `client_domain` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-DROP TABLE IF EXISTS `comunic_API_userLoginToken`;
-CREATE TABLE `comunic_API_userLoginToken` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `ID_utilisateurs` int(11) NOT NULL,
-  `ID_comunic_API_ServicesToken` int(11) NOT NULL,
+DROP TABLE IF EXISTS `comunic_api_users_tokens`;
+CREATE TABLE `comunic_api_users_tokens` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `service_id` int(11) NOT NULL,
   `token1` varchar(255) NOT NULL,
   `token2` varchar(255) NOT NULL,
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -110,7 +110,7 @@ CREATE TABLE `comunic_conversations_list` (
   `name` varchar(50) DEFAULT NULL,
   `last_active` int(11) DEFAULT NULL,
   `creation_time` int(11) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -122,7 +122,7 @@ CREATE TABLE `comunic_conversations_messages` (
   `time_insert` int(11) DEFAULT NULL,
   `message` varchar(200) DEFAULT NULL,
   `image_path` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -134,7 +134,7 @@ CREATE TABLE `comunic_conversations_users` (
   `time_add` int(11) DEFAULT NULL,
   `following` int(1) DEFAULT '0',
   `saw_last_message` int(1) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 DROP TABLE IF EXISTS `comunic_groups`;

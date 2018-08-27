@@ -13,18 +13,6 @@ class AccountComponent {
 	const USER_TABLE = "utilisateurs";
 
 	/**
-	 * @var String $userLoginAPItable The name of the table that contains logins performed on the API
-	 */
-	private $userLoginAPItable = "";
-
-	/**
-	 * Public constructor
-	 */
-	public function __construct(){
-		$this->userLoginAPItable = CS::get()->config->get("dbprefix")."API_userLoginToken";
-	}
-
-	/**
 	 * Try to login user with returning a service token
 	 * 
 	 * @param string $email The e-mail address of the user
@@ -61,10 +49,10 @@ class AccountComponent {
 		$token2 = random_str(75);
 
 		//Insert token in the database
-		$tableName = $this->userLoginAPItable;
+		$tableName = APIClients::USERS_TOKENS_TABLE;
 		$insertValues = array(
-			"ID_utilisateurs" => $userID,
-			"ID_".CS::get()->config->get("dbprefix")."API_ServicesToken" => $serviceID,
+			"user_id" => $userID,
+			"service_id" => $serviceID,
 			"token1" => $token1,
 			"token2" => $token2
 		);
@@ -84,12 +72,12 @@ class AccountComponent {
 	 */
 	private function getUserLoginTokenByIDs(int $userID, int $serviceID) {
 		//Prepare database request
-		$conditions = "WHERE ID_utilisateurs = ? AND ID_".CS::get()->config->get("dbprefix")."API_ServicesToken = ?";
+		$conditions = "WHERE user_id = ? AND service_id = ?";
 		$values = array(
 			$userID,
 			$serviceID
 		);
-		$tokenInfos = CS::get()->db->select($this->userLoginAPItable, $conditions, $values);
+		$tokenInfos = CS::get()->db->select(APIClients::USERS_TOKENS_TABLE, $conditions, $values);
 		
 		if(count($tokenInfos) == 0)
 			return false; //There is nobody at this address
@@ -111,14 +99,14 @@ class AccountComponent {
 	public function deleteUserLoginToken(int $userID, string $serviceID) : bool {
 
 		//Prepare database request
-		$condition = "ID_utilisateurs = ? AND ID_".CS::get()->config->get("dbprefix")."API_ServicesToken = ?";
+		$condition = "user_id = ? AND service_id = ?";
 		$values = array(
 			$userID,
 			$serviceID
 		);
 
 		//Try to perform request
-		if(!CS::get()->db->deleteEntry($this->userLoginAPItable, $condition, $values))
+		if(!CS::get()->db->deleteEntry(APIClients::USERS_TOKENS_TABLE, $condition, $values))
 			return false; //Something went wrong during the request
 		
 		//Everything is ok
@@ -135,13 +123,13 @@ class AccountComponent {
 	public function deleteAllUserLoginTokens(int $userID) : bool {
 
 		//Prepare database request
-		$condition = "ID_utilisateurs = ?";
+		$condition = "user_id = ?";
 		$values = array(
 			$userID
 		);
 
 		//Try to perform request
-		if(!CS::get()->db->deleteEntry($this->userLoginAPItable, $condition, $values))
+		if(!CS::get()->db->deleteEntry(APIClients::USERS_TOKENS_TABLE, $condition, $values))
 			return false; //Something went wrong during the request
 		
 		//Everything is ok
@@ -162,8 +150,8 @@ class AccountComponent {
 			return 0;
 		
 		//Prepare database request
-		$tablesName = $this->userLoginAPItable;
-		$conditions = "WHERE ".$this->userLoginAPItable.".ID_".CS::get()->config->get("dbprefix")."API_ServicesToken = ? AND ".$this->userLoginAPItable.".token1 = ? AND ".$this->userLoginAPItable.".token2 = ?";
+		$tablesName = APIClients::USERS_TOKENS_TABLE;
+		$conditions = "WHERE ".APIClients::USERS_TOKENS_TABLE.".service_id = ? AND ".APIClients::USERS_TOKENS_TABLE.".token1 = ? AND ".APIClients::USERS_TOKENS_TABLE.".token2 = ?";
 		$conditionsValues = array(
 			$serviceID,
 			$tokens[0],
@@ -178,7 +166,7 @@ class AccountComponent {
 			return 0; //No result
 
 		//Return ID
-		return $userInfos[0]["ID_utilisateurs"];
+		return $userInfos[0]["user_id"];
 	}
 
 	/**
