@@ -360,6 +360,23 @@ class Conversations {
 	}
 
 	/**
+	 * Check whether a user is the owner of a conversation message or not
+	 * 
+	 * @param int $userID Target user ID
+	 * @param int $messageID Target message
+	 * @return bool TRUE if the user is the owner of the conversation / FALSE else
+	 */
+	public function isOwnerMessage(int $userID, int $messageID) : bool {
+
+		return db()->count(
+			$this->conversationsMessagesTable, 
+			"WHERE ID  = ? AND ID_utilisateurs = ?",
+			array($messageID, $userID)
+		) > 0;
+
+	}
+
+	/**
 	 * Search for a private conversation between two users
 	 *
 	 * @param int $user1 The first user
@@ -750,6 +767,22 @@ class Conversations {
 		return true;
 	}
 
+	/**
+	 * Delete a single conversation message
+	 * 
+	 * @param int $messageID The ID of the message to delete
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteConversationMessage(int $messageID) : bool {
+
+		//Get information about the message
+		$messages = $this->getMessages("WHERE ID = ?", array($messageID));
+
+		if(count($messages) < 1)
+			return FALSE; //Message not found
+
+		return $this->delete_message($messages[0]);
+	}
 
 	/**
 	 * Delete a single message of a conversation

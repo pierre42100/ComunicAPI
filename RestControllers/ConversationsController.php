@@ -481,6 +481,27 @@ class ConversationsController {
 	}
 
 	/**
+	 * Delete a conversation message
+	 * 
+	 * @url POST /conversations/deleteMessage
+	 */
+	public function deleteMessage(){
+		
+		user_login_required();
+
+		$messageID = postInt("messageID");
+
+		//Check whether the user own or not conversation message
+		if(!components()->conversations->isOwnerMessage(userID, $messageID))
+			Rest_fatal_error(401, "You do not own this conversation message!");
+		
+		if(!components()->conversations->deleteConversationMessage($messageID))
+			Rest_fatal_error(500, "Could not delete conversation message!");
+		
+		return array("success" => "Conversation message has been successfully deleted!");
+	}
+
+	/**
 	 * Get and return safely a conversation ID specified in a $_POST Request
 	 * 
 	 * This methods check the existence of the conversation, but also check if the
