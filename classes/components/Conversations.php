@@ -553,6 +553,24 @@ class Conversations {
 	}
 
 	/**
+	 * Update a message
+	 * 
+	 * @param ConversationMessage $message Information about the message to update
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function updateMessage(ConversationMessage $message) : bool {
+		
+		$modifs = array();
+
+		//Check if the content of message has to be updated
+		if($message->has_message())
+			$modifs["message"] = $message->get_message();
+
+		//Peform update
+		return db()->updateDB(self::MESSAGES_TABLE, "id = ?", $modifs, array($message->get_id()));
+	}
+
+	/**
 	 * Get the last messages of a conversation
 	 *
 	 * @param int $conversationID The ID of the target conversation

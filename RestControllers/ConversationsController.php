@@ -481,6 +481,34 @@ class ConversationsController {
 	}
 
 	/**
+	 * Update the content of a conversation message
+	 * 
+	 * @url POST /conversations/updateMessage
+	 */
+	public function updateMessage(){
+		user_login_required();
+
+		$messageID = postInt("messageID");
+		$newContent = postString("content");
+
+		if(!check_string_before_insert($newContent))
+			Rest_fatal_error(401, "Invalid new message content!");
+
+		//Check whether the user own or not conversation message
+		if(!components()->conversations->isOwnerMessage(userID, $messageID))
+			Rest_fatal_error(401, "You do not own this conversation message!");
+		
+		//Update the message
+		$message = new ConversationMessage();
+		$message->set_id($messageID);
+		$message->set_message($newContent);
+		if(!components()->conversations->updateMessage($message))
+			Rest_fatal_error(500, "Could not update the content of the message!");
+		
+		return array("success" => "The conversation message has been successfully updated!");
+	}
+
+	/**
 	 * Delete a conversation message
 	 * 
 	 * @url POST /conversations/deleteMessage
