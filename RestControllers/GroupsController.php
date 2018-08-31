@@ -715,6 +715,10 @@ class GroupsController {
 
 		user_login_required();
 
+		//Check user password
+		if(!check_post_password(userID, "password"))
+			Rest_fatal_error(401, "Password required!");
+
 		//Get the group
 		$groupID = getPostGroupIdWithAccess("groupID", GroupInfo::ADMIN_ACCESS);
 
