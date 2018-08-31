@@ -328,6 +328,34 @@ class Posts {
 	}
 
 	/**
+	 * Get the entire list of posts of a group, ignoring visibility levels
+	 * 
+	 * @param int $groupID The ID of the target group
+	 * @param bool $load_comments Specify whether the comments should be loaded or not
+	 * @return array The list of posts
+	 */
+	public function getGroupEntirePostsList(int $groupID, bool $load_comments = FALSE) : array {
+
+		//Security
+		if($groupID == 0)
+			return array();
+
+		//Prepare database request
+		$conditions = "WHERE group_id = ?";
+		$dataConds = array($groupID);
+
+		//Perform the request
+		$list = CS::get()->db->select(
+			$this::TABLE_NAME,
+			$conditions,
+			$dataConds
+		);
+
+		//Parse and return posts (do not load comments)
+		return $this->processGetMultiple($list, $load_comments);
+	}
+
+	/**
 	 * Get the entire list of posts that uses a movie
 	 * 
 	 * This function does not take care of visibility level, and does not admit
@@ -644,12 +672,16 @@ class Posts {
 	 */
 	public function delete(int $postID) : bool {
 
-		//Get informations about the post
+		//Get information about the post
 		$post_info = $this->get_single($postID);
 
-		//Check if we didn't get informations about the post
+		//Check if we didn't get information about the post
 		if(!$post_info->isValid())
 			return false;
+
+		//Delete all the notifications related to the post
+		if(!components()->notifications->deleteAllRelatedWithPost($postID))
+			return FALSE;
 
 		//Delete the likes associated to the post
 		if(!components()->likes->delete_all($postID, Likes::LIKE_POST))
@@ -751,6 +783,30 @@ class Posts {
 
 		//Get the list of posts of the user
 		$posts = $this->getPostsForMovie($movieID);
+
+		//Delete the list of posts
+		foreach($posts as $post){
+
+			//Delete the posts
+			if(!$this->delete($post->get_id()))
+				return FALSE;
+
+		}
+
+		//Success
+		return TRUE;
+	}
+
+	/**
+	 * Delete all the posts of a group
+	 * 
+	 * @param int $groupID The ID of the target group
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteAllGroup(int $groupID) : bool {
+
+		//Get the list of posts of the group
+		$posts = $this->getGroupEntirePostsList($groupID);
 
 		//Delete the list of posts
 		foreach($posts as $post){

@@ -93,7 +93,7 @@ class notificationComponent {
 		//Determine the visibility level of the notification
 		if($notification->get_on_elem_type() == Notification::POST){
 
-			//Fetch post informations
+			//Fetch post information
 			$info_post = components()->posts->get_single($notification->get_on_elem_id());
 
 			//Check for error
@@ -403,6 +403,21 @@ class notificationComponent {
 
 
 	/**
+	 * Delete all the notifications related with a post
+	 * 
+	 * @param int $postID The ID of the target post
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteAllRelatedWithPost(int $postID) : bool {
+
+		$notification = new Notification();
+		$notification->set_on_elem_type(Notification::POST);
+		$notification->set_on_elem_id($postID);
+		return $this->delete($notification);
+		
+	}
+
+	/**
 	 * Delete all the notifications related with a user
 	 * 
 	 * @param int $userID The ID of the target user
@@ -419,6 +434,26 @@ class notificationComponent {
 		$notif->set_from_user_id($userID);
 		return $this->delete($notif);
 
+	}
+
+	/**
+	 * Delete all the notifications related with a group
+	 * 
+	 * @param int $groupID The ID of the target group
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function deleteAllRelatedWithGroup(int $groupID) : bool {
+
+		//Groups membership notifications
+		$notification = new Notification();
+		$notification->set_on_elem_type(Notification::GROUP_MEMBERSHIP);
+		$notification->set_on_elem_id($groupID);
+		if(!$this->delete($notification)) return FALSE;
+
+		$notification->set_on_elem_type(Notification::GROUP_PAGE);
+		if(!$this->delete($notification)) return FALSE;
+		
+		return TRUE;
 	}
 
 	/**

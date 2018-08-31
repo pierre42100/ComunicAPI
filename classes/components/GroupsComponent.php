@@ -685,6 +685,38 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Delete a group
+	 * 
+	 * @param int $groupID Target group id
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function delete_group(int $groupID) : bool {
+
+		//Delete group image
+		if(!$this->deleteLogo($groupID))
+			return FALSE;
+
+		//Delete all group posts
+		if(!components()->posts->deleteAllGroup($groupID))
+			return FALSE;
+
+		//Delete all group related notifications
+		if(!components()->notifications->deleteAllRelatedWithGroup($groupID))
+		 	return FALSE;
+
+		//Delete all group members
+		if(!db()->deleteEntry(self::GROUPS_MEMBERS_TABLE, "groups_id = ?", array($groupID)))
+			return FALSE;
+
+		//Delete group information
+		if(!db()->deleteEntry(self::GROUPS_LIST_TABLE, "id = ?", array($groupID)))
+			return FALSE;
+		
+		//Success
+		return TRUE;
+	}
+
+	/**
 	 * Turn a database entry into a GroupInfo object
 	 * 
 	 * @param array $data Database entry

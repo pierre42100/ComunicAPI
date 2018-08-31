@@ -707,6 +707,25 @@ class GroupsController {
 	}
 
 	/**
+	 * Delete a group
+	 * 
+	 * @url POST groups/delete
+	 */
+	public function delete(){
+
+		user_login_required();
+
+		//Get the group
+		$groupID = getPostGroupIdWithAccess("groupID", GroupInfo::ADMIN_ACCESS);
+
+		//Delete the group
+		if(!components()->groups->delete_group($groupID))
+			Rest_fatal_error(500, "Could not delete group!");
+		
+		return array("success" => "The group has been successfully deleted!");
+	}
+
+	/**
 	 * Parse a GroupInfo object into an array for the API
 	 * 
 	 * @param GroupInfo $info Information about the group
