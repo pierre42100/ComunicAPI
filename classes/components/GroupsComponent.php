@@ -71,7 +71,7 @@ class GroupsComponent {
 	 * Get the list of groups of a user
 	 * 
 	 * @param int $userID The ID of the target user
-	 * @return array The list of groups of the user
+	 * @return array The list of groups of the user (the IDs of the groups)
 	 */
 	public function getListUser(int $userID) : array {
 
@@ -86,7 +86,7 @@ class GroupsComponent {
 		//Parse results
 		$info = array();
 		foreach($groups as $group)
-			$info[] = $this->get_info($group["groups_id"]);
+			$info[] = $group["groups_id"];
 		
 		return $info;
 	}

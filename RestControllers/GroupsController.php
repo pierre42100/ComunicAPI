@@ -642,10 +642,6 @@ class GroupsController {
 
 		//Get the list of groups of the user
 		$list = components()->groups->getListUser(userID);
-
-		//Parse list
-		foreach($list as $num => $info)
-			$list[$num] = self::GroupInfoToAPI($info);
 		
 		return $list;
 
