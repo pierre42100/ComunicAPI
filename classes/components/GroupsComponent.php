@@ -355,6 +355,22 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Invite a user to join a group
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @param int $groupID The ID of the target group
+	 * @param bool TRUE for a success / FALSE else
+	 */
+	public function sendInvitation(int $userID, int $groupID) : bool {
+		$member = new GroupMember();
+		$member->set_userID($userID);
+		$member->set_group_id($groupID);
+		$member->set_time_sent(time());
+		$member->set_level(GroupMember::INVITED);
+		return $this->insertMember($member);
+	}
+
+	/**
 	 * Check whether a user received an invitation or not
 	 * 
 	 * @param int $userID The ID of the user to check

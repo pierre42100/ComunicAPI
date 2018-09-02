@@ -360,6 +360,36 @@ class GroupsController {
 	}
 
 	/**
+	 * Invite a user to join the network
+	 * 
+	 * @url POST /groups/invite
+	 */
+	public function inviteUser(){
+
+		user_login_required();
+
+		//Get target group ID
+		$groupID = getPostGroupIdWithAccess("group_id", GroupInfo::MODERATOR_ACCESS);
+
+		//Get target user ID
+		$userID = getPostUserID("userID");
+
+		//Get the current status of the user over the group
+		if(components()->groups->getMembershipLevel($userID, $groupID) != GroupMember::VISITOR)
+			Rest_fatal_error(401, "The user is not a visitor for this group!");
+		
+		//Save the invitation of the user
+		if(!components()->groups->sendInvitation($userID, $groupID))
+			Rest_fatal_error(500, "Could not send user invitation!");
+
+		//Create notification
+		create_group_membership_notification($userID, userID, $groupID, Notification::SENT_GROUP_MEMBERSHIP_INVITATION);
+
+		//Success
+		return array("success" => "The user has been successfully invited to join this group!");
+	}
+
+	/**
 	 * Respond to a membership invitation
 	 * 
 	 * @url POST /groups/respond_invitation
