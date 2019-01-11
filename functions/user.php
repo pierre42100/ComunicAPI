@@ -59,3 +59,20 @@ function check_post_password(int $userID, string $name) : bool {
     //Else the password seems to be valid
     return TRUE;
 }
+
+/**
+ * Update last user activity if the user allows it
+ * 
+ * This function do not do anything if the incognito mode
+ * has been enabled by the user
+ */
+function update_last_user_activity_if_allowed() {
+
+    //Check if incognito mode is enabled
+    if(isset($_POST["incognito"]))
+        return;
+    
+    //Update last activity time of the user
+    CS::get()->components->user->updateLastActivity(userID);
+
+}

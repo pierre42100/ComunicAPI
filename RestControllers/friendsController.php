@@ -38,7 +38,7 @@ class friendsController{
 		}
 
 		//Update the last activity of the user
-		CS::get()->components->user->updateLastActivity(userID);
+		update_last_user_activity_if_allowed();
 
 		//Return list
 		return $api_list;

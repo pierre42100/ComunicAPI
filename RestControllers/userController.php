@@ -129,7 +129,7 @@ class userController
 		user_login_required();
 
 		//Update last user activity
-		CS::get()->components->user->updateLastActivity(userID);
+		update_last_user_activity_if_allowed();
 
 		//Return userID
 		return array("userID" => userID);
