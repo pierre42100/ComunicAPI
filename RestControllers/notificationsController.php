@@ -50,6 +50,12 @@ class notificationsController {
 			if(postBool("friends_request"))
 				$data["friends_request"] = components()->friends->count_requests(userID);
 
+		
+		//Include pending calls if required
+		if(isset($_POST["include_calls"]))
+			if(postBool("include_calls"))
+				$data["calls"] = components()->calls->countPendingResponsesForUser(userID);
+
 		return $data;
 	}
 

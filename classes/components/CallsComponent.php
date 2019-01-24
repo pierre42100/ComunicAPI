@@ -148,6 +148,22 @@ class CallsComponents {
 	}
 
 	/**
+	 * Count and return the number of pending calls for a user
+	 * 
+	 * @param $userID The ID of the target user
+	 * @return int The number of pending calls for the user
+	 */
+	public function countPendingResponsesForUser(int $userID) : int {
+
+		return db()->count(
+			self::CALLS_MEMBERS_TABLE,
+			"WHERE user_id = ? AND user_accepted = ?",
+			array($userID, CallMemberInformation::USER_UNKNOWN)
+		);
+
+	}
+
+	/**
 	 * Set the response of a member to a call
 	 * 
 	 * @param $callID The ID of the target call
