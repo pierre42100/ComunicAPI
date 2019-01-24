@@ -68,6 +68,22 @@ class CallsController {
 			
 	}
 
+	/**
+	 * Get the next pending call
+	 * 
+	 * @url POST /calls/nextPending
+	 */
+	public function GetNextPendingCall(){
+		user_login_required();
+
+		//Get the next pending call for the user
+		$call = components()->calls->getNextPendingForUser(userID, TRUE);
+
+		if(!$call->isValid())
+			return array("notice" => "No pending call.");
+
+		return self::CallInformationToAPI($call);
+	}
 
 	/**
 	 * Turn a CallsConfig object into an API entry

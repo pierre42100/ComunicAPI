@@ -70,6 +70,63 @@ class CallsComponents {
 	}
 
 	/**
+	 * Get information about a call
+	 * 
+	 * @param $call_id Target call ID
+	 * @param $load_members Specify whether members information should
+	 * be loaded too or not
+	 * @return CallInformation Matching call information object / invalid object
+	 * in case of failure
+	 */
+	public function get(int $call_id, bool $load_members) : CallInformation {
+		
+		$entry = db()->select(
+			self::CALLS_LIST_TABLE, 
+			"WHERE id = ?",
+			array($call_id)
+		);
+
+		if(count($entry) == 0)
+			return new CallInformation();
+		
+		$info = self::DBToCallInformation($entry[0]);
+
+		//Load call members if required
+		if($load_members && !$this->getMembers($info))
+			return new CallInformation();
+
+
+		return $info;
+	}
+
+	/**
+	 * Get the next call for a user
+	 * 
+	 * @param $userID Target user ID
+	 * @param $load_members Specify whether information about members 
+	 * should be loaded or not
+	 * @return CallInformation Information about the call / invalid object
+	 * if none found
+	 */
+	public function getNextPendingForUser(int $userID, bool $load_members) : CallInformation {
+
+		//Get the ID of a call the user has not responded yet
+		$entries = db()->select(
+			self::CALLS_MEMBERS_TABLE,
+			"WHERE user_id = ? AND user_accepted = ?",
+			array($userID, CallMemberInformation::USER_UNKNOWN),
+			array("call_id")
+		);
+
+		//Check if the user has no pending call
+		if(count($entries) == 0)
+			return new CallInformation();
+		
+		return $this->get($entries[0]["call_id"], $load_members);
+
+	}
+
+	/**
 	 * Create a call for a conversation
 	 * 
 	 * @param $conversationID The ID of the target conversation
