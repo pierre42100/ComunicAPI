@@ -103,6 +103,26 @@ CREATE TABLE `comunic_api_users_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+DROP TABLE IF EXISTS `comunic_calls`;
+CREATE TABLE `comunic_calls` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `conversation_id` INT NULL,
+  `last_active` INT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS `comunic_calls_members`;
+CREATE TABLE `comunic_calls_members` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `call_id` INT NOT NULL,
+  `user_id` INT NULL,
+  `user_call_id` VARCHAR(200) NULL,
+  `user_accepted` TINYINT DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 DROP TABLE IF EXISTS `comunic_conversations_list`;
 CREATE TABLE `comunic_conversations_list` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
