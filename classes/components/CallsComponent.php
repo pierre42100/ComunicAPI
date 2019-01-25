@@ -221,6 +221,21 @@ class CallsComponents {
 	}
 
 	/**
+	 * Check out whether a user belongs to a call or not
+	 * 
+	 * @param $callID The ID of the target call
+	 * @param $userID The ID of the target user
+	 * @return bool TRUE if the user belongs to the call / FALSE else
+	 */
+	public function doesUserBelongToCall(int $callID, int $userID) : bool {
+		return db()->count(
+			self::CALLS_MEMBERS_TABLE,
+			"WHERE call_id = ? AND user_id = ?",
+			array($callID, $userID)
+		) > 0;
+	}
+
+	/**
 	 * Set the response of a member to a call
 	 * 
 	 * @param $callID The ID of the target call

@@ -86,6 +86,50 @@ class CallsController {
 	}
 
 	/**
+	 * Respond to a call
+	 * 
+	 * @url POST /calls/respond
+	 */
+	public function respondToCall(){
+		user_login_required();
+
+		//Get target call ID
+		$call_id = $this->GetSafeCallIDFromRequest("call_id");
+
+		//Get target response
+		$accept = postBool("accept");
+
+		//Set user response to call
+		if(!components()->calls->setMemberResponse($call_id, userID, $accept))
+			Rest_fatal_error(500, "Could not set response of user to call!");
+		
+		return array(
+			"success" => "User response to call has been successfully set!"
+		);
+	}
+
+	/**
+	 * Get safely the ID of a call from the request
+	 * 
+	 * @param $name The name of the POST field containing call ID
+	 * @return int The ID of the call
+	 */
+	private function GetSafeCallIDFromRequest(string $name) : int {
+
+		//Get call ID
+		$call_id = postInt($name);
+
+		if($call_id < 1)
+			Rest_fatal_error(401, "Invalid call id !");
+		
+		//Check if the user belongs to the call or not
+		if(!components()->calls->doesUserBelongToCall($call_id, userID))
+			Rest_fatal_error(401, "You do not belong to this call!");
+		
+		return $call_id;
+	}
+
+	/**
 	 * Turn a CallsConfig object into an API entry
 	 * 
 	 * @param $config The config to convert
