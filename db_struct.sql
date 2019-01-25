@@ -118,7 +118,7 @@ CREATE TABLE `comunic_calls_members` (
   `call_id` INT NOT NULL,
   `user_id` INT NULL,
   `user_call_id` VARCHAR(200) NULL,
-  `user_accepted` TINYINT DEFAULT NULL,
+  `status` TINYINT DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

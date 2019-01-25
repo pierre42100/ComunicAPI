@@ -211,7 +211,7 @@ class CallsController {
 			"userID" => $member->get_userID(),
 			"call_id" => $member->get_call_id(),
 			"user_call_id" => $member->get_user_call_id(),
-			"accepted" => self::USER_RESPONSE_TO_CALL[$member->get_accepted()]
+			"status" => self::USER_RESPONSE_TO_CALL[$member->get_status()]
 		);
 	}
 }

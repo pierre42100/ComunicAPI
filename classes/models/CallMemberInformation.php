@@ -53,16 +53,16 @@ class CallMemberInformation extends BaseUniqueObjectFromUser {
 
 
 	//User response to call
-	public function set_accepted(int $accepted){
-		$this->accepted = $accepted;
+	public function set_status(int $status){
+		$this->status = $status;
 	}
 
-	public function has_accepted() : bool {
-		return $this->accepted > -1;
+	public function has_status() : bool {
+		return $this->status > -1;
 	}
 
-	public function get_accepted() : int {
-		return $this->accepted;
+	public function get_status() : int {
+		return $this->status;
 	}
 
 }

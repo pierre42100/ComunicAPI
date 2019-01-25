@@ -134,7 +134,7 @@ class CallsComponents {
 		//Get the ID of a call the user has not responded yet
 		$entries = db()->select(
 			self::CALLS_MEMBERS_TABLE,
-			"WHERE user_id = ? AND user_accepted = ?",
+			"WHERE user_id = ? AND status = ?",
 			array($userID, CallMemberInformation::USER_UNKNOWN),
 			array("call_id")
 		);
@@ -181,7 +181,7 @@ class CallsComponents {
 			$member->set_call_id($info->get_id());
 			$member->set_userID($memberID);
 			$member->set_user_call_id(random_str(190));
-			$member->set_accepted(CallMemberInformation::USER_UNKNOWN);
+			$member->set_status(CallMemberInformation::USER_UNKNOWN);
 
 			//Try to add the member to the list
 			if(!$this->addMember($member))
@@ -235,7 +235,7 @@ class CallsComponents {
 
 		return db()->count(
 			self::CALLS_MEMBERS_TABLE,
-			"WHERE user_id = ? AND user_accepted = ?",
+			"WHERE user_id = ? AND status = ?",
 			array($userID, CallMemberInformation::USER_UNKNOWN)
 		);
 
@@ -293,7 +293,7 @@ class CallsComponents {
 			self::CALLS_MEMBERS_TABLE,
 			"call_id = ? AND user_id = ?",
 			array(
-				"user_accepted" => $status
+				"status" => $status
 			),
 			array(
 				$callID,
@@ -343,7 +343,7 @@ class CallsComponents {
 		$member->set_call_id($entry["call_id"]);
 		$member->set_userID($entry["user_id"]);
 		$member->set_user_call_id($entry["user_call_id"]);
-		$member->set_accepted($entry["user_accepted"]);
+		$member->set_status($entry["status"]);
 		return $member;
 	}
 
@@ -358,7 +358,7 @@ class CallsComponents {
 		$data["call_id"] = $member->get_call_id();
 		$data["user_id"] = $member->get_userID();
 		$data["user_call_id"] = $member->get_user_call_id();
-		$data["user_accepted"] = $member->get_accepted();
+		$data["status"] = $member->get_status();
 		return $data;
 	}
 }
