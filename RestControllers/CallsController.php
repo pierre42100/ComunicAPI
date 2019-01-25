@@ -14,7 +14,8 @@ class CallsController {
 	const USER_RESPONSE_TO_CALL = array(
 		CallMemberInformation::USER_ACCEPTED => "accepted",
 		CallMemberInformation::USER_REJECTED => "rejected",
-		CallMemberInformation::USER_UNKNOWN => "unknown"
+		CallMemberInformation::USER_UNKNOWN => "unknown",
+		CallMemberInformation::USER_HANG_UP => "hang_up"
 	);
 
 	/**

@@ -265,12 +265,35 @@ class CallsComponents {
 	 * @return bool TRUE for a success / FALSE else
 	 */
 	public function setMemberResponse(int $callID, int $userID, bool $accept) : bool {
+		return $this->setMemberStatus(
+			$accept ? CallMemberInformation::USER_ACCEPTED : CallMemberInformation::USER_REJECTED, $callID, $userID);
+	}
+
+	/**
+	 * Make user hang up the call
+	 * 
+	 * @param int $callID Target call ID
+	 * @param int $userID Target user ID
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function setMemberHangUp(int $callID, int $userID) : bool {
+		return $this->setMemberStatus(CallMemberInformation::USER_HANG_UP, $callID, $userID);
+	}
+
+	/**
+	 * Update member status
+	 * 
+	 * @param $status New status for the user
+	 * @param $callID Target call ID
+	 * @param $userID Target user ID
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	private function setMemberStatus(int $status, int $callID, int $userID){
 		db()->updateDB(
 			self::CALLS_MEMBERS_TABLE,
 			"call_id = ? AND user_id = ?",
 			array(
-				"user_accepted" => 
-					$accept ? CallMemberInformation::USER_ACCEPTED : CallMemberInformation::USER_REJECTED
+				"user_accepted" => $status
 			),
 			array(
 				$callID,

@@ -13,6 +13,7 @@ class CallMemberInformation extends BaseUniqueObjectFromUser {
 	public const USER_ACCEPTED = 1;
 	public const USER_REJECTED = 0;
 	public const USER_UNKNOWN  = -1;
+	public const USER_HANG_UP = 2;
 
 
 	
