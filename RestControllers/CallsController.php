@@ -69,6 +69,27 @@ class CallsController {
 	}
 
 	/**
+	 * Get information about a single call
+	 * 
+	 * @url POST /calls/getInfo
+	 */
+	public function getInfo(){
+		
+		user_login_required();
+
+		//Get target call ID
+		$call_id = $this->GetSafeCallIDFromRequest("call_id");
+
+		//Get information about the call
+		$call = components()->calls->get($call_id, true);
+
+		if(!$call->isValid())
+			Rest_fatal_error(500, "Could not get information about the call!");
+		
+		return self::CallInformationToAPI($call);
+	}
+
+	/**
 	 * Get the next pending call
 	 * 
 	 * @url POST /calls/nextPending
