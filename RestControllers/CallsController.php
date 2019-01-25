@@ -86,6 +86,9 @@ class CallsController {
 		if(!$call->isValid())
 			Rest_fatal_error(500, "Could not get information about the call!");
 		
+		//Update last activity of the call
+		components()->calls->updateLastActivity($call_id);
+		
 		return self::CallInformationToAPI($call);
 	}
 

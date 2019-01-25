@@ -100,6 +100,27 @@ class CallsComponents {
 	}
 
 	/**
+	 * Update last activity time of a conversation
+	 * 
+	 * @param $call_id The ID of the call to update
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function updateLastActivity(int $call_id) : bool {
+
+		return db()->updateDB(
+			self::CALLS_LIST_TABLE,
+			"id = ?",
+			array(
+				"last_active" => time()
+			),
+			array(
+				$call_id
+			)
+		);
+
+	}
+
+	/**
 	 * Get the next call for a user
 	 * 
 	 * @param $userID Target user ID
