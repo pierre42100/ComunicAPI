@@ -5,7 +5,11 @@ This project is the main Comunic RestAPI. It assures data backend support.
 (c) Pierre HUBERT since 2017
 
 # Crons required for Comunic
-Currently, this server does not make use of crons.
+
+## Calls cron
+There is a cron to automatically cleanup old conversation. Ideally this cron should be executed every 30 seconds. The file to execute is `bin/clean_calls` 
+
+
 
 # Use calls in Comunic
 To use calls in Comunic, you need a WebRTCSignalExchangerServer, a small signal exchanging server written using NodeJS. You also need to modify your configuration file located at `config/overwrite.php` by copying and pasting commented configuration located at `config/calls.php` and make it fit your needs.

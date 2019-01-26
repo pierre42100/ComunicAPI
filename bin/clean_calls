@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+
+############################
+# ComunicAPI calls cleaner #
+#                          #
+#  @author Pierre HUBERT   #
+############################
+
+Automatically remove old calls
+
+<?php
+
+require __DIR__."/../init.php";
+
+if(!components()->calls->cleanCalls())
+	echo "Could not clean calls!";
+
+echo "Calls successfully cleaned.";

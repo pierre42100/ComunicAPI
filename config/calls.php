@@ -27,3 +27,11 @@ $config->set("calls", array(
 	"turn_password" => "anonymous"
 ));
 */
+
+/**
+ * Calls expiration time
+ * 
+ * The amount of time of inactivity for what the call get
+ * automatically deleted
+ */
+$config->set("calls_expiration", 30);

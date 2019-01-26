@@ -305,6 +305,47 @@ class CallsComponents {
 	}
 
 	/**
+	 * Delete all old call
+	 * 
+	 * @return bool TRUE for a success / FALSE else
+	 */
+	public function cleanCalls() : bool {
+
+		//Compute timeout time
+		$old_time = time() - cs()->config->get("calls_expiration");
+		
+		//Get the list of old calls
+		$calls = db()->select(
+			self::CALLS_LIST_TABLE,
+			"WHERE last_active < ?",
+			array($old_time),
+			array("id")
+		);
+
+		//Process each result
+		foreach($calls as $call){
+
+			//Delete all the members of the call
+			db()->deleteEntry(
+				self::CALLS_MEMBERS_TABLE,
+				"call_id = ?",
+				array($call["id"])
+			);
+
+		}
+
+		//Delete calls entries
+		db()->deleteEntry(
+			self::CALLS_LIST_TABLE,
+			"last_active < ?",
+			array($old_time)
+		);
+
+		//Success
+		return true;
+	}
+
+	/**
 	 * Turn a database entry into a CallInformation object
 	 * 
 	 * @param $entry The entry to convert
