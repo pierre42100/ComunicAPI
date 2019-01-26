@@ -134,6 +134,26 @@ class CallsController {
 	}
 
 	/**
+	 * Hang up a call
+	 * 
+	 * @url POST /calls/hangUp
+	 */
+	public function hangUp(){
+		user_login_required();
+
+		//Get target call ID
+		$call_id = $this->GetSafeCallIDFromRequest("call_id");
+
+		//Make user hang up call
+		if(!components()->calls->setMemberHangUp($call_id, userID))
+			Rest_fatal_error(500, "Could not make user hang up call!");
+		
+		return array(
+			"success" => "User successfully hang up call!"
+		);
+	}
+
+	/**
 	 * Get safely the ID of a call from the request
 	 * 
 	 * @param $name The name of the POST field containing call ID
