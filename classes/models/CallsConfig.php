@@ -9,6 +9,7 @@ class CallsConfig {
 
 	//Private fields
 	private $enabled = false;
+	private $maximum_number_members = -1;
 	private $signal_server_name;
 	private $signal_server_port;
 	private $is_signal_server_secure;
@@ -27,6 +28,20 @@ class CallsConfig {
 		return $this->enabled;
 	}
 	
+
+	//Get the maximum number of members for a conversation
+	public function set_maximum_number_members(int $maximum_number_members){
+		$this->maximum_number_members = $maximum_number_members;
+	}
+
+	public function has_maximum_number_members() : bool {
+		return $this->maximum_number_members > 0;
+	}
+
+	public function get_maximum_number_members() : int {
+		return $this->maximum_number_members;
+	}
+
 
 	//Get Set Signal Server name
 	public function set_signal_server_name(string $signal_server_name){

@@ -29,6 +29,7 @@ class CallsComponents {
 
 		$config = new CallsConfig();
 		$config->set_enabled($callConfig["enabled"]);
+		$config->set_maximum_number_members($callConfig["maximum_number_members"]);
 		$config->set_signal_server_name($callConfig["signal_server_name"]);
 		$config->set_signal_server_port($callConfig["signal_server_port"]);
 		$config->set_is_signal_server_secure($callConfig["is_signal_server_secure"]);

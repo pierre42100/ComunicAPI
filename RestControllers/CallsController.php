@@ -188,6 +188,7 @@ class CallsController {
 
 		//Give full configuration calls are enabled
 		if($config->get_enabled()){
+			$data["maximum_number_members"] = $config->get_maximum_number_members();
 			$data["signal_server_name"] = $config->get_signal_server_name();
 			$data["signal_server_port"] = $config->get_signal_server_port();
 			$data["is_signal_server_secure"] = $config->get_is_signal_server_secure();

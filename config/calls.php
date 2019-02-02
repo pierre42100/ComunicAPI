@@ -19,6 +19,7 @@ $config->set("calls", false);
 /*
 $config->set("calls", array(
 	"enabled" => true,
+	"maximum_number_members" => 2,
 	"signal_server_name" => "localhost",
 	"signal_server_port" => 8081,
 	"is_signal_server_secure" => false,
