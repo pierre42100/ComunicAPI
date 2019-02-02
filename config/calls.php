@@ -21,6 +21,7 @@ $config->set("calls", array(
 	"enabled" => true,
 	"signal_server_name" => "localhost",
 	"signal_server_port" => 8081,
+	"is_signal_server_secure" => false,
 	"stun_server" => "stun:127.0.0.1:3478",
 	"turn_server" => "turn:127.0.0.1:3478",
 	"turn_username" => "anonymous",

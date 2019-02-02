@@ -31,6 +31,7 @@ class CallsComponents {
 		$config->set_enabled($callConfig["enabled"]);
 		$config->set_signal_server_name($callConfig["signal_server_name"]);
 		$config->set_signal_server_port($callConfig["signal_server_port"]);
+		$config->set_is_signal_server_secure($callConfig["is_signal_server_secure"]);
 		$config->set_stun_server($callConfig["stun_server"]);
 		$config->set_turn_server($callConfig["turn_server"]);
 		$config->set_turn_username($callConfig["turn_username"]);

@@ -11,6 +11,7 @@ class CallsConfig {
 	private $enabled = false;
 	private $signal_server_name;
 	private $signal_server_port;
+	private $is_signal_server_secure;
 	private $stun_server;
 	private $turn_server;
 	private $turn_username;
@@ -54,6 +55,14 @@ class CallsConfig {
 		return $this->signal_server_port;
 	}
 
+	//Get and set secure state of the signaling server
+	public function set_is_signal_server_secure(bool $is_signal_server_secure){
+		$this->is_signal_server_secure = $is_signal_server_secure;
+	}
+
+	public function get_is_signal_server_secure() : bool {
+		return $this->is_signal_server_secure;
+	}
 
 	//Get and set stun server
 	public function set_stun_server(string $stun_server){
