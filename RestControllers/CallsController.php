@@ -19,6 +19,16 @@ class CallsController {
 	);
 
 	/**
+	 * Public constructor
+	 */
+	public function __construct(){
+		
+		//Clean calls
+		components()->calls->cleanCalls();
+
+	}
+
+	/**
 	 * Get call configuration
 	 * 
 	 * @url POST /calls/config
