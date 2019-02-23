@@ -555,7 +555,7 @@ class GroupsComponent {
 	 */
 	private function countMembers(int $id) : int {
 		return db()->count(self::GROUPS_MEMBERS_TABLE, 
-			"WHERE groups_id = ?",
+			"WHERE groups_id = ? AND level <= ".GroupMember::MEMBER,
 			array($id));
 	}
 
