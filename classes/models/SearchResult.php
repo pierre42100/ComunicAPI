@@ -21,7 +21,7 @@ class SearchResult {
 	 * @param int $kind The kind of result (group, user...)
 	 * @param int $kind_id The ID of the result
 	 */
-	public function SearchResult(int $kind, int $kind_id){
+	public function __construct(int $kind, int $kind_id){
 		$this->set_kind($kind);
 		$this->set_kind_id($kind_id);
 	}
