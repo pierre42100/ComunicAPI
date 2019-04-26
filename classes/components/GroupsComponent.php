@@ -708,6 +708,10 @@ class GroupsComponent {
 	 */
 	public function delete_group(int $groupID) : bool {
 
+		// Delete all the likes of the group
+		if(!components()->likes->delete_all($groupID, Likes::LIKE_GROUP))
+			return FALSE;
+
 		//Delete group image
 		if(!$this->deleteLogo($groupID))
 			return FALSE;
