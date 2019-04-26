@@ -522,6 +522,20 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Check out whether a user is the last administrator of a group
+	 * or not
+	 * 
+	 * @param int $userID The ID of the user to check
+	 * @param int $groupID The ID of the target group
+	 * @return bool TRUE if the user is an admin and the last one of the group
+	 * and FALSE else
+	 */
+	public function isLastAdmin(int $userID, int $groupID) : bool {
+		return $this->isAdmin($userID, $groupID) 
+			&& $this->countMembersAtLevel($groupID, GroupMember::ADMINISTRATOR) === 1;
+	}
+
+	/**
 	 * Check whether a group is open or not
 	 * 
 	 * @param int $groupID The ID of the target group
@@ -732,6 +746,36 @@ class GroupsComponent {
 		if(!db()->deleteEntry(self::GROUPS_LIST_TABLE, "id = ?", array($groupID)))
 			return FALSE;
 		
+		//Success
+		return TRUE;
+	}
+
+	/**
+	 * Delete all the groups a user belongs to 
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return bool TRUE in case of success / FALSE else
+	 */
+	public function deleteAllUsersGroups(int $userID) : bool {
+		
+		//Get all user gropus
+		foreach($this->getListUser($userID) as $groupID){
+
+			//Get information about user membership to determine whether the group has to be
+			// deleted or not, to do so we check whether the user is the last administrator
+			// of the group or not
+			if($this->isLastAdmin($userID, $groupID)) {
+				if(!$this->delete_group($groupID))
+					return FALSE;
+			}
+			else
+				//Make the user leave the group
+				if(!$this->deleteMembershipWithStatus(
+					$userID, $groupID, $this->getMembershipLevel($userID, $groupID)))
+					return FALSE;
+
+		}
+
 		//Success
 		return TRUE;
 	}

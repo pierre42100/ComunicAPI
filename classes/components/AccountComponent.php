@@ -409,8 +409,12 @@ class AccountComponent {
 	 */
 	public function delete(int $userID) : bool {
 
+		/*//Delete all group memberships
+		if(!components()->groups->deleteAllUsersGroups($userID))
+			return FALSE;
+
 		//Delete user comments
-		/*if(!components()->comments->deleteAllUser($userID))
+		if(!components()->comments->deleteAllUser($userID))
 			return false;
 
 		//Delete user posts
