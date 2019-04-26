@@ -34,6 +34,33 @@ use ReflectionObject;
 use ReflectionMethod;
 use DOMDocument;
 
+////////////////////////////////////////////////////////////////////////////////
+////////// THESE FUNCTIONS FIXE ENCODING ISSUES DUE TO PREVIOUS ENCODING ///////
+/////////// CHOICES ////////////////////////////////////////////////////////////
+//////////// THEY HAVE NOT BEEN TESTED ENOUGH, USE WITH CAUTION !!!!! //////////
+////////////////////////////////////////////////////////////////////////////////
+function do_fix_utf8($input){
+	if(\json_encode($input) == FALSE)
+		return utf8_encode($input);
+	
+	return $input;
+}
+
+function check_utf8($input) {
+
+	if(is_array($input)) {
+		$out = array();
+		foreach($input as $key => $value)
+			$out[$key] = check_utf8($value);
+		return $out;
+	}
+	else
+		return mb_detect_encoding($input) == "UTF-8" ? do_fix_utf8($input) : $input;
+}
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Description of RestServer
  *
@@ -432,7 +459,13 @@ class RestServer
 				$options = JSON_PRETTY_PRINT;
 			}
 			$options = $options | JSON_UNESCAPED_UNICODE;
-			echo json_encode($data, $options);
+
+			// Return data
+			$output = json_encode($data, $options);
+			if($output === FALSE)
+				$output = json_encode(check_utf8($data), $options);
+			echo $output;
+
 		}
 	}
 
