@@ -449,6 +449,10 @@ class AccountComponent {
 		if(!components()->accountImage->delete($userID))
 			return FALSE;
 		
+		//Delete all the likes on the user page
+		if(!components()->likes->delete_all($userID, Likes::LIKE_USER))
+			return FALSE;
+		
 		if(!components()->backgroundImage->delete($userID))
 			return FALSE;
 
