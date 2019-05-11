@@ -173,6 +173,25 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Get the timestamp of the estimated last activity on the group
+	 * 
+	 * @param int $id The ID of the target group
+	 * @return int The time of last activity on the group
+	 */
+	public function getLastActivity(int $id) : int {
+
+		// Query the database
+		$posts = components()->posts->getGroupPosts($id, true, 0, 1);
+
+		if(count($posts) == 0)
+			return 0;
+
+		else
+			return $posts[0]->get_time_sent();
+
+	}
+
+	/**
 	 * Get a group settings
 	 * 
 	 * @param int $id The ID of the target group
