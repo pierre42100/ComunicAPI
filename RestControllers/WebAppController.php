@@ -67,7 +67,7 @@ class WebAppController {
 				$info = array_shift($groups);
 				$out[] = array(
 					"type" => $type,
-					"id" => $info["id"],
+					"id" => (int)$info["id"],
 					"last_activity" => $info["activity"]
 				);
 			}
