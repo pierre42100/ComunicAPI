@@ -92,6 +92,32 @@ class GroupsComponent {
 	}
 
 	/**
+	 * Get the list of groups of a user where the users can create
+	 * posts
+	 * 
+	 * @param int $userID The ID of the target user
+	 * @return array The list of the groups the user can participate to
+	 */
+	public function getListUserWhereCanCreatePosts(int $userID) : array {
+		$list = db()->select(self::GROUPS_MEMBERS_TABLE." m, ".self::GROUPS_LIST_TABLE." g",
+			"WHERE user_id = ? 
+				AND m.groups_id = g.id 
+				AND (
+					level = ".GroupMember::ADMINISTRATOR." OR
+					level = ".GroupMember::MODERATOR." OR
+					(level = ".GroupMember::MEMBER." AND posts_level = ".GroupInfo::POSTS_LEVEL_ALL_MEMBERS.")
+				)
+			", 
+			array($userID), 
+			array("g.id"));
+
+		foreach($list as $num => $info)
+			$list[$num] = (int)$info["id"];
+
+		return $list;
+	}
+
+	/**
 	 * Get the visibility level of a group
 	 * 
 	 * @param int $id The ID of the target group

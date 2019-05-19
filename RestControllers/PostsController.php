@@ -492,6 +492,29 @@ class PostsController {
 
 
 	/**
+	 * Get the list of targets (pages) where the current user can create
+	 * posts
+	 * 
+	 * @url POST /posts/getAvailableTargets
+	 */
+	public function getAvailableTargets() {
+		user_login_required();
+
+		// Get the list of friends of the user where the user
+		// can create posts
+		$friends = components()->friends->getListThatAllowPostsFromUser(userID);
+
+		// Get the list of groups where the user can create posts
+		$groups = components()->groups->getListUserWhereCanCreatePosts(userID);
+		
+		//Return result
+		return array(
+			"friends" => $friends,
+			"groups" => $groups
+		);
+	}
+
+	/**
 	 * Get the visibility level specified in a POST request
 	 * 
 	 * @param string $name The name of the POST parameter

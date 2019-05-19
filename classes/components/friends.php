@@ -77,6 +77,28 @@ class friends {
 	}
 
 	/**
+	 * Get the list of friends of a given user that allows him to
+	 * create posts on their page
+	 * 
+	 * @param $userID The ID of the target user
+	 * @return array The list of friends of a user that allows him
+	 * to create posts
+	 */
+	public function getListThatAllowPostsFromUser(int $userID) : array {
+		$list = db()->select(
+			$this->friendsTable, 
+			"WHERE autoriser_post_page = 1 AND ID_amis = ?", 
+			array($userID), 
+			array("ID_personne")
+		);
+
+		foreach($list as $num=>$info)
+			$list[$num] = (int)$info["ID_personne"];
+		
+		return $list;
+	}
+
+	/**
 	 * Respond to a friendship request
 	 *
 	 * @param int $userID The ID of the user who respond to the request
