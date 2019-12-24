@@ -114,8 +114,8 @@ class AccountImage {
 		//Check for personnalized level
 		$fileContent = file_get_contents($filePath);
 
-			//Return visibility level
-			return $fileContent;
+		//Return visibility level
+		return (int)$fileContent;
 	}
 
 	/**
