@@ -731,7 +731,7 @@ class GroupsComponent {
 	 * @param int $groupID The ID of the target group
 	 * @return bool TRUE if the directory is available / FALSE
 	 */
-	public function checkDirectoryAvailability(string $directory, int $groupID) : int {
+	public function checkDirectoryAvailability(string $directory, int $groupID) : bool {
 		$currID = $this->findByVirtualDirectory($directory);
 
 		//Check if the domain has not been allocated
