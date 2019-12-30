@@ -393,7 +393,7 @@ class accountController {
 		user_login_required();
 		check_post_password(userID, "password");
 
-		//Try to delet the account
+		//Try to delete the account
 		if(!components()->account->delete(userID))
 			Rest_fatal_error(500, "An error occurred while trying to delete your account!");
 		
