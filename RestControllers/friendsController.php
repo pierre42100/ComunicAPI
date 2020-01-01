@@ -330,7 +330,7 @@ class friendsController{
 		
 		//Update status
 		if(!components()->friends->set_can_post_texts(userID, $friendID, $can_post_texts))
-			Rest_fatal_error(500, "Coudl not update friendship status !");
+			Rest_fatal_error(500, "Could not update friendship status !");
 
 		//Success
 		return array("success" => "Updated authorization status !");
