@@ -558,3 +558,12 @@ CREATE TABLE `utilisateurs` (
   `lang` varchar(4) DEFAULT 'en',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS `comunic_custom_smileys`;
+CREATE TABLE `comunic_custom_smileys` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NULL,
+  `shorcut` VARCHAR(45) NULL,
+  `path` VARCHAR(255) NULL,
+  PRIMARY KEY (`id`));
