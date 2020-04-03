@@ -560,8 +560,8 @@ CREATE TABLE `utilisateurs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-DROP TABLE IF EXISTS `comunic_custom_smileys`;
-CREATE TABLE `comunic_custom_smileys` (
+DROP TABLE IF EXISTS `comunic_custom_emojis`;
+CREATE TABLE `comunic_custom_emojis` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NULL,
   `shorcut` VARCHAR(45) NULL,
