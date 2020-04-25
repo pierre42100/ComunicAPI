@@ -130,6 +130,7 @@ CREATE TABLE `comunic_conversations_list` (
   `name` varchar(50) DEFAULT NULL,
   `last_active` int(11) DEFAULT NULL,
   `creation_time` int(11) DEFAULT NULL,
+  `can_everyone_add_members` tinyint(4) DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
