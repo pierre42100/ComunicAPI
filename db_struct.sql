@@ -565,6 +565,6 @@ DROP TABLE IF EXISTS `comunic_custom_emojis`;
 CREATE TABLE `comunic_custom_emojis` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NULL,
-  `shorcut` VARCHAR(45) NULL,
+  `shortcut` VARCHAR(45) NULL,
   `path` VARCHAR(255) NULL,
   PRIMARY KEY (`id`));
